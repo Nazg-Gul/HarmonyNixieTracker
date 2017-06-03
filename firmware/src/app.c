@@ -25,11 +25,19 @@
 #include "app_command.h"
 #include "app_network.h"
 #include "app_usb_hid.h"
+#include "app_version.h"
 
 static bool app_greetings(AppData* app_data) {
+  SYS_CONSOLE_MESSAGE("\r\n");
+  SYS_CONSOLE_MESSAGE("System initialization finished.\r\n");
+  SYS_CONSOLE_MESSAGE("\r\n");
   SYS_CONSOLE_MESSAGE("====================================\r\n");
-  SYS_CONSOLE_MESSAGE("***  Ethernet/Wi-Fi TCP/IP Demo  ***\r\n");
-  SYS_CONSOLE_MESSAGE("====================================\r\n\r\n");
+  SYS_CONSOLE_MESSAGE("***          NixieTracker        ***\r\n");
+  SYS_CONSOLE_MESSAGE("====================================\r\n");
+  SYS_CONSOLE_MESSAGE("\r\n");
+  SYS_CONSOLE_PRINT("Hardware version: %s\r\n", APP_VERSION_HARDWARE);
+  SYS_CONSOLE_PRINT("Software version: %s\r\n", APP_VERSION_SOFTWARE);
+  SYS_CONSOLE_MESSAGE("\r\n");
   app_data->state = APP_RUN_SERVICES;
   return true;
 }

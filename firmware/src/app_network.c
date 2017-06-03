@@ -47,7 +47,7 @@ static bool app_network_tcpip_init_wait(AppNetworkData* app_network_data) {
       }
     }
     if (has_wifi) {
-      SYS_CONSOLE_MESSAGE("APP NETWORK: Waiting WiFI module to finish configuration\r\n");
+      SYS_CONSOLE_MESSAGE("APP NETWORK: Waiting WiFi module to finish configuration\r\n");
       app_network_data->state = APP_NETWORK_WIFI_CONFIG;
     } else {
       app_network_data->state = APP_NETWORK_TCPIP_MODULES_ENABLE;

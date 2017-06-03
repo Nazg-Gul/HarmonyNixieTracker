@@ -84,22 +84,22 @@ extern "C" {
 #define SYS_CLK_FREQ                        80000000ul
 #define SYS_CLK_BUS_PERIPHERAL_1            40000000ul
 #define SYS_CLK_UPLL_BEFORE_DIV2_FREQ       48000000ul
-#define SYS_CLK_CONFIG_PRIMARY_XTAL         48000000ul
+#define SYS_CLK_CONFIG_PRIMARY_XTAL         8000000ul
 #define SYS_CLK_CONFIG_SECONDARY_XTAL       32768ul
 #define SYS_CLK_CONFIG_FREQ_ERROR_LIMIT     10
 #define SYS_CLK_WAIT_FOR_SWITCH             true
 #define SYS_CLK_ON_WAIT                     OSC_ON_WAIT_IDLE 
  
 /*** Ports System Service Configuration ***/
-#define SYS_PORT_AD1PCFG        ~0xffff
+#define SYS_PORT_AD1PCFG        ~0xffc3
 #define SYS_PORT_CNPUE          0x0
 #define SYS_PORT_CNEN           0x0
 #define SYS_PORT_A_TRIS         0xFFBF
 #define SYS_PORT_A_LAT          0x0000
 #define SYS_PORT_A_ODC          0x0000
 
-#define SYS_PORT_B_TRIS         0xFFFF
-#define SYS_PORT_B_LAT          0x0000
+#define SYS_PORT_B_TRIS         0xFFC3
+#define SYS_PORT_B_LAT          0x003C
 #define SYS_PORT_B_ODC          0x0000
 
 #define SYS_PORT_C_TRIS         0xFFFF
@@ -719,6 +719,34 @@ extern "C" {
 // *****************************************************************************
 // *****************************************************************************
 /*** Application Defined Pins ***/
+
+/*** Functions for STATUS_LED_1 pin ***/
+#define STATUS_LED_1Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
+#define STATUS_LED_1On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
+#define STATUS_LED_1Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
+#define STATUS_LED_1StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
+#define STATUS_LED_1StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5, Value)
+
+/*** Functions for STATUS_LED_2 pin ***/
+#define STATUS_LED_2Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_4)
+#define STATUS_LED_2On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_4)
+#define STATUS_LED_2Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_4)
+#define STATUS_LED_2StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_4)
+#define STATUS_LED_2StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_4, Value)
+
+/*** Functions for STATUS_LED_3 pin ***/
+#define STATUS_LED_3Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_3)
+#define STATUS_LED_3On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_3)
+#define STATUS_LED_3Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_3)
+#define STATUS_LED_3StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_3)
+#define STATUS_LED_3StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_3, Value)
+
+/*** Functions for STATUS_LED_4 pin ***/
+#define STATUS_LED_4Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_2)
+#define STATUS_LED_4On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_2)
+#define STATUS_LED_4Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_2)
+#define STATUS_LED_4StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_2)
+#define STATUS_LED_4StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_2, Value)
 
 /*** Functions for ETH_NRST pin ***/
 #define ETH_NRSTToggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_6)

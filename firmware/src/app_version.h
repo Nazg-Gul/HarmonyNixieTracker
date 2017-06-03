@@ -20,28 +20,10 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#include <stddef.h>                     // Defines NULL
-#include <stdbool.h>                    // Defines true
-#include <stdlib.h>                     // Defines EXIT_FAILURE
-#include "system/common/sys_module.h"   // SYS function prototypes
+#ifndef _APP_VERSION_H
+#define _APP_VERSION_H
 
-#include "system_definitions.h"
-#include "app.h"
+#define APP_VERSION_HARDWARE "Rev.B"
+#define APP_VERSION_SOFTWARE "v0.1"
 
-#define DWORD long long
-
-int main(void) {
-  AppData app_data;
-  // Initialize all MPLAB Harmony modules.
-  SYS_Initialize(NULL);
-  // Initialize application specific modules.
-  APP_Initialize(&app_data, &sysObj);
-  while (true) {
-    // Maintain state machines of all polled MPLAB Harmony modules.
-    SYS_Tasks();
-    // Maintain the application's state machine.
-    APP_Tasks(&app_data);
-  }
-  // Execution should not come here during normal operation.
-  return EXIT_FAILURE;
-}
+#endif  // _APP_VERSION_H

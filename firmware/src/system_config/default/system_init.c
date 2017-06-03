@@ -70,7 +70,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #pragma config FNOSC =      PRIPLL
 #pragma config FSOSCEN =    OFF
 #pragma config IESO =       OFF
-#pragma config POSCMOD =    HS
+#pragma config POSCMOD =    XT
 #pragma config OSCIOFNC =   OFF
 #pragma config FPBDIV =     DIV_2
 #pragma config FCKSM =      CSECMD
@@ -78,10 +78,10 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #pragma config FWDTEN =     OFF
 /*** DEVCFG2 ***/
 
-#pragma config FPLLIDIV =   DIV_12
+#pragma config FPLLIDIV =   DIV_2
 #pragma config FPLLMUL =    MUL_20
 #pragma config FPLLODIV =   DIV_1
-#pragma config UPLLIDIV =   DIV_12
+#pragma config UPLLIDIV =   DIV_2
 #pragma config UPLLEN =     ON
 /*** DEVCFG3 ***/
 
@@ -799,13 +799,13 @@ USB_DEVICE_CONFIGURATION_DESCRIPTORS_TABLE fullSpeedConfigDescSet[1] =
     {
         uint8_t bLength;        // Size of this descriptor in bytes
         uint8_t bDscType;       // STRING descriptor type
-        uint16_t string[10];    // String
+        uint16_t string[12];    // String
     }
     sd002 =
     {
         sizeof(sd002),
         USB_DESCRIPTOR_STRING,
-		{'P','i','c','N','e','t','w','o','r','k'}
+		{'N','i','x','i','e','T','r','a','c','k','e','r'}
     }; 
 
 /***************************************

@@ -37,6 +37,7 @@
         <itemPath>../src/app_command.h</itemPath>
         <itemPath>../src/app_usb_hid.h</itemPath>
         <itemPath>../src/app_usb_hid_utils.h</itemPath>
+        <itemPath>../src/app_version.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f6" displayName="crypto" projectFiles="true">
