@@ -106,6 +106,26 @@ static const DRV_MIIM_INIT drvMiimInitData =
     .moduleInit = {SYS_MODULE_POWER_RUN_FULL},
     .ethphyId = DRV_MIIM_ETH_MODULE_ID,
 };
+// <editor-fold defaultstate="collapsed" desc="DRV_I2C Initialization Data">
+// *****************************************************************************
+/* I2C Driver Initialization Data
+*/
+
+const DRV_I2C_INIT drvI2C0InitData =
+{
+    .i2cId = DRV_I2C_PERIPHERAL_ID_IDX0,
+    .i2cMode = DRV_I2C_OPERATION_MODE_IDX0,
+    .baudRate = DRV_I2C_BAUD_RATE_IDX0,
+    .busspeed = DRV_I2C_SLEW_RATE_CONTROL_IDX0,
+    .buslevel = DRV_I2C_SMBus_SPECIFICATION_IDX0,
+    .mstrInterruptSource = DRV_I2C_MASTER_INT_SRC_IDX0,
+    .errInterruptSource = DRV_I2C_ERR_MX_INT_SRC_IDX0,
+};
+
+
+
+
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="DRV_SPI Initialization Data"> 
  /*** SPI Driver Initialization Data ***/
   /*** Index 0  ***/
@@ -126,6 +146,43 @@ static const DRV_MIIM_INIT drvMiimInitData =
     .queueSize = DRV_SPI_QUEUE_SIZE_IDX0,
     .jobQueueReserveSize = DRV_SPI_RESERVED_JOB_IDX0,
  };
+  /*** Index 1  ***/
+ DRV_SPI_INIT drvSpi1InitData =
+ {
+    .spiId = DRV_SPI_SPI_ID_IDX1,
+    .taskMode = DRV_SPI_TASK_MODE_IDX1,
+    .spiMode = DRV_SPI_SPI_MODE_IDX1,
+    .allowIdleRun = DRV_SPI_ALLOW_IDLE_RUN_IDX1,
+    .spiProtocolType = DRV_SPI_SPI_PROTOCOL_TYPE_IDX1,
+    .commWidth = DRV_SPI_COMM_WIDTH_IDX1,
+    .spiClk = DRV_SPI_SPI_CLOCK_IDX1,
+    .baudRate = DRV_SPI_BAUD_RATE_IDX1,
+    .bufferType = DRV_SPI_BUFFER_TYPE_IDX1,
+    .clockMode = DRV_SPI_CLOCK_MODE_IDX1,
+    .inputSamplePhase = DRV_SPI_INPUT_PHASE_IDX1,
+    .dummyByteValue = DRV_SPI_TRANSMIT_DUMMY_BYTE_VALUE_IDX1,
+    .queueSize = DRV_SPI_QUEUE_SIZE_IDX1,
+    .jobQueueReserveSize = DRV_SPI_RESERVED_JOB_IDX1,
+ };
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="DRV_SST25 Initialization Data">
+// *****************************************************************************
+/* SST25 Driver Initialization Data
+*/
+
+const DRV_SST25_INIT drvSst25Obj0InitData =
+{
+    .moduleInit = {DRV_SST25_POWER_STATE_IDX0},
+    .spiDriverIndex = DRV_SST25_SPI_DRIVER_INSTANCE_IDX0, 
+    .holdPort = DRV_SST25_HOLD_PIN_PORT_CHANNEL_IDX0,
+    .holdPin = DRV_SST25_HOLD_PIN_PORT_BIT_POS_IDX0,
+    .wpPort = DRV_SST25_WRITE_PROTECT_PIN_PORT_CHANNEL_IDX0,
+    .wpPin = DRV_SST25_WRITE_PROTECT_PIN_BIT_POS_IDX0,
+    .csPort = DRV_SST25_CHIP_SELECT_PORT_CHANNEL_IDX0,
+    .csPin = DRV_SST25_CHIP_SELECT_PORT_BIT_POS_IDX0,
+};
+
+
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="DRV_Timer Initialization Data">
 /*** TMR Driver Initialization Data ***/
@@ -893,12 +950,22 @@ void SYS_Initialize ( void* data )
     SYS_PORTS_Initialize();
 
     /* Initialize Drivers */
+    sysObj.drvI2C0 = DRV_I2C_Initialize(DRV_I2C_INDEX_0, (SYS_MODULE_INIT *)&drvI2C0InitData);
+
 
     /*** SPI Driver Index 0 initialization***/
 
     sysObj.spiObjectIdx0 = DRV_SPI_Initialize(DRV_SPI_INDEX_0, (const SYS_MODULE_INIT  * const)&drvSpi0InitData);
+
+    /*** SPI Driver Index 1 initialization***/
+
+    sysObj.spiObjectIdx1 = DRV_SPI_Initialize(DRV_SPI_INDEX_1, (const SYS_MODULE_INIT  * const)&drvSpi1InitData);
     /* Initialize the MIIM Driver */
     sysObj.drvMiim = DRV_MIIM_Initialize(DRV_MIIM_INDEX_0, (const SYS_MODULE_INIT  * const)&drvMiimInitData);
+    sysObj.drvSst25Obj0 = DRV_SST25_Initialize(DRV_SST25_INDEX_0, (SYS_MODULE_INIT *)&drvSst25Obj0InitData);
+
+
+
 
     sysObj.drvTmr0 = DRV_TMR_Initialize(DRV_TMR_INDEX_0, (SYS_MODULE_INIT *)&drvTmr0InitData);
 

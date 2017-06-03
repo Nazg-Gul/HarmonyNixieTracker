@@ -61,6 +61,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system/reset/sys_reset.h"
 #include "driver/tmr/drv_tmr.h"
 #include "driver/usart/drv_usart.h"
+#include "driver/i2c/drv_i2c.h"
+#include "driver/spi_flash/sst25/drv_sst25.h"
 #include "system/ports/sys_ports.h"
  
 #include "driver/spi/drv_spi.h"
@@ -116,11 +118,16 @@ typedef struct
     SYS_MODULE_OBJ  sysTmr;
     SYS_MODULE_OBJ  drvTmr0;
     SYS_MODULE_OBJ  drvUsart0;
+    SYS_MODULE_OBJ  drvSst25Obj0;
+    SYS_MODULE_OBJ  drvI2C0;
     SYS_MODULE_OBJ  sysDebug;
     SYS_MODULE_OBJ  sysConsole0;
 
     /*** SPI Object for Index 0 ***/
     SYS_MODULE_OBJ				spiObjectIdx0;
+    
+    /*** SPI Object for Index 1 ***/
+    SYS_MODULE_OBJ				spiObjectIdx1;
     SYS_MODULE_OBJ  drvUSBObject;
     
     SYS_MODULE_OBJ  usbDevObject0;

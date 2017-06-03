@@ -183,6 +183,31 @@ extern "C" {
 #define DRV_MIIM_COMMANDS   true
 #define DRV_MIIM_DRIVER_OBJECT              DRV_MIIM_OBJECT_BASE_Default
 #define DRV_MIIM_DRIVER_INDEX               DRV_MIIM_INDEX_0              
+// *****************************************************************************
+/* I2C Driver Configuration Options
+*/
+#define DRV_I2C_INTERRUPT_MODE                    		false
+#define DRV_I2C_CLIENTS_NUMBER                    		1
+#define DRV_I2C_INSTANCES_NUMBER                  		1
+
+#define DRV_I2C_PERIPHERAL_ID_IDX0                		I2C_ID_2
+#define DRV_I2C_OPERATION_MODE_IDX0               		DRV_I2C_MODE_MASTER
+#define DRV_SCL_PORT_IDX0                               PORT_CHANNEL_A
+#define DRV_SCL_PIN_POSITION_IDX0                       PORTS_BIT_POS_2
+#define DRV_SDA_PORT_IDX0                               PORT_CHANNEL_A
+#define DRV_SDA_PIN_POSITION_IDX0                       PORTS_BIT_POS_3
+#define DRV_I2C_BIT_BANG_IDX0                           false
+#define DRV_I2C_STOP_IN_IDLE_IDX0                       false
+#define DRV_I2C_SMBus_SPECIFICATION_IDX0			    false
+#define DRV_I2C_BAUD_RATE_IDX0                    		50000
+#define DRV_I2C_BRG_CLOCK_IDX0	                  		40000000
+#define DRV_I2C_SLEW_RATE_CONTROL_IDX0      			false
+#define DRV_I2C_MASTER_INT_SRC_IDX0               		INT_SOURCE_I2C_2_MASTER
+#define DRV_I2C_SLAVE_INT_SRC_IDX0                		
+#define DRV_I2C_ERR_MX_INT_SRC_IDX0               		INT_SOURCE_I2C_2_ERROR
+#define DRV_I2C_POWER_STATE_IDX0                  		SYS_MODULE_POWER_RUN_FULL
+#define DRV_I2C_INTERRUPT_MODE                    		false
+
 
 /*** SPI Driver Configuration ***/
 #define DRV_SPI_NUMBER_OF_MODULES		4
@@ -200,8 +225,8 @@ extern "C" {
 #define DRV_SPI_DMA 				0
 
 /*** SPI Driver Static Allocation Options ***/
-#define DRV_SPI_INSTANCES_NUMBER 		1
-#define DRV_SPI_CLIENTS_NUMBER 			1
+#define DRV_SPI_INSTANCES_NUMBER 		2
+#define DRV_SPI_CLIENTS_NUMBER 			2
 #define DRV_SPI_ELEMENTS_PER_QUEUE 		10
 /* SPI Driver Instance 0 Configuration */
 #define DRV_SPI_SPI_ID_IDX0 				SPI_ID_4
@@ -219,6 +244,41 @@ extern "C" {
 
 #define DRV_SPI_QUEUE_SIZE_IDX0 			10
 #define DRV_SPI_RESERVED_JOB_IDX0 			1
+/* SPI Driver Instance 1 Configuration */
+#define DRV_SPI_SPI_ID_IDX1 				SPI_ID_1
+#define DRV_SPI_TASK_MODE_IDX1 				DRV_SPI_TASK_MODE_POLLED
+#define DRV_SPI_SPI_MODE_IDX1				DRV_SPI_MODE_MASTER
+#define DRV_SPI_ALLOW_IDLE_RUN_IDX1			false
+#define DRV_SPI_SPI_PROTOCOL_TYPE_IDX1 		DRV_SPI_PROTOCOL_TYPE_STANDARD
+#define DRV_SPI_COMM_WIDTH_IDX1 			SPI_COMMUNICATION_WIDTH_8BITS
+#define DRV_SPI_SPI_CLOCK_IDX1 				CLK_BUS_PERIPHERAL_1
+#define DRV_SPI_BAUD_RATE_IDX1 				1000000
+#define DRV_SPI_BUFFER_TYPE_IDX1 			DRV_SPI_BUFFER_TYPE_ENHANCED
+#define DRV_SPI_CLOCK_MODE_IDX1 			DRV_SPI_CLOCK_MODE_IDLE_LOW_EDGE_FALL
+#define DRV_SPI_INPUT_PHASE_IDX1 			SPI_INPUT_SAMPLING_PHASE_AT_END
+#define DRV_SPI_TRANSMIT_DUMMY_BYTE_VALUE_IDX1      0xFF
+
+#define DRV_SPI_QUEUE_SIZE_IDX1 			10
+#define DRV_SPI_RESERVED_JOB_IDX1 			1
+// *****************************************************************************
+/* SST25 Driver Configuration Options
+*/
+#define DRV_SST25_BUFFER_OBJ_NUMBER                       5
+#define DRV_SST25_CLIENTS_NUMBER                          1
+#define DRV_SST25_INSTANCES_NUMBER                        1
+
+#define DRV_SST25_POWER_STATE_IDX0                        SYS_MODULE_POWER_RUN_FULL
+#define DRV_SST25_SPI_DRIVER_INSTANCE_IDX0                1
+#define DRV_SST25_HOLD_PIN_PORT_CHANNEL_IDX0              PORT_CHANNEL_C
+#define DRV_SST25_HOLD_PIN_PORT_BIT_POS_IDX0              PORTS_BIT_POS_13
+#define DRV_SST25_WRITE_PROTECT_PIN_PORT_CHANNEL_IDX0     PORT_CHANNEL_C
+#define DRV_SST25_WRITE_PROTECT_PIN_BIT_POS_IDX0          PORTS_BIT_POS_14
+#define DRV_SST25_CHIP_SELECT_PORT_CHANNEL_IDX0           PORT_CHANNEL_D
+#define DRV_SST25_CHIP_SELECT_PORT_BIT_POS_IDX0           PORTS_BIT_POS_1
+
+
+
+
 /*** Timer Driver Configuration ***/
 #define DRV_TMR_INTERRUPT_MODE             true
 #define DRV_TMR_INSTANCES_NUMBER           1
