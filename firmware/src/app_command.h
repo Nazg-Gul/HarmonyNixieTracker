@@ -23,8 +23,45 @@
 #ifndef _APP_COMMAND_H
 #define _APP_COMMAND_H
 
-#include "app.h"
+#include "app_command_rtc.h"
 
-void APP_Command_Initialize(AppData* app_data);
+#include <stdbool.h>
+
+struct AppData;
+struct SYS_CMD_DEVICE_NODE;
+
+typedef enum {
+  // Command processor has nothing to do.
+  APP_COMMAND_STATE_NONE,
+  // Command processor is in the middle of RTC related commands.
+  APP_COMMAND_STATE_RTC,
+} AppCommandState;
+
+typedef struct AppCommandData {
+  AppCommandState state;
+  // Per-command data for the state machine.
+  AppCommandRTCData rtc;
+} AppCommandData;
+
+void APP_Command_Initialize(struct AppData* app_data);
+
+// Perform all periodic command related tasks.
+void APP_Command_Tasks(struct AppData* app_data);
+
+// Internal helpers.
+
+#define COMMAND_PRINT(format, ...) \
+    (*cmd_io->pCmdApi->print)(cmd_io->cmdIoParam, format, ##__VA_ARGS__)
+
+#define COMMAND_MESSAGE(message) \
+    (*cmd_io->pCmdApi->msg)(cmd_io->cmdIoParam, message)
+
+// Check whether command processor is busy with some command.
+bool APP_Command_IsBusy(struct AppData* app_data);
+
+// Check availability of command processor, if it's busy will
+// print message about this.
+bool APP_Command_CheckAvailable(struct AppData* app_data,
+                                struct SYS_CMD_DEVICE_NODE* cmd_io);
 
 #endif  // _APP_COMMAND_H

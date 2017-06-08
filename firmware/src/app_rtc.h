@@ -20,44 +20,19 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_USB_HID_H
-#define _APP_USB_HID_H
+#ifndef _APP_RTC_H
+#define _APP_RTC_H
 
-#include "system_definitions.h"
+#include "rtc_mcp7940n.h"
 
-typedef enum {
-  // USB HID is initializing.
-  APP_USB_HID_STATE_INIT,
-  // USB HID is waiting for configuration.
-  APP_USB_HID_STATE_WAIT_FOR_CONFIGURATION,
-  // USB HID is running the main tasks.
-  APP_USB_HID_STATE_MAIN_TASK,
-  // USB HID system encountered an error.
-  APP_USB_HID_STATE_ERROR,
-} AppUSBHIDState;
+typedef struct AppRTCData {
+  RTC_MCP7940N rtc_handle;
+} AppRTCData;
 
-typedef struct {
-  AppUSBHIDState state;
+// Initialize RTC related application routines.
+void APP_RTC_Initialize(AppRTCData* app_rtc_data);
 
-  USB_DEVICE_HANDLE  us_handle;
+// Perform all RTC related tasks.
+void APP_RTC_Tasks(AppRTCData* app_rtc_data);
 
-  uint8_t* receive_data_buffer;
-  uint8_t* transmit_data_buffer;
-
-  bool is_device_configured;
-
-  USB_DEVICE_HID_TRANSFER_HANDLE tx_transfer_handle;
-  USB_DEVICE_HID_TRANSFER_HANDLE rx_transfer_handle;
-
-  uint8_t configuration_value;
-
-  bool is_hid_data_received;
-  bool is_hid_data_transmitted;
-
-  uint8_t idle_rate;
-} AppUSBHIDData;
-
-void APP_USB_HID_Initialize(AppUSBHIDData* app_usb_hid_data);
-void APP_USB_HID_Tasks(AppUSBHIDData* app_usb_hid_data);
-
-#endif  // _APP_USB_HID_H
+#endif  // _APP_RTC_H

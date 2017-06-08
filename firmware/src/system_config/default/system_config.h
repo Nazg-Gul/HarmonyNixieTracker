@@ -186,7 +186,7 @@ extern "C" {
 // *****************************************************************************
 /* I2C Driver Configuration Options
 */
-#define DRV_I2C_INTERRUPT_MODE                    		false
+#define DRV_I2C_INTERRUPT_MODE                    		true
 #define DRV_I2C_CLIENTS_NUMBER                    		1
 #define DRV_I2C_INSTANCES_NUMBER                  		1
 
@@ -205,8 +205,12 @@ extern "C" {
 #define DRV_I2C_MASTER_INT_SRC_IDX0               		INT_SOURCE_I2C_2_MASTER
 #define DRV_I2C_SLAVE_INT_SRC_IDX0                		
 #define DRV_I2C_ERR_MX_INT_SRC_IDX0               		INT_SOURCE_I2C_2_ERROR
+#define DRV_I2C_INT_VECTOR_IDX0                         INT_VECTOR_I2C2
+#define DRV_I2C_ISR_VECTOR_IDX0                         _I2C_2_VECTOR
+#define DRV_I2C_INT_PRIORITY_IDX0                 		INT_PRIORITY_LEVEL1
+#define DRV_I2C_INT_SUB_PRIORITY_IDX0             		INT_SUBPRIORITY_LEVEL0
 #define DRV_I2C_POWER_STATE_IDX0                  		SYS_MODULE_POWER_RUN_FULL
-#define DRV_I2C_INTERRUPT_MODE                    		false
+#define DRV_I2C_INTERRUPT_MODE                    		true
 
 
 /*** SPI Driver Configuration ***/

@@ -20,44 +20,20 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_USB_HID_H
-#define _APP_USB_HID_H
+#ifndef _UTILDEFINES_H
+#define _UTILDEFINES_H
 
-#include "system_definitions.h"
+#include <string.h>
 
-typedef enum {
-  // USB HID is initializing.
-  APP_USB_HID_STATE_INIT,
-  // USB HID is waiting for configuration.
-  APP_USB_HID_STATE_WAIT_FOR_CONFIGURATION,
-  // USB HID is running the main tasks.
-  APP_USB_HID_STATE_MAIN_TASK,
-  // USB HID system encountered an error.
-  APP_USB_HID_STATE_ERROR,
-} AppUSBHIDState;
+#define STREQ(a, b) (strcmp((a), (b)) == 0)
 
-typedef struct {
-  AppUSBHIDState state;
+#define APP_ERROR_MESSAGE(prefix, message)  \
+    SYS_CONSOLE_MESSAGE(prefix message)
 
-  USB_DEVICE_HANDLE  us_handle;
+#define APP_DEBUG_MESSAGE(prefix, message)  \
+    SYS_DEBUG_MESSAGE(0, "[DEBUG] " prefix message)
 
-  uint8_t* receive_data_buffer;
-  uint8_t* transmit_data_buffer;
+#define APP_DEBUG_PRINT(prefix, format, ...)  \
+    SYS_DEBUG_PRINT(0, "[DEBUG] " prefix format, ##__VA_ARGS__)
 
-  bool is_device_configured;
-
-  USB_DEVICE_HID_TRANSFER_HANDLE tx_transfer_handle;
-  USB_DEVICE_HID_TRANSFER_HANDLE rx_transfer_handle;
-
-  uint8_t configuration_value;
-
-  bool is_hid_data_received;
-  bool is_hid_data_transmitted;
-
-  uint8_t idle_rate;
-} AppUSBHIDData;
-
-void APP_USB_HID_Initialize(AppUSBHIDData* app_usb_hid_data);
-void APP_USB_HID_Tasks(AppUSBHIDData* app_usb_hid_data);
-
-#endif  // _APP_USB_HID_H
+#endif  // _UTILDEFINES_H

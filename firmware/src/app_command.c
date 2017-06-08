@@ -22,13 +22,21 @@
 
 #include "app_command.h"
 
-#include "app_network.h"
+#include "app.h"
 #include "system_definitions.h"
 
+// TODO(sergey): Find a way to avoid this global thing.
 static AppData* g_app_data;
 
+int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+
 static const SYS_CMD_DESCRIPTOR commands[] = {
+  {"rtc", cmd_rtc, ": Real Time Clock configuration"},
 };
+
+int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_RTC(g_app_data, cmd_io, argc, argv);
+}
 
 void APP_Command_Initialize(AppData* app_data) {
   const int num_commands = sizeof(commands) / sizeof(*commands);
@@ -36,5 +44,30 @@ void APP_Command_Initialize(AppData* app_data) {
     SYS_CONSOLE_MESSAGE("APP: Error initializing command processor\r\n");
   }
   g_app_data = app_data;
+  app_data->command.state = APP_COMMAND_STATE_NONE;
+  APP_Command_RTC_Initialize(app_data);
 }
 
+void APP_Command_Tasks(AppData* app_data) {
+  switch (app_data->command.state) {
+    case APP_COMMAND_STATE_NONE:
+      // Nothing to do.
+      break;
+    case APP_COMMAND_STATE_RTC:
+      APP_Command_RTC_Tasks(app_data);
+      break;
+  }
+}
+
+bool APP_Command_IsBusy(AppData* app_data) {
+  return app_data->command.state != APP_COMMAND_STATE_NONE;
+}
+
+bool APP_Command_CheckAvailable(AppData* app_data,
+                                struct SYS_CMD_DEVICE_NODE* cmd_io) {
+  if (APP_Command_IsBusy(app_data)) {
+    COMMAND_MESSAGE("Command processor is busy, try again later.\r\n");
+    return false;
+  }
+  return true;
+}

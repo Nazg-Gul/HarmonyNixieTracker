@@ -80,7 +80,6 @@ void SYS_Tasks ( void )
 
     /* Maintain Device Drivers */
     DRV_MIIM_Tasks (sysObj.drvMiim);
-    DRV_I2C_Tasks(sysObj.drvI2C0);
     DRV_SPI_Tasks(sysObj.spiObjectIdx1);
     DRV_SST25_Tasks(sysObj.drvSst25Obj0);
 

@@ -20,15 +20,12 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#include <stddef.h>                     // Defines NULL
-#include <stdbool.h>                    // Defines true
-#include <stdlib.h>                     // Defines EXIT_FAILURE
-#include "system/common/sys_module.h"   // SYS function prototypes
+#include <stdlib.h>
 
+#include "system/common/sys_module.h"
 #include "system_definitions.h"
-#include "app.h"
 
-#define DWORD long long
+#include "app.h"
 
 int main(void) {
   AppData app_data;

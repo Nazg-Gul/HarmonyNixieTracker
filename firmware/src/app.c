@@ -27,7 +27,7 @@
 #include "app_usb_hid.h"
 #include "app_version.h"
 
-static bool app_greetings(AppData* app_data) {
+static void app_greetings(AppData* app_data) {
   SYS_CONSOLE_MESSAGE("\r\n");
   SYS_CONSOLE_MESSAGE("System initialization finished.\r\n");
   SYS_CONSOLE_MESSAGE("\r\n");
@@ -38,29 +38,30 @@ static bool app_greetings(AppData* app_data) {
   SYS_CONSOLE_PRINT("Hardware version: %s\r\n", APP_VERSION_HARDWARE);
   SYS_CONSOLE_PRINT("Software version: %s\r\n", APP_VERSION_SOFTWARE);
   SYS_CONSOLE_MESSAGE("\r\n");
-  app_data->state = APP_RUN_SERVICES;
-  return true;
+  app_data->state = APP_STATE_RUN_SERVICES;
 }
 
 void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects) {
   app_data->system_objects = system_objects;
-  app_data->state = APP_GREETINGS;
+  app_data->state = APP_STATE_GREETINGS;
   APP_Command_Initialize(app_data);
   APP_Network_Initialize(&app_data->network, app_data->system_objects);
   APP_USB_HID_Initialize(&app_data->usb_hid);
+  APP_RTC_Initialize(&app_data->rtc);
 }
 
 void APP_Tasks(AppData* app_data) {
   switch (app_data->state) {
-    case APP_GREETINGS:
-      if (!app_greetings(app_data)) {
-        break;
-      }
-    case APP_RUN_SERVICES:
+    case APP_STATE_GREETINGS:
+      app_greetings(app_data);
+      break;
+    case APP_STATE_RUN_SERVICES:
       APP_Network_Tasks(&app_data->network);
       APP_USB_HID_Tasks(&app_data->usb_hid);
+      APP_RTC_Tasks(&app_data->rtc);
+      APP_Command_Tasks(app_data);
       break;
-    case APP_ERROR:
+    case APP_STATE_ERROR:
       // TODO(sergey): Do we need to do something here?
       break;
   }
