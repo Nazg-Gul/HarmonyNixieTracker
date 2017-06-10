@@ -61,6 +61,9 @@ static int app_command_rtc_usage(SYS_CMD_DEVICE_NODE* cmd_io,
 "\r\n"
 "    battery status\r\n"
 "        This command will report current status of backup battery.\r\n"
+"\r\n"
+"    dump\r\n"
+"        This command will dump all internal registers.\r\n"
     );
   return true;
 }
@@ -346,6 +349,51 @@ static int app_command_rtc_battery(AppData* app_data,
   return true;
 }
 
+static void print_registers(SYS_CMD_DEVICE_NODE* cmd_io,
+                            uint8_t* registers,
+                            uint8_t num_registers) {
+  uint8_t current_register = 0;
+  while (current_register < num_registers) {
+    uint8_t i;
+    COMMAND_PRINT("%02x |", current_register);
+    for (i = 0; i < 8 && current_register < num_registers; ++i) {
+      COMMAND_PRINT(" %02x", registers[current_register]);
+      current_register++;
+    }
+    COMMAND_MESSAGE("\r\n");
+  }
+}
+
+static void rtc_dump(AppData* app_data,
+                     SYS_CMD_DEVICE_NODE* cmd_io,
+                     AppCommandRTCCallbackMode mode) {
+  switch (mode) {
+    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+      RTC_MCP7940N_ReadNumRegisters(&app_data->rtc.rtc_handle,
+                                    app_data->command.rtc.registers_storage,
+                                    RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
+      break;
+    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
+        print_registers(cmd_io,
+                        app_data->command.rtc.registers_storage,
+                        RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
+        app_command_rtc_finish_task(app_data);
+      }
+      break;
+  }
+}
+
+static int app_command_rtc_dump(AppData* app_data,
+                                SYS_CMD_DEVICE_NODE* cmd_io,
+                                int argc, char** argv) {
+  if (argc != 2) {
+    return app_command_rtc_usage(cmd_io, argv[0]);
+  }
+  app_command_rtc_start_task(app_data, cmd_io, &rtc_dump);
+  return true;
+}
+
 void APP_Command_RTC_Initialize(AppData* app_data) {
   // TODO(sergey): Ignore for release builds to save CPU ticks?
   memset(&app_data->command.rtc, 0, sizeof(app_data->command.rtc));
@@ -394,6 +442,8 @@ int APP_Command_RTC(AppData* app_data,
     return app_command_rtc_date(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "battery")) {
     return app_command_rtc_battery(app_data, cmd_io, argc, argv);
+  } else if (STREQ(argv[1], "dump")) {
+    return app_command_rtc_dump(app_data, cmd_io, argc, argv);
   } else {
     // For unknown command show usage.
     return app_command_rtc_usage(cmd_io, argv[0]);
