@@ -130,13 +130,16 @@ static void oscillator_status(AppData* app_data,
                               AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
-      RTC_MCP7940N_OscillatorStatus(&app_data->rtc.rtc_handle,
-                                    &app_data->command.rtc.status);
+      RTC_MCP7940N_OscillatorStatus(
+          &app_data->rtc.rtc_handle,
+          &app_data->command.rtc._private.oscillator.status);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        COMMAND_PRINT("Oscillator status: %s\r\n",
-                      app_data->command.rtc.status ? "ENABLED" : "DISABLED");
+        COMMAND_PRINT(
+            "Oscillator status: %s\r\n",
+            app_data->command.rtc._private.oscillator.status ? "ENABLED"
+                                                             : "DISABLED");
         app_command_rtc_finish_task(app_data);
       }
       break;
@@ -166,20 +169,22 @@ static void date_show(AppData* app_data,
                       AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
-      RTC_MCP7940N_ReadDateAndTime(&app_data->rtc.rtc_handle,
-                                   &app_data->command.rtc.date_time);
+      RTC_MCP7940N_ReadDateAndTime(
+          &app_data->rtc.rtc_handle,
+          &app_data->command.rtc._private.date.date_time);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
+        RTC_MCP7940N_DateTime* date_time = &app_data->command.rtc._private.date.date_time;
         // TODO(sergey): Need to get rid of manual year offset here.
         COMMAND_PRINT("%s %2d %s %d %2d:%02d:%02d\r\n",
-                      days_of_week[app_data->command.rtc.date_time.day_of_week],
-                      app_data->command.rtc.date_time.day,
-                      months[app_data->command.rtc.date_time.month],
-                      app_data->command.rtc.date_time.year + 2000,
-                      app_data->command.rtc.date_time.hours,
-                      app_data->command.rtc.date_time.minutes,
-                      app_data->command.rtc.date_time.seconds);
+                      days_of_week[date_time->day_of_week],
+                      date_time->day,
+                      months[date_time->month],
+                      date_time->year + 2000,
+                      date_time->hours,
+                      date_time->minutes,
+                      date_time->seconds);
         app_command_rtc_finish_task(app_data);
       }
       break;
@@ -191,8 +196,9 @@ static void date_set(AppData* app_data,
                      AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
-      RTC_MCP7940N_WriteDateAndTime(&app_data->rtc.rtc_handle,
-                                    &app_data->command.rtc.date_time);
+      RTC_MCP7940N_WriteDateAndTime(
+          &app_data->rtc.rtc_handle,
+          &app_data->command.rtc._private.date.date_time);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
@@ -271,7 +277,7 @@ static int app_command_rtc_date(AppData* app_data,
   if (argc == 2) {
     app_command_rtc_start_task(app_data, cmd_io, &date_show);
   } else if (argc == 7) {
-    if (date_decode(argv, &app_data->command.rtc.date_time)) {
+    if (date_decode(argv, &app_data->command.rtc._private.date.date_time)) {
       app_command_rtc_start_task(app_data, cmd_io, &date_set);
     } else {
       COMMAND_MESSAGE("Failed to parse date.\r\n");
@@ -318,13 +324,16 @@ static void battery_status(AppData* app_data,
                            AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
-      RTC_MCP7940N_BatteryBackupStatus(&app_data->rtc.rtc_handle,
-                                       &app_data->command.rtc.status);
+      RTC_MCP7940N_BatteryBackupStatus(
+          &app_data->rtc.rtc_handle,
+          &app_data->command.rtc._private.battery.status);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        COMMAND_PRINT("Battery status: %s\r\n",
-                      app_data->command.rtc.status ? "ENABLED" : "DISABLED");
+        COMMAND_PRINT(
+            "Battery status: %s\r\n",
+            app_data->command.rtc._private.battery.status ? "ENABLED"
+                                                          : "DISABLED");
         app_command_rtc_finish_task(app_data);
       }
       break;
@@ -369,14 +378,15 @@ static void rtc_dump(AppData* app_data,
                      AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
-      RTC_MCP7940N_ReadNumRegisters(&app_data->rtc.rtc_handle,
-                                    app_data->command.rtc.registers_storage,
-                                    RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
+      RTC_MCP7940N_ReadNumRegisters(
+          &app_data->rtc.rtc_handle,
+          app_data->command.rtc._private.dump.registers_storage,
+          RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         print_registers(cmd_io,
-                        app_data->command.rtc.registers_storage,
+                        app_data->command.rtc._private.dump.registers_storage,
                         RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
         app_command_rtc_finish_task(app_data);
       }

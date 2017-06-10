@@ -63,17 +63,30 @@ typedef struct AppCommandRTCData {
   AppCommandRTCCallback callback;
   struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
 
-  // TODO(sergey): Consider wrapping the following fields into union of
-  // per-task data.
-
   // Temporary storage buffers for async RTC communication.
-  // Pointer to this field is passed to low-level RTC query of battery backup
-  // and oscillator status.
-  bool status;
-  // Buffer to read date and time from the RTC.
-  RTC_MCP7940N_DateTime date_time;
-  // Buffer to read all registers values.
-  uint8_t registers_storage[RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE];
+  union {
+    // Temporary storage for `oscillator` command.
+    struct {
+      bool status;
+    } oscillator;
+
+    // Temporary storage for `battery` command.
+    struct {
+      bool status;
+    } battery;
+
+    // Temporary storage for `date` command.
+    struct {
+      // Buffer to store date and time read from the RTC.
+      RTC_MCP7940N_DateTime date_time;
+    } date;
+
+    // Temporary storage for `dump` command.
+    struct {
+      // Buffer to read all registers values.
+      uint8_t registers_storage[RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE];
+    } dump;
+  } _private;
 } AppCommandRTCData;
 
 // Initialize RTC related command processor state and data.
