@@ -57,9 +57,9 @@ typedef struct AppCommandRTCData {
   // and general rule here is:
   //
   // - Command processor callback sets RTC data state to WAIT_AVAILABLE,
-  //   additionally it sels which callback needs to be called.
+  //   additionally it sets which callback needs to be called.
   // - RTC state machine waits for RTC handle to be free.
-  // - RTC state machine calles the specified callback.
+  // - RTC state machine calls the specified callback.
   AppCommandRTCCallback callback;
   struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
   // Temporary storage buffers for async RTC communication.

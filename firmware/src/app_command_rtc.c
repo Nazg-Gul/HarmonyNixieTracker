@@ -201,14 +201,27 @@ static void date_set(AppData* app_data,
 
 static bool date_decode(char** argv,
                         RTC_MCP7940N_DateTime* date_time) {
-  int day, month, year, hour, minute, second, i;
+  int day_of_week, day, month, year, hour, minute, second, i;
   const char* month_name;
+  const char* day_of_week_name;
   // Parse the string.
-  day = atoi(argv[2]);
-  month_name = argv[3];
-  year = atoi(argv[4]);
+  day_of_week_name = argv[2];
+  day = atoi(argv[3]);
+  month_name = argv[4];
+  year = atoi(argv[5]);
   // TODO(sergey): Check output code of scanf.
-  sscanf(argv[5], "%d:%d:%d", &hour, &minute, &second);
+  sscanf(argv[6], "%d:%d:%d", &hour, &minute, &second);
+  // Verify day of week.
+  day_of_week = -1;
+  for (i = 0; i < 7; ++i) {
+    if (STREQ(days_of_week[i], day_of_week_name)) {
+      day_of_week = i;
+      break;
+    }
+  }
+  if (day_of_week < 0 || day_of_week > 6) {
+    return false;
+  }
   // Verify date.
   if (day < 0 || day > 31) {
     // TODO(sergey): Tighten some check here so we don't allow 31 Feb.
@@ -217,11 +230,11 @@ static bool date_decode(char** argv,
   month = -1;
   for (i = 0; i < 12; ++i) {
     if (STREQ(months[i], month_name)) {
-      month = i + 1;
+      month = i;
       break;
     }
   }
-  if (month < 1 || month > 12) {
+  if (month < 0 || month > 11) {
     return false;
   }
   // TODO(sergey): Avoid hardware-related limit here.
@@ -241,6 +254,7 @@ static bool date_decode(char** argv,
   date_time->seconds = second;
   date_time->minutes = minute;
   date_time->hours = hour;
+  date_time->day_of_week = day_of_week;
   date_time->day = day;
   date_time->month = month;
   // TODO(sergey): Avoid hardware-related shifts.
@@ -253,12 +267,12 @@ static int app_command_rtc_date(AppData* app_data,
                                 int argc, char** argv) {
   if (argc == 2) {
     app_command_rtc_start_task(app_data, cmd_io, &date_show);
-  } else if (argc == 6) {
+  } else if (argc == 7) {
     if (date_decode(argv, &app_data->command.rtc.date_time)) {
       app_command_rtc_start_task(app_data, cmd_io, &date_set);
     } else {
       COMMAND_MESSAGE("Failed to parse date.\r\n");
-      COMMAND_MESSAGE("Expected format: DD MMM YYYY HH:MM:SS.\r\n");
+      COMMAND_MESSAGE("Expected format: ddd DD MMM YYYY HH:MM:SS.\r\n");
     }
   } else {
     return app_command_rtc_usage(cmd_io, argv[0]);

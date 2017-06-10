@@ -110,8 +110,9 @@ extern "C" {
 
 ///////////////////////////
 // Buffers.
-  
-#define RTC_MCP7940N_MAX_TRANSMIT_BUFFSER_SIZE 16
+
+#define RTC_MCP7940N_MAX_TRANSMIT_BUFFSER_SIZE 32
+#define RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE 31
 
 ///////////////////////////
 // Descriptor of RTC itself.
@@ -137,6 +138,7 @@ typedef enum RTC_MCP7940N_NextTask {
   RTC_MCP7940N_TASK_BATTERY_UPDATE_DISABLE,
   RTC_MCP7940N_TASK_BATTERY_UPDATE_STATUS,
   RTC_MCP7940N_TASK_DATE_TIME_CONVERT_BCD,
+  RTC_MCP7940N_TASK_DATE_TIME_UPDATE_AND_TRANSMIT,
 } RTC_MCP7940N_NextTask;
 
 typedef struct RTC_MCP7940N_DateTime {
@@ -163,12 +165,42 @@ typedef struct RTC_MCP7940N {
   // Buffer to be transmitted,
   uint8_t transmit_buffer[RTC_MCP7940N_MAX_TRANSMIT_BUFFSER_SIZE];
 
-  // Values used by intermediate tasks.
-  // Must never be used externally.
+  // Values used by intermediate tasks. Must never be used externally.
+  // TODO(sergey): Make it more clear what tasks particular fields are used for.
+  // TODO(sergey): Consider making it a per-task union.
+  // TODO(sergey): Think how can we reduce memory footprint here.
   struct {
-    uint8_t register_value;
-    RTC_MCP7940N_DateTime* date_time;
-    bool* return_status;
+    // Temporary value to store register value(s).
+    // - First element is used to store original register value when starting
+    //   or stopping oscillator.
+    // - First element is used to store original register value when enabling
+    //   or disabling battery backup.
+    // - Full storage array is used to store 7 registers when updating date
+    //   and time.
+    uint8_t register_storage[RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE];
+
+    // Pointer to memory where date and time are read from RTC to.
+    //
+    // This is used to store pointer to a user defined buffer for async date and
+    // time reading. Reading of original registers is happening here, which is
+    // then followed by BCD conversion.
+    RTC_MCP7940N_DateTime* date_time_ptr;
+
+    // Pointer to boolean flag to store oscillator/battery status to.
+    //
+    // Used for such operations as:
+    // - Query oscillator status.
+    // - Query battery backup status.
+    //
+    // TODO(sergey): Consider making it a bitfield rather than a single boolean.
+    bool* return_status_ptr;
+
+    // New date and time to be transfered to the RTC.
+    //
+    // Used by WriteDateAndTime to store original values user wants to write.
+    // We store a copy for the time while we are reading original register
+    // values.
+    RTC_MCP7940N_DateTime date_time;
   } _private;
 } RTC_MCP7940N;
 
@@ -206,6 +238,19 @@ void RTC_MCP7940N_ReadDateAndTime(RTC_MCP7940N* rtc,
 void RTC_MCP7940N_ReadRegister(RTC_MCP7940N* rtc,
                                uint8_t register_address,
                                uint8_t* register_value);
+
+// Write single register value.
+void RTC_MCP7940N_WriteRegister(RTC_MCP7940N* rtc,
+                                uint8_t register_address,
+                                uint8_t register_value);
+
+// Similar to above, but operates with given number of registers.
+void RTC_MCP7940N_ReadNumRegisters(RTC_MCP7940N* rtc,
+                                   uint8_t* register_storage,
+                                   uint8_t num_registers);
+void RTC_MCP7940N_WriteNumRegisters(RTC_MCP7940N* rtc,
+                                    const uint8_t* register_storage,
+                                    uint8_t num_registers);
 
 // Set enabled bit on the oscillator.
 void RTC_MCP7940N_EnableOscillator(RTC_MCP7940N* rtc, bool enable);
