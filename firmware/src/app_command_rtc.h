@@ -63,29 +63,38 @@ typedef struct AppCommandRTCData {
   AppCommandRTCCallback callback;
   struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
 
-  // Temporary storage buffers for async RTC communication.
+  // Storage buffers for async RTC communication.
   union {
-    // Temporary storage for `oscillator` command.
+    // Storage for `oscillator` command.
     struct {
       bool status;
     } oscillator;
 
-    // Temporary storage for `battery` command.
+    // Storage for `battery` command.
     struct {
       bool status;
     } battery;
 
-    // Temporary storage for `date` command.
+    // Storage for `date` command.
     struct {
       // Buffer to store date and time read from the RTC.
       RTC_MCP7940N_DateTime date_time;
     } date;
 
-    // Temporary storage for `dump` command.
+    // Storage for `dump` command.
     struct {
       // Buffer to read all registers values.
-      uint8_t registers_storage[RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE];
+      uint8_t registers_storage[RTC_MCP7940N_NUM_REGISTERS];
     } dump;
+
+    // Storage for `register` command.
+    struct {
+      // Address of register to be read or written.
+      uint8_t register_address;
+      // This is a new register value for `register write` command and this is
+      // the received register value for `register read` command.
+      uint8_t register_value;
+    } reg;
   } _private;
 } AppCommandRTCData;
 

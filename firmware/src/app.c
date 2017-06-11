@@ -38,6 +38,11 @@ static void app_greetings(AppData* app_data) {
   SYS_CONSOLE_PRINT("Hardware version: %s\r\n", APP_VERSION_HARDWARE);
   SYS_CONSOLE_PRINT("Software version: %s\r\n", APP_VERSION_SOFTWARE);
   SYS_CONSOLE_MESSAGE("\r\n");
+  // Disable status LEDs.
+  STATUS_LED_1_Off();
+  STATUS_LED_2_Off();
+  STATUS_LED_3_Off();
+  STATUS_LED_4_Off();
   app_data->state = APP_STATE_RUN_SERVICES;
 }
 

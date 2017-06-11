@@ -64,6 +64,12 @@ static int app_command_rtc_usage(SYS_CMD_DEVICE_NODE* cmd_io,
 "\r\n"
 "    dump\r\n"
 "        This command will dump all internal registers.\r\n"
+"\r\n"
+"    register read <address>\r\n"
+"        Read value of the given register.\r\n"
+"\r\n"
+"    register write <address> <value>\r\n"
+"        Write value of the given register.\r\n"
     );
   return true;
 }
@@ -309,7 +315,7 @@ static void battery_disable(AppData* app_data,
                             AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
-      RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, true);
+      RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, false);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
@@ -358,7 +364,7 @@ static int app_command_rtc_battery(AppData* app_data,
   return true;
 }
 
-static void print_registers(SYS_CMD_DEVICE_NODE* cmd_io,
+static void printRegisters(SYS_CMD_DEVICE_NODE* cmd_io,
                             uint8_t* registers,
                             uint8_t num_registers) {
   uint8_t current_register = 0;
@@ -381,13 +387,13 @@ static void rtc_dump(AppData* app_data,
       RTC_MCP7940N_ReadNumRegisters(
           &app_data->rtc.rtc_handle,
           app_data->command.rtc._private.dump.registers_storage,
-          RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
+          RTC_MCP7940N_NUM_REGISTERS);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        print_registers(cmd_io,
+        printRegisters(cmd_io,
                         app_data->command.rtc._private.dump.registers_storage,
-                        RTC_MCP7940N_MAX_REGISTER_BUFFSER_SIZE);
+                        RTC_MCP7940N_NUM_REGISTERS);
         app_command_rtc_finish_task(app_data);
       }
       break;
@@ -401,6 +407,63 @@ static int app_command_rtc_dump(AppData* app_data,
     return app_command_rtc_usage(cmd_io, argv[0]);
   }
   app_command_rtc_start_task(app_data, cmd_io, &rtc_dump);
+  return true;
+}
+
+static void rtc_register_read(AppData* app_data,
+                              SYS_CMD_DEVICE_NODE* cmd_io,
+                              AppCommandRTCCallbackMode mode) {
+  switch (mode) {
+    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+      RTC_MCP7940N_ReadRegister(
+          &app_data->rtc.rtc_handle,
+          app_data->command.rtc._private.reg.register_address,
+          &app_data->command.rtc._private.reg.register_value);
+      break;
+    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
+        COMMAND_PRINT("Register value: 0x%02x.\r\n",
+                      app_data->command.rtc._private.reg.register_value);
+        app_command_rtc_finish_task(app_data);
+      }
+      break;
+  }
+}
+
+static void rtc_register_write(AppData* app_data,
+                               SYS_CMD_DEVICE_NODE* cmd_io,
+                               AppCommandRTCCallbackMode mode) {
+  switch (mode) {
+    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+      RTC_MCP7940N_WriteRegister(
+          &app_data->rtc.rtc_handle,
+          app_data->command.rtc._private.reg.register_address,
+          app_data->command.rtc._private.reg.register_value);
+      break;
+    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
+        app_command_rtc_finish_task(app_data);
+      }
+      break;
+  }
+}
+
+static int app_command_rtc_register(AppData* app_data,
+                                    SYS_CMD_DEVICE_NODE* cmd_io,
+                                    int argc, char** argv) {
+  if (argc < 4) {
+    return app_command_rtc_usage(cmd_io, argv[0]);
+  }
+  if (argc == 4 && STREQ(argv[2], "read")) {
+    app_data->command.rtc._private.reg.register_address = atoi(argv[3]);
+    app_command_rtc_start_task(app_data, cmd_io, &rtc_register_read);
+  } else if (argc == 5 && STREQ(argv[2], "write")) {
+    app_data->command.rtc._private.reg.register_address = atoi(argv[3]);
+    app_data->command.rtc._private.reg.register_value = atoi(argv[4]);
+    app_command_rtc_start_task(app_data, cmd_io, &rtc_register_write);
+  } else {
+    return app_command_rtc_usage(cmd_io, argv[0]);
+  }
   return true;
 }
 
@@ -454,6 +517,8 @@ int APP_Command_RTC(AppData* app_data,
     return app_command_rtc_battery(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "dump")) {
     return app_command_rtc_dump(app_data, cmd_io, argc, argv);
+  } else if (STREQ(argv[1], "register")) {
+    return app_command_rtc_register(app_data, cmd_io, argc, argv);
   } else {
     // For unknown command show usage.
     return app_command_rtc_usage(cmd_io, argv[0]);
