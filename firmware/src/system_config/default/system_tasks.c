@@ -75,12 +75,13 @@ void SYS_Tasks ( void )
     /* SYS_COMMAND layer tasks routine */ 
     SYS_CMD_Tasks();
     SYS_CONSOLE_Tasks(sysObj.sysConsole0);
+    /* Maintain the file system state machine. */
+    SYS_FS_Tasks();
     /* SYS_TMR Device layer tasks routine */ 
     SYS_TMR_Tasks(sysObj.sysTmr);
 
     /* Maintain Device Drivers */
     DRV_MIIM_Tasks (sysObj.drvMiim);
-    DRV_SPI_Tasks(sysObj.spiObjectIdx1);
     DRV_SST25_Tasks(sysObj.drvSst25Obj0);
 
     /* Maintain Middleware & Other Libraries */

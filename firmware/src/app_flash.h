@@ -20,53 +20,30 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _APP_FLASH_H
+#define _APP_FLASH_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include "system_config.h"
 #include "system_definitions.h"
 
-// TODO(sergey): Think how we can reduce header hell dependency here.
-#include "app_command.h"
-#include "app_flash.h"
-#include "app_network.h"
-#include "app_rtc.h"
-#include "app_usb_hid.h"
-
 typedef enum {
-  // Show greetings message in the console.
-  APP_STATE_GREETINGS,
-  // Run all runtime services.
-  APP_STATE_RUN_SERVICES,
-  // Unrecoverable error, can't continue
-  APP_STATE_ERROR,
-} AppState;
+  // Initial initialization: register file system media.
+  APP_FLASH_STATE_REGISTER_MEDIA,
+  // No tasks to be performed.
+  APP_FLASH_STATE_IDLE,
+  // Error occurred in flash module.
+  APP_FLASH_STATE_ERROR,
+} AppFlashState;
 
-typedef struct AppData {
+typedef struct AppFlashData {
   SYSTEM_OBJECTS* system_objects;
+  AppFlashState state;
+} AppFlashData;
 
-  // Current state of the global state machine.
-  AppState state;
+// Initialize flash related application routines.
+void APP_Flash_Initialize(AppFlashData* app_flash_data,
+                          SYSTEM_OBJECTS* system_objects);
 
-  // Descriptors of all peripherials.
-  AppNetworkData network;
-  AppUSBHIDData usb_hid;
-  AppRTCData rtc;
-  AppFlashData flash;
+// Perform all flash related tasks.
+void APP_Flash_Tasks(AppFlashData* app_flash_data);
 
-  // Internal state machine of sub-routines.
-  AppCommandData command;
-} AppData;
-
-
-// Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
-
-// Perform all application tasks.
-void APP_Tasks(AppData* app_data);
-
-#endif  // _APP_H
+#endif  // _APP_FLASH_H

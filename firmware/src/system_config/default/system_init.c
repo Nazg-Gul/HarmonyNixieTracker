@@ -160,6 +160,9 @@ const DRV_I2C_INIT drvI2C0InitData =
     .bufferType = DRV_SPI_BUFFER_TYPE_IDX1,
     .clockMode = DRV_SPI_CLOCK_MODE_IDX1,
     .inputSamplePhase = DRV_SPI_INPUT_PHASE_IDX1,
+    .txInterruptSource = DRV_SPI_TX_INT_SOURCE_IDX1,
+    .rxInterruptSource = DRV_SPI_RX_INT_SOURCE_IDX1,
+    .errInterruptSource = DRV_SPI_ERROR_INT_SOURCE_IDX1,
     .dummyByteValue = DRV_SPI_TRANSMIT_DUMMY_BYTE_VALUE_IDX1,
     .queueSize = DRV_SPI_QUEUE_SIZE_IDX1,
     .jobQueueReserveSize = DRV_SPI_RESERVED_JOB_IDX1,
@@ -414,6 +417,25 @@ SYS_DEBUG_INIT debugInit =
 {
     .moduleInit = {0},
     .errorLevel = SYS_ERROR_DEBUG
+};
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="SYS_FS Initialization Data">
+/*** File System Initialization Data ***/
+
+const SYS_FS_MEDIA_MOUNT_DATA sysfsMountTable[SYS_FS_VOLUME_NUMBER] = 
+{
+	{NULL}
+};
+
+
+
+
+const SYS_FS_REGISTRATION_TABLE sysFSInit [ SYS_FS_MAX_FILE_SYSTEM_TYPE ] =
+{
+    {
+        .nativeFileSystemType = FAT,
+        .nativeFileSystemFunctions = &FatFsFunctions
+    }
 };
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="SYS_TMR Initialization Data">
@@ -964,6 +986,8 @@ void SYS_Initialize ( void* data )
 
     /*** SPI Driver Index 1 initialization***/
 
+    SYS_INT_VectorPrioritySet(DRV_SPI_INT_VECTOR_IDX1, DRV_SPI_INT_PRIORITY_IDX1);
+    SYS_INT_VectorSubprioritySet(DRV_SPI_INT_VECTOR_IDX1, DRV_SPI_INT_SUB_PRIORITY_IDX1);
     sysObj.spiObjectIdx1 = DRV_SPI_Initialize(DRV_SPI_INDEX_1, (const SYS_MODULE_INIT  * const)&drvSpi1InitData);
     /* Initialize the MIIM Driver */
     sysObj.drvMiim = DRV_MIIM_Initialize(DRV_MIIM_INDEX_0, (const SYS_MODULE_INIT  * const)&drvMiimInitData);
@@ -993,6 +1017,9 @@ void SYS_Initialize ( void* data )
 
     /*** Debug Service Initialization Code ***/
     sysObj.sysDebug = SYS_DEBUG_Initialize(SYS_DEBUG_INDEX_0, (SYS_MODULE_INIT*)&debugInit);
+
+    /*** File System Service Initialization Code ***/
+    SYS_FS_Initialize( (const void *) sysFSInit );
 
     /*** Interrupt Service Initialization Code ***/
     SYS_INT_Initialize();

@@ -53,6 +53,7 @@ void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects) {
   APP_Network_Initialize(&app_data->network, app_data->system_objects);
   APP_USB_HID_Initialize(&app_data->usb_hid);
   APP_RTC_Initialize(&app_data->rtc);
+  APP_Flash_Initialize(&app_data->flash, app_data->system_objects);
 }
 
 void APP_Tasks(AppData* app_data) {
@@ -64,6 +65,7 @@ void APP_Tasks(AppData* app_data) {
       APP_Network_Tasks(&app_data->network);
       APP_USB_HID_Tasks(&app_data->usb_hid);
       APP_RTC_Tasks(&app_data->rtc);
+      APP_Flash_Tasks(&app_data->flash);
       APP_Command_Tasks(app_data);
       break;
     case APP_STATE_ERROR:
