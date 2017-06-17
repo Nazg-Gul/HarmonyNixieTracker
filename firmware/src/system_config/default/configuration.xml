@@ -1098,202 +1098,206 @@
         <Path dnOrder="1">Header Files/framework/system/int/src</Path>
       </File>
       <File dnOrder="271">
+        <Name dnOrder="0">sntp.c</Name>
+        <Path dnOrder="1">Source Files/framework/tcpip/src</Path>
+      </File>
+      <File dnOrder="272">
         <Name dnOrder="0">drv_extphy_smsc8720.c</Name>
         <Path dnOrder="1">Source Files/framework/driver/ethphy</Path>
       </File>
-      <File dnOrder="272">
+      <File dnOrder="273">
         <Name dnOrder="0">drv_usart.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/usart</Path>
       </File>
-      <File dnOrder="273">
+      <File dnOrder="274">
         <Name dnOrder="0">ffconf.h</Name>
         <Path dnOrder="1">Header Files/framework/system/fs/fat_fs/src/file_system</Path>
       </File>
-      <File dnOrder="274">
+      <File dnOrder="275">
         <Name dnOrder="0">mpfs_local.h</Name>
         <Path dnOrder="1">Header Files/framework/system/fs/mpfs/src</Path>
       </File>
-      <File dnOrder="275">
+      <File dnOrder="276">
         <Name dnOrder="0">iperf.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip</Path>
       </File>
-      <File dnOrder="276">
+      <File dnOrder="277">
         <Name dnOrder="0">drv_wifi_scan.c</Name>
         <Path dnOrder="1">Source Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="277">
+      <File dnOrder="278">
         <Name dnOrder="0">drv_wifi_eint.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="278">
+      <File dnOrder="279">
         <Name dnOrder="0">tcpip_ethernet.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip</Path>
       </File>
-      <File dnOrder="279">
+      <File dnOrder="280">
         <Name dnOrder="0">zero_conf_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="280">
+      <File dnOrder="281">
         <Name dnOrder="0">net_pres_encryptionproviderapi.h</Name>
         <Path dnOrder="1">Header Files/framework/net/pres</Path>
       </File>
-      <File dnOrder="281">
+      <File dnOrder="282">
         <Name dnOrder="0">drv_wifi_softap_client_cache.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="282">
+      <File dnOrder="283">
         <Name dnOrder="0">zero_conf_link_local_private.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="283">
+      <File dnOrder="284">
         <Name dnOrder="0">_eth_dcpt_lists.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/ethmac/src/dynamic</Path>
       </File>
-      <File dnOrder="284">
+      <File dnOrder="285">
         <Name dnOrder="0">drv_tmr_variant_mapping.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/tmr/src</Path>
       </File>
-      <File dnOrder="285">
+      <File dnOrder="286">
         <Name dnOrder="0">sntp_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="286">
+      <File dnOrder="287">
         <Name dnOrder="0">usb_billboard.h</Name>
         <Path dnOrder="1">Header Files/framework/usb</Path>
       </File>
-      <File dnOrder="287">
+      <File dnOrder="288">
         <Name dnOrder="0">sys_console.c</Name>
         <Path dnOrder="1">Source Files/framework/system/console/src</Path>
       </File>
-      <File dnOrder="288">
+      <File dnOrder="289">
         <Name dnOrder="0">drv_ethphy.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/ethphy</Path>
       </File>
-      <File dnOrder="289">
+      <File dnOrder="290">
         <Name dnOrder="0">iperf.c</Name>
         <Path dnOrder="1">Source Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="290">
+      <File dnOrder="291">
         <Name dnOrder="0">usb_hid.h</Name>
         <Path dnOrder="1">Header Files/framework/usb</Path>
       </File>
-      <File dnOrder="291">
+      <File dnOrder="292">
         <Name dnOrder="0">http_net_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="292">
+      <File dnOrder="293">
         <Name dnOrder="0">usb_device_hid_local.h</Name>
         <Path dnOrder="1">Header Files/framework/usb/src</Path>
       </File>
-      <File dnOrder="293">
+      <File dnOrder="294">
         <Name dnOrder="0">drv_wifi_mac.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="294">
+      <File dnOrder="295">
         <Name dnOrder="0">tftpc.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip</Path>
       </File>
-      <File dnOrder="295">
+      <File dnOrder="296">
         <Name dnOrder="0">ftp_private.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="296">
+      <File dnOrder="297">
         <Name dnOrder="0">usb_host_hub_interface.h</Name>
         <Path dnOrder="1">Header Files/framework/usb</Path>
       </File>
-      <File dnOrder="297">
+      <File dnOrder="298">
         <Name dnOrder="0">sys_ports.h</Name>
         <Path dnOrder="1">Header Files/framework/system/ports</Path>
       </File>
-      <File dnOrder="298">
+      <File dnOrder="299">
         <Name dnOrder="0">dnss.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip</Path>
       </File>
-      <File dnOrder="299">
+      <File dnOrder="300">
         <Name dnOrder="0">drv_usart.c</Name>
         <Path dnOrder="1">Source Files/framework/driver/usart/src/dynamic</Path>
       </File>
-      <File dnOrder="300">
+      <File dnOrder="301">
         <Name dnOrder="0">tcpip_reboot_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="301">
+      <File dnOrder="302">
         <Name dnOrder="0">drv_wifi_iwpriv.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="302">
+      <File dnOrder="303">
         <Name dnOrder="0">usb_device_mapping.h</Name>
         <Path dnOrder="1">Header Files/framework/usb/src</Path>
       </File>
-      <File dnOrder="303">
+      <File dnOrder="304">
         <Name dnOrder="0">dhcpv6_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="304">
+      <File dnOrder="305">
         <Name dnOrder="0">drv_ethmac_local.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/ethmac/src</Path>
       </File>
-      <File dnOrder="305">
+      <File dnOrder="306">
         <Name dnOrder="0">drv_i2c_variant_mapping.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/i2c/src</Path>
       </File>
-      <File dnOrder="306">
+      <File dnOrder="307">
         <Name dnOrder="0">drv_wifi_connection_algorithm.c</Name>
         <Path dnOrder="1">Source Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="307">
+      <File dnOrder="308">
         <Name dnOrder="0">drv_i2c_local.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/i2c/src</Path>
       </File>
-      <File dnOrder="308">
+      <File dnOrder="309">
         <Name dnOrder="0">dhcpv6_private.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="309">
+      <File dnOrder="310">
         <Name dnOrder="0">ftp_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="310">
+      <File dnOrder="311">
         <Name dnOrder="0">drv_wifi_mgmt_msg.c</Name>
         <Path dnOrder="1">Source Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="311">
+      <File dnOrder="312">
         <Name dnOrder="0">sys_debug.c</Name>
         <Path dnOrder="1">Source Files/framework/system/debug/src</Path>
       </File>
-      <File dnOrder="312">
+      <File dnOrder="313">
         <Name dnOrder="0">sys_clk_variant_mapping.h</Name>
         <Path dnOrder="1">Header Files/framework/system/clk/src</Path>
       </File>
-      <File dnOrder="313">
+      <File dnOrder="314">
         <Name dnOrder="0">drv_wifi_pbkdf2.c</Name>
         <Path dnOrder="1">Source Files/framework/driver/wifi/mrf24w/src</Path>
       </File>
-      <File dnOrder="314">
+      <File dnOrder="315">
         <Name dnOrder="0">drv_i2c_mapping.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/i2c</Path>
       </File>
-      <File dnOrder="315">
+      <File dnOrder="316">
         <Name dnOrder="0">oahash.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="316">
+      <File dnOrder="317">
         <Name dnOrder="0">http_private.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="317">
+      <File dnOrder="318">
         <Name dnOrder="0">telnet_manager.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="318">
+      <File dnOrder="319">
         <Name dnOrder="0">ipv6_private.h</Name>
         <Path dnOrder="1">Header Files/framework/tcpip/src</Path>
       </File>
-      <File dnOrder="319">
+      <File dnOrder="320">
         <Name dnOrder="0">drv_usbfs_mapping.h</Name>
         <Path dnOrder="1">Header Files/framework/driver/usb/usbfs</Path>
       </File>
-      <File dnOrder="320">
+      <File dnOrder="321">
         <Name dnOrder="0">usb_host_client_driver.h</Name>
         <Path dnOrder="1">Header Files/framework/usb</Path>
       </File>
@@ -1312,7 +1316,7 @@
       <Template dnOrder="2">
         <Name dnOrder="0">system_init.c</Name>
         <Path dnOrder="1">Source Files/app/system_config/default</Path>
-        <Checksum dnOrder="2">6A62E87053FA3BEFD11D7EBC5DCACC47</Checksum>
+        <Checksum dnOrder="2">97B8147F0513C46CC81A4BE2B6B3742C</Checksum>
         <ProjectFileChecksum dnOrder="3">B73532002FA3D01B81F57457DBD80D9B</ProjectFileChecksum>
       </Template>
       <Template dnOrder="3">
@@ -1378,7 +1382,7 @@
       <Template dnOrder="15">
         <Name dnOrder="0">system_config.h</Name>
         <Path dnOrder="1">Header Files/app/system_config/default</Path>
-        <Checksum dnOrder="2">865F66CFF8BA096D3E0BD725CB3FB4A5</Checksum>
+        <Checksum dnOrder="2">DA213EFC73063CBB624D269F456C3C50</Checksum>
       </Template>
       <Template dnOrder="16">
         <Name dnOrder="0">app.h</Name>

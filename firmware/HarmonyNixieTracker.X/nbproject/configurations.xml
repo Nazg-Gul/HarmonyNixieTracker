@@ -666,6 +666,7 @@
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/dns.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/icmp.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/nbns.c</itemPath>
+            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/sntp.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/telnet.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_helper.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_link_local.c</itemPath>
