@@ -68,6 +68,7 @@ void APP_Tasks(AppData* app_data) {
       APP_RTC_Tasks(&app_data->rtc);
       APP_Flash_Tasks(&app_data->flash);
       APP_Command_Tasks(app_data);
+      SYS_CMD_READY_TO_READ();
       break;
     case APP_STATE_ERROR:
       // TODO(sergey): Do we need to do something here?

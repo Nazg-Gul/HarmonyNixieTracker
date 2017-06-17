@@ -180,10 +180,11 @@ static void app_network_run(AppNetworkData* app_network_data) {
     if (app_network_data->ip_wait &&
         ++app_network_data->ip_wait > WIFI_DHCP_WAIT_THRESHOLD) {
       app_network_data->ip_wait = 0;
-      if (wifi_get_param.conn.status == IWPRIV_CONNECTION_SUCCESSFUL)
+      if (wifi_get_param.conn.status == IWPRIV_CONNECTION_SUCCESSFUL) {
         SYS_CONSOLE_MESSAGE(
             "\r\nFailed to obtain an IP address from DHCP server\r\n"
             "If WEP security is used, double-check if the key is valid\r\n");
+      }
     }
     start_tick = SYS_TMR_TickCountGet();
   }
@@ -218,8 +219,6 @@ void APP_Network_Tasks(AppNetworkData* app_network_data) {
       timestamp_dhcp_kickin(app_network_data->ip_wait);
       break;
     case APP_NETWORK_TCPIP_TRANSACT:
-      // TODO(sergey): This perhaps belongs to an application-level tasks.
-      SYS_CMD_READY_TO_READ();
       app_network_run(app_network_data);
       break;
     case APP_NETWORK_TCPIP_ERROR:
