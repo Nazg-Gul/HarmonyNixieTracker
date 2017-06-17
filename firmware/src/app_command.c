@@ -31,11 +31,15 @@ static AppData* g_app_data;
 int cmd_flash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_power(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+int cmd_iwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 
 static const SYS_CMD_DESCRIPTOR commands[] = {
   {"flash", cmd_flash, ": Serial flash configuration"},
   {"rtc", cmd_rtc, ": Real Time Clock configuration"},
   {"power", cmd_power, ": Power supply configuration"},
+  // TODO(sergey): This should in theory be handled by iwconfig, but it is not.
+  // So we work this around for particular Harmony version and device we use.
+  {"iwsecurity", cmd_iwsecurity, ": WiFi security configuration"},
 };
 
 int cmd_flash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
@@ -48,6 +52,10 @@ int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
 
 int cmd_power(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Power(g_app_data, cmd_io, argc, argv);
+}
+
+int cmd_iwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_IwSecurity(g_app_data, cmd_io, argc, argv);
 }
 
 void APP_Command_Initialize(AppData* app_data) {

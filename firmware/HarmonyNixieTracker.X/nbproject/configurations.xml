@@ -49,6 +49,7 @@
         <itemPath>../src/app_command_flash.h</itemPath>
         <itemPath>../src/app_command_power.h</itemPath>
         <itemPath>../src/app_power.h</itemPath>
+        <itemPath>../src/app_command_wifi.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -785,6 +786,7 @@
         <itemPath>../src/app_command_flash.c</itemPath>
         <itemPath>../src/app_command_power.c</itemPath>
         <itemPath>../src/app_power.c</itemPath>
+        <itemPath>../src/app_command_wifi.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -1071,7 +1073,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.43</languageToolchainVersion>
-        <platform>2</platform>
+        <platform>3</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
