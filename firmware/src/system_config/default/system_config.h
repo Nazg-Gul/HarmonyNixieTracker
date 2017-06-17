@@ -91,7 +91,7 @@ extern "C" {
 #define SYS_CLK_ON_WAIT                     OSC_ON_WAIT_IDLE 
  
 /*** Ports System Service Configuration ***/
-#define SYS_PORT_AD1PCFG        ~0xffc3
+#define SYS_PORT_AD1PCFG        ~0xc7c0
 #define SYS_PORT_CNPUE          0x0
 #define SYS_PORT_CNEN           0x0
 #define SYS_PORT_A_TRIS         0xFFBF
@@ -106,7 +106,7 @@ extern "C" {
 #define SYS_PORT_C_LAT          0x6000
 #define SYS_PORT_C_ODC          0x0000
 
-#define SYS_PORT_D_TRIS         0xFFFF
+#define SYS_PORT_D_TRIS         0xFFFD
 #define SYS_PORT_D_LAT          0x0000
 #define SYS_PORT_D_ODC          0x0000
 
@@ -118,7 +118,7 @@ extern "C" {
 #define SYS_PORT_F_LAT          0x0000
 #define SYS_PORT_F_ODC          0x0000
 
-#define SYS_PORT_G_TRIS         0xFFFF
+#define SYS_PORT_G_TRIS         0xFFFD
 #define SYS_PORT_G_LAT          0x0000
 #define SYS_PORT_G_ODC          0x0000
 
@@ -856,6 +856,20 @@ extern "C" {
 #define FLASH_WP_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_C, PORTS_BIT_POS_14)
 #define FLASH_WP_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_C, PORTS_BIT_POS_14, Value)
 
+/*** Functions for FLASH_CE_ pin ***/
+#define FLASH_CE_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_D, PORTS_BIT_POS_1)
+#define FLASH_CE_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_D, PORTS_BIT_POS_1)
+#define FLASH_CE_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_D, PORTS_BIT_POS_1)
+#define FLASH_CE_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_D, PORTS_BIT_POS_1)
+#define FLASH_CE_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_D, PORTS_BIT_POS_1, Value)
+
+/*** Functions for WF_Hibernate_ pin ***/
+#define WF_Hibernate_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_1)
+#define WF_Hibernate_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_1)
+#define WF_Hibernate_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_1)
+#define WF_Hibernate_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_1)
+#define WF_Hibernate_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_G, PORTS_BIT_POS_1, Value)
+
 /*** Functions for ETH_NRST pin ***/
 #define ETH_NRSTToggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_6)
 #define ETH_NRSTOn() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_6)
@@ -897,6 +911,12 @@ extern "C" {
 #define HV_EN_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_E, PORTS_BIT_POS_4)
 #define HV_EN_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_E, PORTS_BIT_POS_4)
 #define HV_EN_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_E, PORTS_BIT_POS_4, Value)
+
+/*** Functions for PGC pin ***/
+#define PGCStateGet() PLIB_PORTS_PinGet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_1)
+
+/*** Functions for PGD pin ***/
+#define PGDStateGet() PLIB_PORTS_PinGet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_0)
 
 
 /*** Application Instance 0 Configuration ***/
