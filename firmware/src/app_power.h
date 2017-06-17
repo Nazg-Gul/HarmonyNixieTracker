@@ -20,54 +20,20 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _APP_POWER_H
+#define _APP_POWER_H
 
-#include <stdint.h>
 #include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include "system_config.h"
-#include "system_definitions.h"
-
-// TODO(sergey): Think how we can reduce header hell dependency here.
-#include "app_command.h"
-#include "app_flash.h"
-#include "app_network.h"
-#include "app_power.h"
-#include "app_rtc.h"
-#include "app_usb_hid.h"
 
 typedef enum {
-  // Show greetings message in the console.
-  APP_STATE_GREETINGS,
-  // Run all runtime services.
-  APP_STATE_RUN_SERVICES,
-  // Unrecoverable error, can't continue
-  APP_STATE_ERROR,
-} AppState;
+  // High-voltage power supply.
+  APP_POWER_SUPPLY_HV,
+} AppPowerSupply;
 
-typedef struct AppData {
-  SYSTEM_OBJECTS* system_objects;
+// Initialize power supplies.
+void APP_Power_Initialize(void);
 
-  // Current state of the global state machine.
-  AppState state;
+// Set enabled state of the given power supply.
+void APP_Power_Enable(AppPowerSupply power_supply, bool enabled);
 
-  // Descriptors of all peripherials.
-  AppNetworkData network;
-  AppUSBHIDData usb_hid;
-  AppRTCData rtc;
-  AppFlashData flash;
-
-  // Internal state machine of sub-routines.
-  AppCommandData command;
-} AppData;
-
-
-// Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
-
-// Perform all application tasks.
-void APP_Tasks(AppData* app_data);
-
-#endif  // _APP_H
+#endif  // _APP_POWER_H

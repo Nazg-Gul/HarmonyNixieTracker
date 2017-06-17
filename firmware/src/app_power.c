@@ -20,54 +20,33 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_H
-#define _APP_H
+#include "app_power.h"
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include "system_config.h"
 #include "system_definitions.h"
 
-// TODO(sergey): Think how we can reduce header hell dependency here.
-#include "app_command.h"
-#include "app_flash.h"
-#include "app_network.h"
-#include "app_power.h"
-#include "app_rtc.h"
-#include "app_usb_hid.h"
+#define LOG_PREFIX "APP POWER: "
 
-typedef enum {
-  // Show greetings message in the console.
-  APP_STATE_GREETINGS,
-  // Run all runtime services.
-  APP_STATE_RUN_SERVICES,
-  // Unrecoverable error, can't continue
-  APP_STATE_ERROR,
-} AppState;
+// Regular print / message.
+#define POWER_PRINT(format, ...) APP_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
+#define POWER_MESSAGE(message) APP_MESSAGE(LOG_PREFIX, message)
+// Error print / message.
+#define POWER_ERROR_PRINT(format, ...) \
+  APP_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
+#define POWER_ERROR_MESSAGE(message) APP_MESSAGE(LOG_PREFIX, message)
+// Debug print / message.
+#define POWER_DEBUG_PRINT(format, ...) \
+  APP_DEBUG_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
+#define POWER_DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
-typedef struct AppData {
-  SYSTEM_OBJECTS* system_objects;
+void APP_Power_Initialize(void) {
+  // TODO(sergey): Read power supply state from EEPROM and restore the state.
+  SYS_MESSAGE("Power supply subsystem initialized.\r\n");
+}
 
-  // Current state of the global state machine.
-  AppState state;
-
-  // Descriptors of all peripherials.
-  AppNetworkData network;
-  AppUSBHIDData usb_hid;
-  AppRTCData rtc;
-  AppFlashData flash;
-
-  // Internal state machine of sub-routines.
-  AppCommandData command;
-} AppData;
-
-
-// Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
-
-// Perform all application tasks.
-void APP_Tasks(AppData* app_data);
-
-#endif  // _APP_H
+void APP_Power_Enable(AppPowerSupply power_supply, bool enabled) {
+  switch (power_supply) {
+    case APP_POWER_SUPPLY_HV:
+      HV_EN_StateSet(enabled ? 0 : 1);
+      break;
+  }
+}

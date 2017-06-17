@@ -20,54 +20,15 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _APP_COMMAND_POWER_H
+#define _APP_COMMAND_POWER_H
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include "system_config.h"
-#include "system_definitions.h"
+struct AppData;
+struct SYS_CMD_DEVICE_NODE;
 
-// TODO(sergey): Think how we can reduce header hell dependency here.
-#include "app_command.h"
-#include "app_flash.h"
-#include "app_network.h"
-#include "app_power.h"
-#include "app_rtc.h"
-#include "app_usb_hid.h"
+// Handle `power` command line command.
+int APP_Command_Power(struct AppData* app_data,
+                      struct SYS_CMD_DEVICE_NODE* cmd_io,
+                      int argc, char** argv);
 
-typedef enum {
-  // Show greetings message in the console.
-  APP_STATE_GREETINGS,
-  // Run all runtime services.
-  APP_STATE_RUN_SERVICES,
-  // Unrecoverable error, can't continue
-  APP_STATE_ERROR,
-} AppState;
-
-typedef struct AppData {
-  SYSTEM_OBJECTS* system_objects;
-
-  // Current state of the global state machine.
-  AppState state;
-
-  // Descriptors of all peripherials.
-  AppNetworkData network;
-  AppUSBHIDData usb_hid;
-  AppRTCData rtc;
-  AppFlashData flash;
-
-  // Internal state machine of sub-routines.
-  AppCommandData command;
-} AppData;
-
-
-// Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
-
-// Perform all application tasks.
-void APP_Tasks(AppData* app_data);
-
-#endif  // _APP_H
+#endif  // _APP_COMMAND_POWER_H

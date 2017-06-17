@@ -25,6 +25,7 @@
 
 #include "app_command_flash.h"
 #include "app_command_rtc.h"
+#include "app_command_power.h"
 
 #include <stdbool.h>
 
