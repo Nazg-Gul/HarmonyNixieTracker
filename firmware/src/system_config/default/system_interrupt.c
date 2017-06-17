@@ -103,6 +103,12 @@ void __ISR(_SPI_1_VECTOR, ipl1AUTO) _IntHandlerSPIInstance1(void)
 {
     DRV_SPI_Tasks(sysObj.spiObjectIdx1);
 }
+void __ISR(_FCE_VECTOR, ipl3AUTO) _IntHandlerDrvNvm (void)
+{
+    DRV_NVM_Tasks(sysObj.drvNvm);
+
+}
+
 
 
 void __ISR(_I2C_2_VECTOR, ipl1AUTO) _IntHandlerDrvI2CInstance0(void)

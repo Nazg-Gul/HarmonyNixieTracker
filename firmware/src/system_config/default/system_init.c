@@ -126,6 +126,47 @@ const DRV_I2C_INIT drvI2C0InitData =
 
 
 // </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="DRV_NVM Initialization Data">
+/*** FLASH Driver Initialization Data ***/
+extern const uint8_t NVM_MEDIA_DATA[];
+SYS_FS_MEDIA_REGION_GEOMETRY NVMGeometryTable[3] = 
+{
+    {
+        .blockSize = 1,
+        .numBlocks = (DRV_NVM_MEDIA_SIZE * 1024),
+    },
+    {
+       .blockSize = DRV_NVM_ROW_SIZE,
+       .numBlocks = ((DRV_NVM_MEDIA_SIZE * 1024)/DRV_NVM_ROW_SIZE)
+    },
+    {
+       .blockSize = DRV_NVM_PAGE_SIZE,
+       .numBlocks = ((DRV_NVM_MEDIA_SIZE * 1024)/DRV_NVM_PAGE_SIZE)
+    }
+};
+
+const SYS_FS_MEDIA_GEOMETRY NVMGeometry = 
+{
+    .mediaProperty = SYS_FS_MEDIA_WRITE_IS_BLOCKING,
+    .numReadRegions = 1,
+    .numWriteRegions = 1,
+    .numEraseRegions = 1,
+    .geometryTable = (SYS_FS_MEDIA_REGION_GEOMETRY *)&NVMGeometryTable
+};
+
+const DRV_NVM_INIT drvNvmInit =
+{
+    .moduleInit.sys.powerState = SYS_MODULE_POWER_RUN_FULL,
+    .nvmID = NVM_ID_0,
+    .interruptSource = INT_SOURCE_FLASH_CONTROL,
+
+    .mediaStartAddress = 0x9D010000,
+    .nvmMediaGeometry = (SYS_FS_MEDIA_GEOMETRY *)&NVMGeometry
+
+};
+
+
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="DRV_SPI Initialization Data"> 
  /*** SPI Driver Initialization Data ***/
   /*** Index 0  ***/
@@ -428,15 +469,21 @@ const SYS_FS_MEDIA_MOUNT_DATA sysfsMountTable[SYS_FS_VOLUME_NUMBER] =
 };
 
 
-
-
 const SYS_FS_REGISTRATION_TABLE sysFSInit [ SYS_FS_MAX_FILE_SYSTEM_TYPE ] =
 {
     {
         .nativeFileSystemType = FAT,
         .nativeFileSystemFunctions = &FatFsFunctions
+    },
+    {
+        .nativeFileSystemType = MPFS2,
+        .nativeFileSystemFunctions = &MPFSFunctions
     }
+
 };
+
+
+
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="SYS_TMR Initialization Data">
 /*** TMR Service Initialization Data ***/
@@ -1003,6 +1050,14 @@ void SYS_Initialize ( void* data )
     sysObj.spiObjectIdx1 = DRV_SPI_Initialize(DRV_SPI_INDEX_1, (const SYS_MODULE_INIT  * const)&drvSpi1InitData);
     /* Initialize the MIIM Driver */
     sysObj.drvMiim = DRV_MIIM_Initialize(DRV_MIIM_INDEX_0, (const SYS_MODULE_INIT  * const)&drvMiimInitData);
+    /* Configure the Flash Controller Interrupt Priority */
+    SYS_INT_VectorPrioritySet(INT_VECTOR_FCE, INT_PRIORITY_LEVEL3);
+
+    /* Configure the Flash Controller Interrupt Sub Priority */
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_FCE, INT_SUBPRIORITY_LEVEL0);
+
+    /* Initialize the NVM Driver */
+    sysObj.drvNvm = DRV_NVM_Initialize(DRV_NVM_INDEX_0, (SYS_MODULE_INIT *)&drvNvmInit);
     sysObj.drvSst25Obj0 = DRV_SST25_Initialize(DRV_SST25_INDEX_0, (SYS_MODULE_INIT *)&drvSst25Obj0InitData);
 
 

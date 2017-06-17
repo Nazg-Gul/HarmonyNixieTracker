@@ -158,7 +158,7 @@ extern "C" {
 
 #define SYS_FS_AUTOMOUNT_ENABLE		false
 #define SYS_FS_MAX_FILES	    	1
-#define SYS_FS_MAX_FILE_SYSTEM_TYPE 	1
+#define SYS_FS_MAX_FILE_SYSTEM_TYPE 	2
 #define SYS_FS_MEDIA_MAX_BLOCK_SIZE  	512
 #define SYS_FS_MEDIA_MANAGER_BUFFER_SIZE 512
 
@@ -235,6 +235,25 @@ extern "C" {
 #define DRV_I2C_INT_SUB_PRIORITY_IDX0             		INT_SUBPRIORITY_LEVEL0
 #define DRV_I2C_POWER_STATE_IDX0                  		SYS_MODULE_POWER_RUN_FULL
 #define DRV_I2C_INTERRUPT_MODE                    		true
+
+
+/*** NVM Driver Configuration ***/
+
+#define DRV_NVM_INSTANCES_NUMBER     	1
+#define DRV_NVM_CLIENTS_NUMBER        	2
+#define DRV_NVM_BUFFER_OBJECT_NUMBER  	5
+
+#define DRV_NVM_INTERRUPT_MODE        	true
+#define DRV_NVM_INTERRUPT_SOURCE      	INT_SOURCE_FLASH_CONTROL
+
+#define DRV_NVM_MEDIA_SIZE              32
+#define DRV_NVM_MEDIA_START_ADDRESS     0x9D010000
+
+#define DRV_NVM_ERASE_WRITE_ENABLE
+
+
+#define DRV_NVM_SYS_FS_REGISTER
+
 
 
 /*** SPI Driver Configuration ***/
@@ -376,6 +395,9 @@ extern "C" {
 
 #define DRV_WIFI_SPI_INDEX 0
 #define DRV_WIFI_SPI_INSTANCE sysObj.spiObjectIdx0
+
+#define DRV_WIFI_NVM_SPACE_ENABLE
+#define DRV_WIFI_NVM_SPACE_ADDR (0 * 1024)
 
 // I/O mappings for general control pins, including CS, HIBERNATE, INTERRUPT and RESET.
 #define WF_CS_PORT_CHANNEL          PORT_CHANNEL_F
