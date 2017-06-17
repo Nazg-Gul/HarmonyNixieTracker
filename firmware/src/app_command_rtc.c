@@ -29,8 +29,6 @@
 #include "utildefines.h"
 
 #define LOG_PREFIX "APP CMD RTC: "
-
-// TODO(sergey): Use message of command processor?
 #define DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
 static const char* days_of_week[] = {"Mon", "Tue", "Wed", "Thu",
@@ -479,7 +477,7 @@ void APP_Command_RTC_Initialize(AppData* app_data) {
 void APP_Command_RTC_Tasks(struct AppData* app_data) {
   switch (app_data->command.rtc.state) {
     case APP_COMMAND_RTC_STATE_NONE:
-      // Pass, nothing to do.
+      // Nothing to do.
       break;
     case APP_COMMAND_RTC_STATE_WAIT_AVAILABLE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {

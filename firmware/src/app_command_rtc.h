@@ -31,7 +31,11 @@ struct AppData;
 struct SYS_CMD_DEVICE_NODE;
 
 typedef enum {
+  // Callback is being invoked for the first time after RTC module became
+  // available.
   APP_COMMAND_RTC_MODE_CALLBACK_INVOKE,
+  // Callback is called after callback was invoked, to update status of async
+  // running task.
   APP_COMMAND_RTC_MODE_CALLBACK_UPDATE,
 } AppCommandRTCCallbackMode;
 

@@ -25,9 +25,17 @@
 
 #include "system_definitions.h"
 
+#include <stdbool.h>
+
 typedef enum {
   // Initial initialization: register file system media.
   APP_FLASH_STATE_REGISTER_MEDIA,
+  // Mount flash fist to the filesystem mount point.
+  APP_FLASH_STATE_MOUNT_DISK,
+  // Ensure flash drive is properly formatted and ready for use.
+  APP_FLASH_STATE_ENSURE_FORMATTED,
+  // Perform drive format.
+  APP_FLASH_STATE_FORMAT,
   // No tasks to be performed.
   APP_FLASH_STATE_IDLE,
   // Error occurred in flash module.
@@ -37,6 +45,8 @@ typedef enum {
 typedef struct AppFlashData {
   SYSTEM_OBJECTS* system_objects;
   AppFlashState state;
+  // Initial format attempted, do not try it again if format fails.
+  bool format_attempted;
 } AppFlashData;
 
 // Initialize flash related application routines.
@@ -45,5 +55,21 @@ void APP_Flash_Initialize(AppFlashData* app_flash_data,
 
 // Perform all flash related tasks.
 void APP_Flash_Tasks(AppFlashData* app_flash_data);
+
+// Check whether flash module is busy with any tasks.
+bool APP_Flash_IsBusy(AppFlashData* app_flash_data);
+
+// Check whether flash module is in error state.
+bool APP_Flash_IsError(AppFlashData* app_flash_data);
+
+// Query number of total and free sectors.
+//
+// Return true on success.
+bool APP_Flash_DriveSectorGet(uint32_t* total_sectors, uint32_t* free_sectors);
+
+// Format the flash drive.
+//
+// Return true on success.
+bool APP_Flash_DriveFormat(void);
 
 #endif  // _APP_FLASH_H

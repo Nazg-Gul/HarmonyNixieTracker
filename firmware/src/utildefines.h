@@ -27,13 +27,35 @@
 
 #define STREQ(a, b) (strcmp((a), (b)) == 0)
 
-#define APP_ERROR_MESSAGE(prefix, message)  \
-    SYS_CONSOLE_MESSAGE(prefix message)
+////////////////////////////////////////////////////////////////////////////////
+// Helper macros for fancier state printing to the console
 
-#define APP_DEBUG_MESSAGE(prefix, message)  \
-    SYS_DEBUG_MESSAGE(0, "[DEBUG] " prefix message)
+#define APP_PRINT_SEVERITY(severity, prefix, format, ...) \
+  SYS_CONSOLE_PRINT(severity prefix format, ##__VA_ARGS__)
+#define APP_MESSAGE_SEVERITY(severity, prefix, message) \
+  SYS_CONSOLE_MESSAGE(severity prefix message)
 
-#define APP_DEBUG_PRINT(prefix, format, ...)  \
-    SYS_DEBUG_PRINT(0, "[DEBUG] " prefix format, ##__VA_ARGS__)
+// Regular print / message
+#define APP_PRINT(prefix, format, ...) \
+  APP_PRINT_SEVERITY("", prefix, format, ##__VA_ARGS__)
+#define APP_MESSAGE(prefix, message) APP_MESSAGE_SEVERITY("", prefix, message)
+
+// Warning print / message
+#define APP_WARNING_PRINT(prefix, format, ...) \
+  APP_PRINT_SEVERITY("[WARNING] ", prefix, format, ##__VA_ARGS__)
+#define APP_WARNING_MESSAGE(prefix, message) \
+  APP_MESSAGE_SEVERITY("[WARNING] ", prefix, message)
+
+// Error print / message
+#define APP_ERROR_PRINT(prefix, format, ...) \
+  APP_PRINT_SEVERITY("[ERROR] ", prefix, format, ##__VA_ARGS__)
+#define APP_ERROR_MESSAGE(prefix, message) \
+  APP_MESSAGE_SEVERITY("[ERROR] ", prefix, message)
+
+// Debug print / message
+#define APP_DEBUG_PRINT(prefix, format, ...) \
+  APP_PRINT_SEVERITY("[DEBUG] ", prefix, format, ##__VA_ARGS__)
+#define APP_DEBUG_MESSAGE(prefix, message) \
+  APP_MESSAGE_SEVERITY("[DEBUG] ", prefix, message)
 
 #endif  // _UTILDEFINES_H
