@@ -54,8 +54,8 @@
 
 // Debug print / message
 #define APP_DEBUG_PRINT(prefix, format, ...) \
-  APP_PRINT_SEVERITY("[DEBUG] ", prefix, format, ##__VA_ARGS__)
+  SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "[DEBUG] "  prefix format, ##__VA_ARGS__)
 #define APP_DEBUG_MESSAGE(prefix, message) \
-  APP_MESSAGE_SEVERITY("[DEBUG] ", prefix, message)
+  SYS_DEBUG_MESSAGE(SYS_ERROR_DEBUG, "[DEBUG] " prefix message)
 
 #endif  // _UTILDEFINES_H

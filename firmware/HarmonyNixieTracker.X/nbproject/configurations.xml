@@ -50,6 +50,7 @@
         <itemPath>../src/app_command_power.h</itemPath>
         <itemPath>../src/app_power.h</itemPath>
         <itemPath>../src/app_command_wifi.h</itemPath>
+        <itemPath>../src/app_command_ntp.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -794,6 +795,7 @@
         <itemPath>../src/app_command_power.c</itemPath>
         <itemPath>../src/app_power.c</itemPath>
         <itemPath>../src/app_command_wifi.c</itemPath>
+        <itemPath>../src/app_command_ntp.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
