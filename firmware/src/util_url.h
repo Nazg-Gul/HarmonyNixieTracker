@@ -20,56 +20,26 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _UTIL_URL_H
+#define _UTIL_URL_H
 
-#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include "system_config.h"
-#include "system_definitions.h"
+#include <stdint.h>
 
-// TODO(sergey): Think how we can reduce header hell dependency here.
-#include "app_command.h"
-#include "app_flash.h"
-#include "app_https_client.h"
-#include "app_network.h"
-#include "app_power.h"
-#include "app_rtc.h"
-#include "app_usb_hid.h"
+// Get all parts of the following sequence:
+//   scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
+//
+// path_suffix contains all of [/path][?query][#fragment]
+bool urlParseGetParts(const char* url,
+                      char* scheme, const size_t max_scheme,
+                      char* user, const size_t max_user,
+                      char* password, const size_t max_password,
+                      char* host, const size_t max_host,
+                      uint16_t* port,
+                      char* path, const size_t max_path,
+                      char* query, const size_t max_query,
+                      char* fragment, const size_t max_fragment,
+                      char* path_suffix, const size_t max_path_suffix);
 
-typedef enum {
-  // Show greetings message in the console.
-  APP_STATE_GREETINGS,
-  // Run all runtime services.
-  APP_STATE_RUN_SERVICES,
-  // Unrecoverable error, can't continue
-  APP_STATE_ERROR,
-} AppState;
-
-typedef struct AppData {
-  SYSTEM_OBJECTS* system_objects;
-
-  // Current state of the global state machine.
-  AppState state;
-
-  // Descriptors of all peripherials.
-  AppFlashData flash;
-  AppHTTPSClientData https_client;
-  AppNetworkData network;
-  AppRTCData rtc;
-  AppUSBHIDData usb_hid;
-
-  // Internal state machine of sub-routines.
-  AppCommandData command;
-} AppData;
-
-
-// Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
-
-// Perform all application tasks.
-void APP_Tasks(AppData* app_data);
-
-#endif  // _APP_H
+#endif  // _UTIL_URL_H

@@ -55,6 +55,7 @@ void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects) {
   APP_RTC_Initialize(&app_data->rtc);
   APP_Flash_Initialize(&app_data->flash, app_data->system_objects);
   APP_Power_Initialize();
+  APP_HTTPS_Client_Initialize(&app_data->https_client);
 }
 
 void APP_Tasks(AppData* app_data) {
@@ -67,6 +68,7 @@ void APP_Tasks(AppData* app_data) {
       APP_USB_HID_Tasks(&app_data->usb_hid);
       APP_RTC_Tasks(&app_data->rtc);
       APP_Flash_Tasks(&app_data->flash);
+      APP_HTTPS_Client_Tasks(&app_data->https_client);
       APP_Command_Tasks(app_data);
       SYS_CMD_READY_TO_READ();
       break;

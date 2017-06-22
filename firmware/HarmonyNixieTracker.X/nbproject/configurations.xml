@@ -51,6 +51,10 @@
         <itemPath>../src/app_power.h</itemPath>
         <itemPath>../src/app_command_wifi.h</itemPath>
         <itemPath>../src/app_command_ntp.h</itemPath>
+        <itemPath>../src/app_https_client.h</itemPath>
+        <itemPath>../src/util_string.h</itemPath>
+        <itemPath>../src/util_math.h</itemPath>
+        <itemPath>../src/util_url.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -796,6 +800,10 @@
         <itemPath>../src/app_power.c</itemPath>
         <itemPath>../src/app_command_wifi.c</itemPath>
         <itemPath>../src/app_command_ntp.c</itemPath>
+        <itemPath>../src/app_https_client.c</itemPath>
+        <itemPath>../src/util_string.c</itemPath>
+        <itemPath>../src/util_math.c</itemPath>
+        <itemPath>../src/util_url.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -1091,7 +1099,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.43</languageToolchainVersion>
-        <platform>3</platform>
+        <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>

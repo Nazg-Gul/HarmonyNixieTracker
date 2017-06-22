@@ -20,56 +20,11 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _UTIL_MATH_H
+#define _UTIL_MATH_H
 
-#include <stdint.h>
-#include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include "system_config.h"
-#include "system_definitions.h"
 
-// TODO(sergey): Think how we can reduce header hell dependency here.
-#include "app_command.h"
-#include "app_flash.h"
-#include "app_https_client.h"
-#include "app_network.h"
-#include "app_power.h"
-#include "app_rtc.h"
-#include "app_usb_hid.h"
+size_t min_zz(size_t a, size_t b);
 
-typedef enum {
-  // Show greetings message in the console.
-  APP_STATE_GREETINGS,
-  // Run all runtime services.
-  APP_STATE_RUN_SERVICES,
-  // Unrecoverable error, can't continue
-  APP_STATE_ERROR,
-} AppState;
-
-typedef struct AppData {
-  SYSTEM_OBJECTS* system_objects;
-
-  // Current state of the global state machine.
-  AppState state;
-
-  // Descriptors of all peripherials.
-  AppFlashData flash;
-  AppHTTPSClientData https_client;
-  AppNetworkData network;
-  AppRTCData rtc;
-  AppUSBHIDData usb_hid;
-
-  // Internal state machine of sub-routines.
-  AppCommandData command;
-} AppData;
-
-
-// Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
-
-// Perform all application tasks.
-void APP_Tasks(AppData* app_data);
-
-#endif  // _APP_H
+#endif  // _UTIL_MATH_H
