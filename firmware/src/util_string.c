@@ -105,10 +105,10 @@ size_t safe_vsnprintf(char* buffer,
 }
 
 size_t safe_snprintf(char* dst, size_t size, const char* format, ...) {
-	size_t n;
-	va_list arg;
-	va_start(arg, format);
-	n = safe_vsnprintf(dst, size, format, arg);
-	va_end(arg);
-	return n;
+  size_t n;
+  va_list arg;
+  va_start(arg, format);
+  n = safe_vsnprintf(dst, size, format, arg);
+  va_end(arg);
+  return n;
 }
