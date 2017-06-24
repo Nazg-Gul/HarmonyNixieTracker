@@ -26,7 +26,7 @@
 #include <string.h>
 
 #define STREQ(a, b) (strcmp((a), (b)) == 0)
-#define STREQLEN(a, b, n) (strncmp((a), (b), (n)) == 0)
+#define STREQ_LEN(a, b, n) (strncmp((a), (b), (n)) == 0)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helper macros for fancier state printing to the console

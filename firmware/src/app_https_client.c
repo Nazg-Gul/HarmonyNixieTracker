@@ -49,6 +49,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Internal helpers.
 
+static void enterErrorState(AppHTTPSClientData* app_https_client_data) {
+  // TODO(sergey): Add some sort of error code.
+  app_https_client_data->state = APP_HTTPS_CLIENT_STATE_ERROR;
+}
+
 static bool checkNetworkIsAvailable(AppHTTPSClientData* app_https_client_data) {
   (void) app_https_client_data;  /* Ignored. */
   // TODO(sergey): Needs implementation.
@@ -61,7 +66,7 @@ static void waitForNetworkAvailable(AppHTTPSClientData* app_https_client_data) {
     app_https_client_data->state = APP_HTTPS_CLIENT_STATE_PARSE_REQUEST_URL;
   } else if (SYS_TMR_SystemCountGet() > app_https_client_data->timeout) {
     HTTPS_ERROR_MESSAGE("Timeout waiting for network connection.\r\n");
-    app_https_client_data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+    enterErrorState(app_https_client_data);
   }
 }
 
@@ -79,7 +84,8 @@ static void pasreRequestURL(AppHTTPSClientData* app_https_client_data) {
                         NULL, 0,  // fragment.
                         data->path, sizeof(data->path))) {  // Path suffix
     HTTPS_ERROR_MESSAGE("Error parsing URL.\r\n");
-    app_https_client_data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+    enterErrorState(app_https_client_data);
+    return;
   }
   app_https_client_data->state = APP_HTTPS_CLIENT_STATE_PROCESS_REQUEST;
 }
@@ -145,7 +151,7 @@ static void processRequest(AppHTTPSClientData* app_https_client_data) {
         data->state = APP_HTTPS_CLIENT_STATE_WAIT_ON_DNS;
     } else {
       HTTPS_ERROR_PRINT("DNS Resolve returned %d, aborting.\r\n", result);
-      data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+      enterErrorState(data);
     }
   }
 }
@@ -207,11 +213,11 @@ static void checkDNSResolveStatus(AppHTTPSClientData* app_https_client_data) {
             data->state = APP_HTTPS_CLIENT_STATE_WAIT_ON_DNS;
         } else {
           HTTPS_ERROR_PRINT("DNS Resolve returned %d, aborting.\r\n", result);
-          data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+          enterErrorState(data);
         }
       } else {
         HTTPS_ERROR_PRINT("DNS IsResolved returned %d, aborting.\r\n", result);
-        data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+        enterErrorState(data);
       }
       break;
   }
@@ -260,7 +266,7 @@ static void startNetworkConnection(AppHTTPSClientData* app_https_client_data) {
   NET_PRES_SocketWasReset(data->socket);
   if (data->socket == INVALID_SOCKET) {
     HTTPS_ERROR_MESSAGE("Could not create socket - aborting.\r\n");
-    data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+    enterErrorState(data);
     return;
   }
   data->state = APP_HTTPS_CLIENT_STATE_WAIT_FOR_CONNECTION;
@@ -272,9 +278,7 @@ static void waitNetworkConnection(AppHTTPSClientData* app_https_client_data) {
     // TODO(sergey): Check for timeout?
     return;
   }
-  // XXX: Use proper check.
-  const bool is_ssl = false;
-  if (is_ssl) {
+  if (STREQ_LEN(data->request_url, "https://", 8)) {
     HTTPS_DEBUG_MESSAGE("Connection opened, starting SSL negotiation.\r\n");
     if (!NET_PRES_SocketEncryptSocket(data->socket)) {
       SYS_CONSOLE_MESSAGE("SSL negotiation failed, aborting\r\n");
@@ -304,7 +308,7 @@ static void waitForSSLConnect(AppHTTPSClientData* app_https_client_data) {
   }
   if (!NET_PRES_SocketIsSecure(data->socket)) {
     HTTPS_ERROR_MESSAGE("SSL connection negotiation failed, aborting.\r\n");
-    data->state = APP_HTTPS_CLIENT_STATE_IDLE;
+    enterErrorState(data);
     return;
   }
   HTTPS_DEBUG_MESSAGE("SSL connection opened, "
@@ -320,14 +324,22 @@ static void sendRequest(AppHTTPSClientData* app_https_client_data) {
     return;
   }
   // TODO(sergey): Ensure null terminator?
-  safe_snprintf(data->network_buffer, sizeof(data->network_buffer),
-                "GET /%s HTTP/1.1\r\n"
-                "Host: %s\r\n"
-                "Connection: close\r\n\r\n",
-                data->path, data->host);
-  NET_PRES_SocketWrite(data->socket,
-                       data->network_buffer,
-                       strlen(data->network_buffer));
+  const uint16_t len = safe_snprintf(data->network_buffer,
+                                     sizeof(data->network_buffer),
+                                     "GET /%s HTTP/1.1\r\n"
+                                     "Host: %s\r\n"
+                                     "Connection: close\r\n\r\n",
+                                     data->path, data->host);
+  uint16_t num_bytes_written = NET_PRES_SocketWrite(
+      data->socket,
+      data->network_buffer,
+      strlen(data->network_buffer));
+  if (num_bytes_written != len) {
+    HTTPS_ERROR_PRINT("Error sending request: %d of %d bytes written.\r\n",
+                      num_bytes_written, len);
+    enterErrorState(data);
+    return;
+  }
   data->state = APP_HTTPS_CLIENT_STATE_WAIT_FOR_RESPONSE;
 }
 
@@ -335,13 +347,29 @@ static void waitForResponse(AppHTTPSClientData* app_https_client_data) {
   AppHTTPSClientData* data = app_https_client_data;
   if (NET_PRES_SocketReadIsReady(data->socket) == 0) {
     if (NET_PRES_SocketWasReset(data->socket)) {
+      // TODO(sergey): Check whether connection was aborted?
+      if (data->callbacks.request_handled != NULL) {
+        data->callbacks.request_handled(data->callbacks.user_data);
+      }
       data->state = APP_HTTPS_CLIENT_STATE_CLOSE_CONNECTION;
     }
     return;
   }
-  NET_PRES_SocketRead(data->socket,
-                      data->network_buffer,
-                      sizeof(data->network_buffer));
+  uint16_t num_bytes_read = NET_PRES_SocketRead(data->socket,
+                                                data->network_buffer,
+                                                sizeof(data->network_buffer));
+  if (data->callbacks.buffer_received != NULL) {
+    data->callbacks.buffer_received((const uint8_t*)data->network_buffer,
+                                    num_bytes_read,
+                                    data->callbacks.user_data);
+  }
+}
+
+static void handleError(AppHTTPSClientData* app_https_client_data) {
+  AppHTTPSClientData* data = app_https_client_data;
+  if (data->callbacks.error != NULL) {
+    data->callbacks.error(data->callbacks.user_data);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -394,9 +422,29 @@ void APP_HTTPS_Client_Tasks(AppHTTPSClientData* app_https_client_data) {
     case APP_HTTPS_CLIENT_STATE_WAIT_FOR_RESPONSE:
       waitForResponse(app_https_client_data);
       break;
+    case APP_HTTPS_CLIENT_STATE_ERROR:
+      handleError(app_https_client_data);
+      break;
   }
 }
 
 bool APP_HTTPS_Client_IsBusy(AppHTTPSClientData* app_https_client_data) {
   return (app_https_client_data->state != APP_HTTPS_CLIENT_STATE_IDLE);
+}
+
+bool APP_HTTPS_Client_Request(AppHTTPSClientData* app_https_client_data,
+                              const char url[MAX_URL],
+                              const AppHttpsClientCallbacks* callbacks) {
+  // Check we are ready for the next request.
+  if (APP_HTTPS_Client_IsBusy(app_https_client_data)) {
+    return false;
+  }
+  // Copy settings, so caller can free the data.
+  safe_strncpy(app_https_client_data->request_url,
+               url,
+               sizeof(app_https_client_data->request_url));
+  app_https_client_data->callbacks = *callbacks;
+  // Enter the request routines.
+  app_https_client_data->state = APP_HTTPS_CLIENT_STATE_BEGIN_SEQUENCE;
+  return true;
 }

@@ -40,9 +40,9 @@ static bool urlParse_scheme(const char* url_part,  size_t len,
   }
   // Special case to get default port based on scheme.
   // TODO(sergey): Make it case-insensitive comparison.
-  if (STREQLEN(url_part, "http", len)) {
+  if (STREQ_LEN(url_part, "http", 4)) {
     *port = 80;
-  } else if (STREQLEN(url_part, "https", len)) {
+  } else if (STREQ_LEN(url_part, "https", 5)) {
     *port = 443;
   } else {
     // TODO(sergey): Handle ftp protocol, and maybe some others?
@@ -180,7 +180,7 @@ static bool urlParse_pastScheme(const char* url_part, size_t len,
                                 char* query, const size_t max_query,
                                 char* fragment, const size_t max_fragment,
                                 char* path_suffix, const size_t max_path_suffix) {
-  if (len >= 3 && STREQLEN(url_part, "//", 2)) {
+  if (len >= 3 && STREQ_LEN(url_part, "//", 2)) {
     // We need to parse host with possible credentials and port.
     const char* path_start;
     url_part += 2;

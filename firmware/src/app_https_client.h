@@ -35,6 +35,26 @@
 
 #define HTTPS_CLIENT_NETWORK_BUFFER_SIZE 256
 
+// Callback information for various events happening during HTTP(S) request.
+typedef struct AppHttpsClientCallbacks {
+  // This callback is called when new buffer is received from the server.
+  void (*buffer_received)(const uint8_t* buffer, 
+                          uint16_t num_butes, 
+                          void* user_data);
+
+  // Request is fully handled, all data was received and communicated over
+  // buffer_received() callback.
+  void (*request_handled)(void* user_data);
+
+  // Handler of error happened during the request.
+  //
+  // TODO(sergey): Add error code of some sort here.
+  void (*error)(void* user_data);
+
+  // Generic storage, is passed to all callback types.
+  void* user_data;
+} AppHttpsClientCallbacks;
+
 typedef enum {
   // HTTPS client has nothing to do.
   APP_HTTPS_CLIENT_STATE_IDLE = 0,
@@ -54,7 +74,7 @@ typedef enum {
   APP_HTTPS_CLIENT_STATE_START_CONNECTION,
   // Wait for network connection to be fully established.
   APP_HTTPS_CLIENT_STATE_WAIT_FOR_CONNECTION,
-  // Close netowrk connection and socket.
+  // Close network connection and socket.
   APP_HTTPS_CLIENT_STATE_CLOSE_CONNECTION,
   // Wait SSL negotiation to be finished.
   APP_HTTPS_CLIENT_STATE_WAIT_FOR_SSL_CONNECT,
@@ -62,6 +82,9 @@ typedef enum {
   APP_HTTPS_CLIENT_STATE_SEND_REQUEST,
   // Waiting for response from server.
   APP_HTTPS_CLIENT_STATE_WAIT_FOR_RESPONSE,
+  // Error happened. This is a temporary state which is used to inform caller
+  // about error. After that state is changed to IDLE.
+  APP_HTTPS_CLIENT_STATE_ERROR,
 } AppHTTPSClientState;
 
 typedef enum {
@@ -78,10 +101,13 @@ typedef struct AppHTTPSClientData {
   // IPv6 address for the host.
   AppHTTPSClientIPMode ip_mode_config;
 
-  // Current mache state.
+  // Current machine state.
   AppHTTPSClientState state;
 
-  // ======== Input patameters ========
+  // ======== Input parameters ========
+
+  // Callback information for various events.
+  AppHttpsClientCallbacks callbacks;
 
   // This is an URL which user requested us to fetch.
   char request_url[MAX_URL];
@@ -97,7 +123,7 @@ typedef struct AppHTTPSClientData {
 
   // Parts of URL to be used to query the server.
   //
-  // Those becomes available after PARSE_REQUEST_URL stepis finished.
+  // Those becomes available after PARSE_REQUEST_URL step is finished.
   char scheme[MAX_URL_SCHEME];
   char host[MAX_URL_HOST];
   uint16_t port;
@@ -113,7 +139,7 @@ typedef struct AppHTTPSClientData {
   AppHTTPSClientIPMode dns_query_ip_mode;
 
   // Network connection configuration.
-  // Ip address and mode used for connection.
+  // IP address and mode used for connection.
   //
   // If host is an IP address, then configured by PROCESS_REQUEST, otherwise
   // is configured by WAIT_ON_DNS when DNS lookup is over.
@@ -122,7 +148,7 @@ typedef struct AppHTTPSClientData {
   AppHTTPSClientIPMode ip_mode;
   IP_MULTI_ADDRESS ip_address;
 
-  // Actual netowrk socket.
+  // Actual network socket.
   //
   // Initialized by START_CONNECTION.
   NET_PRES_SKT_HANDLE_T socket;
@@ -139,5 +165,10 @@ void APP_HTTPS_Client_Tasks(AppHTTPSClientData* app_https_client_data);
 
 // Check whether HTTPS client is busy with any tasks.
 bool APP_HTTPS_Client_IsBusy(AppHTTPSClientData* app_https_client_data);
+
+// Place new request for data from HTTP(S) server.
+bool APP_HTTPS_Client_Request(AppHTTPSClientData* app_https_client_data,
+                              const char url[MAX_URL],
+                              const AppHttpsClientCallbacks* callbacks);
 
 #endif  // _APP_HTTPS_CLIENT_H
