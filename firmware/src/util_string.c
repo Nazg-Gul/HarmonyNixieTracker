@@ -37,7 +37,7 @@ char* strchr_len(const char* haystack,
       return NULL;
     }
     if (*haystack == needle) {
-      return (char *)haystack;
+      return (char*)haystack;
     }
   }
   return NULL;
@@ -52,7 +52,7 @@ char* strchr_any_len(const char* haystack,
       return NULL;
     }
     if (strchr(needles, *haystack) != NULL) {
-      return (char *)haystack;
+      return (char*)haystack;
     }
   }
   return NULL;
@@ -81,7 +81,7 @@ char* safe_strncpy_len(char* dst,
   return dst;
 }
 
-size_t strnlen(const char *s, const size_t max_len) {
+size_t strnlen(const char* s, const size_t max_len) {
   size_t len;
   for (len = 0; len < max_len; ++len, ++s) {
     if (*s == '\0') {
