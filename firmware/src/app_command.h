@@ -27,6 +27,7 @@
 #include "app_command_flash.h"
 #include "app_command_ntp.h"
 #include "app_command_rtc.h"
+#include "app_command_shift_register.h"
 #include "app_command_power.h"
 #include "app_command_wifi.h"
 
@@ -42,6 +43,7 @@ typedef enum {
   APP_COMMAND_STATE_FETCH,
   APP_COMMAND_STATE_FLASH,
   APP_COMMAND_STATE_RTC,
+  APP_COMMAND_STATE_SHIFT_REGISTER,
 } AppCommandState;
 
 typedef struct AppCommandData {
@@ -50,6 +52,7 @@ typedef struct AppCommandData {
   AppCommandFetchData fetch;
   AppCommandFlashData flash;
   AppCommandRTCData rtc;
+  AppCommandShiftRegisterData shift_register;
 } AppCommandData;
 
 void APP_Command_Initialize(struct AppData* app_data);

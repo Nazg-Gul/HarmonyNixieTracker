@@ -37,6 +37,7 @@
 #include "app_network.h"
 #include "app_power.h"
 #include "app_rtc.h"
+#include "app_shift_register.h"
 #include "app_usb_hid.h"
 
 typedef enum {
@@ -59,6 +60,7 @@ typedef struct AppData {
   AppHTTPSClientData https_client;
   AppNetworkData network;
   AppRTCData rtc;
+  AppShiftRegisterData shift_register;
   AppUSBHIDData usb_hid;
 
   // Internal state machine of sub-routines.

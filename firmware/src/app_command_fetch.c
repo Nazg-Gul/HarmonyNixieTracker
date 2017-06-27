@@ -146,7 +146,7 @@ void APP_Command_Fetch_Tasks(struct AppData* app_data) {
       // Nothing to do.
       break;
     case APP_COMMAND_FETCH_STATE_WAIT_AVAILABLE:
-      if (APP_HTTPS_Client_IsBusy(&app_data->https_client)) {
+      if (!APP_HTTPS_Client_IsBusy(&app_data->https_client)) {
         DEBUG_MESSAGE("HTTP(S) client is free, invoking command.\r\n");
         app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_RUNNING;
         app_data->command.fetch.callback(

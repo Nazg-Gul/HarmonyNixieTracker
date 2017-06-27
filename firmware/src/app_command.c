@@ -34,6 +34,7 @@ int cmd_iwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_ntp(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_power(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+int cmd_shift_register(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 
 static const SYS_CMD_DESCRIPTOR commands[] = {
   {"fetch", cmd_fetch, ": fetch HTTP(S) page"},
@@ -44,6 +45,7 @@ static const SYS_CMD_DESCRIPTOR commands[] = {
   {"ntp", cmd_ntp, ": NTP client configuration"},
   {"power", cmd_power, ": Power supply configuration"},
   {"rtc", cmd_rtc, ": Real Time Clock configuration"},
+  {"shift_register", cmd_shift_register, ": Shift register manipulation"},
 };
 
 int cmd_fetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
@@ -70,6 +72,10 @@ int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_RTC(g_app_data, cmd_io, argc, argv);
 }
 
+int cmd_shift_register(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_ShiftRegister(g_app_data, cmd_io, argc, argv);
+}
+
 void APP_Command_Initialize(AppData* app_data) {
   const int num_commands = sizeof(commands) / sizeof(*commands);
   if (SYS_CMD_ADDGRP(commands, num_commands, "app", ": app commands") == -1) {
@@ -77,8 +83,10 @@ void APP_Command_Initialize(AppData* app_data) {
   }
   g_app_data = app_data;
   app_data->command.state = APP_COMMAND_STATE_NONE;
+  APP_Command_Fetch_Initialize(app_data);
   APP_Command_Flash_Initialize(app_data);
   APP_Command_RTC_Initialize(app_data);
+  APP_Command_ShiftRegister_Initialize(app_data);
 }
 
 void APP_Command_Tasks(AppData* app_data) {
@@ -89,11 +97,14 @@ void APP_Command_Tasks(AppData* app_data) {
     case APP_COMMAND_STATE_FETCH:
       APP_Command_Fetch_Tasks(app_data);
       break;
+    case APP_COMMAND_STATE_FLASH:
+      APP_Command_Flash_Tasks(app_data);
+      break;
     case APP_COMMAND_STATE_RTC:
       APP_Command_RTC_Tasks(app_data);
       break;
-    case APP_COMMAND_STATE_FLASH:
-      APP_Command_Flash_Tasks(app_data);
+    case APP_COMMAND_STATE_SHIFT_REGISTER:
+      APP_Command_ShiftRegister_Tasks(app_data);
       break;
   }
 }
