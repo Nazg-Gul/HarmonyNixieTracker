@@ -24,14 +24,32 @@
 #define _APP_SHIFT_REGISTER_H
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+// Maximum number of bytes to be sent to shift registers.
+#define SHIFT_REGISTER_MAX_DATA 4
 
 typedef enum {
   // No tasks to be performed.
   APP_SHIFT_REGISTER_STATE_IDLE,
+  // Shift register state machine is in transmittance state.
+  APP_SHIFT_REGISTER_STATE_SEND,
 } AppShiftRegisterState;
 
 typedef struct AppShiftRegisterData {
   AppShiftRegisterState state;
+  // Per-task storage.
+  union {
+    struct {
+      // Data to be transfered.
+      uint8_t data[SHIFT_REGISTER_MAX_DATA];
+      size_t num_bytes;
+      // Current pointer in the array.
+      size_t current_byte;
+      uint8_t current_bit;
+    } send;
+  } _private;
 } AppShiftRegisterData;
 
 // Initialize shift register related application routines.
@@ -44,8 +62,16 @@ void APP_ShiftRegister_Tasks(AppShiftRegisterData* app_shift_register_data);
 // Check whether shift register module is busy with any tasks.
 bool APP_ShiftRegister_IsBusy(AppShiftRegisterData* app_shift_register_data);
 
+// Set enabled state of the outputs.
 void APP_ShiftRegister_SetEnabled(
     AppShiftRegisterData* app_shift_register_data,
     bool is_enabled);
+
+// Send data to shift registers. Assumes all shift registers are daisy-chained.
+// Starts with least significant bit of data[0].
+void APP_ShiftRegister_SendData(
+    AppShiftRegisterData* app_shift_register_data,
+    uint8_t* data,
+    size_t num_bytes);
 
 #endif  // _APP_SHIFT_REGISTER_H

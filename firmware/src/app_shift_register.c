@@ -39,6 +39,40 @@
   APP_DEBUG_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
 #define SHIFT_REGISTER_DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
+static void transmitStep(AppShiftRegisterData* app_shift_register_data) {
+  AppShiftRegisterData* data = app_shift_register_data;
+  // Move to the next byte when needed.
+  if (data->_private.send.current_bit == 8) {
+    data->_private.send.current_bit = 0;
+    ++data->_private.send.current_byte;
+  }
+  // Check whether all data was transferred.
+  if (data->_private.send.current_byte == data->_private.send.num_bytes + 1) {
+    // Toggle RCK to copy data from shift register to storage.
+    //
+    // TODO(sergey): Do we need a delay here, so the pulse has enough length?
+    SHIFT_RCK_On();
+    SHIFT_RCK_Off();
+    // Transaction finished.
+    data->state = APP_SHIFT_REGISTER_STATE_IDLE;
+    return;
+  }
+  const uint8_t current_byte =
+      data->_private.send.data[data->_private.send.current_byte];
+  const uint8_t value = (current_byte & (1 << data->_private.send.current_bit))
+                            ? 1
+                            : 0;
+  // Set new value on the serial output.
+  SHIFT_DATA_StateSet(value);
+  // NOTE: Sampling happens on the raising edge.
+  //
+  // TODO(sergey): Do we need a delay here, so the pulse has enough length?
+  SHIFT_SRCK_On();
+  SHIFT_SRCK_Off();
+  // Advance to the next bit.
+  ++data->_private.send.current_bit;
+}
+
 void APP_ShiftRegister_Initialize(
     AppShiftRegisterData* app_shift_register_data) {
   app_shift_register_data->state = APP_SHIFT_REGISTER_STATE_IDLE;
@@ -53,6 +87,9 @@ void APP_ShiftRegister_Tasks(AppShiftRegisterData* app_shift_register_data) {
     case APP_SHIFT_REGISTER_STATE_IDLE:
       // Nothing to do.
       break;
+    case APP_SHIFT_REGISTER_STATE_SEND:
+      transmitStep(app_shift_register_data);
+      break;
   }
 }
 
@@ -65,4 +102,19 @@ void APP_ShiftRegister_SetEnabled(
     bool is_enabled) {
   // NOTE: Enabled input is inverting.
   SHIFT_EN_StateSet(is_enabled ? 0 : 1);
+}
+
+void APP_ShiftRegister_SendData(
+    AppShiftRegisterData* app_shift_register_data,
+    uint8_t* data,
+    size_t num_bytes) {
+  SHIFT_REGISTER_DEBUG_PRINT("Begin transmittance of %d bytes.\r\n", num_bytes);
+  memcpy(app_shift_register_data->_private.send.data,
+         data,
+         sizeof(app_shift_register_data->_private.send.data));
+  app_shift_register_data->_private.send.num_bytes = num_bytes;
+  app_shift_register_data->_private.send.current_byte = 0;
+  app_shift_register_data->_private.send.current_bit = 0;
+  // Begin transmittance.
+  app_shift_register_data->state = APP_SHIFT_REGISTER_STATE_SEND;
 }
