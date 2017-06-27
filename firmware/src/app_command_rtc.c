@@ -105,6 +105,8 @@ static void performOscillatorStart(AppData* app_data,
       RTC_MCP7940N_EnableOscillator(&app_data->rtc.rtc_handle, true);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         appCmdRTCFinishTask(app_data);
       }
@@ -120,6 +122,8 @@ static void performOscillatorStop(AppData* app_data,
       RTC_MCP7940N_EnableOscillator(&app_data->rtc.rtc_handle, false);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         appCmdRTCFinishTask(app_data);
       }
@@ -137,6 +141,8 @@ static void performOscillatorStatus(AppData* app_data,
           &app_data->command.rtc._private.oscillator.status);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         COMMAND_PRINT(
             "Oscillator status: %s\r\n",
@@ -176,6 +182,8 @@ static void performDateShow(AppData* app_data,
           &app_data->command.rtc._private.date.date_time);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         RTC_MCP7940N_DateTime* date_time = &app_data->command.rtc._private.date.date_time;
         // TODO(sergey): Need to get rid of manual year offset here.
@@ -203,6 +211,8 @@ static void performDateSet(AppData* app_data,
           &app_data->command.rtc._private.date.date_time);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         appCmdRTCFinishTask(app_data);
       }
@@ -298,6 +308,8 @@ static void performBatteryEnable(AppData* app_data,
       RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, true);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         appCmdRTCFinishTask(app_data);
       }
@@ -313,6 +325,8 @@ static void performBatteryDisable(AppData* app_data,
       RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, false);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         appCmdRTCFinishTask(app_data);
       }
@@ -330,6 +344,8 @@ static void performBatteryStatus(AppData* app_data,
           &app_data->command.rtc._private.battery.status);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         COMMAND_PRINT(
             "Battery status: %s\r\n",
@@ -385,6 +401,8 @@ static void performRTCDump(AppData* app_data,
           RTC_MCP7940N_NUM_REGISTERS);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         printRegisters(cmd_io,
                         app_data->command.rtc._private.dump.registers_storage,
@@ -416,6 +434,8 @@ static void performRTCRegisterRead(AppData* app_data,
           &app_data->command.rtc._private.reg.register_value);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         COMMAND_PRINT("Register value: 0x%02x.\r\n",
                       app_data->command.rtc._private.reg.register_value);
@@ -436,6 +456,8 @@ static void performRTCRegisterWrite(AppData* app_data,
           app_data->command.rtc._private.reg.register_value);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if other routine will start using RTC
+      // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         appCmdRTCFinishTask(app_data);
       }
