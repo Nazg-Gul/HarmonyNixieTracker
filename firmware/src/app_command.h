@@ -23,6 +23,7 @@
 #ifndef _APP_COMMAND_H
 #define _APP_COMMAND_H
 
+#include "app_command_fetch.h"
 #include "app_command_flash.h"
 #include "app_command_ntp.h"
 #include "app_command_rtc.h"
@@ -38,6 +39,7 @@ typedef enum {
   // Command processor has nothing to do.
   APP_COMMAND_STATE_NONE,
   // Per-command processor state.
+  APP_COMMAND_STATE_FETCH,
   APP_COMMAND_STATE_FLASH,
   APP_COMMAND_STATE_RTC,
 } AppCommandState;
@@ -45,6 +47,7 @@ typedef enum {
 typedef struct AppCommandData {
   AppCommandState state;
   // Per-command data for the state machine.
+  AppCommandFetchData fetch;
   AppCommandFlashData flash;
   AppCommandRTCData rtc;
 } AppCommandData;

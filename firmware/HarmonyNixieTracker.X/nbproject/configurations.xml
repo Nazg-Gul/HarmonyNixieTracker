@@ -55,6 +55,7 @@
         <itemPath>../src/util_string.h</itemPath>
         <itemPath>../src/util_math.h</itemPath>
         <itemPath>../src/util_url.h</itemPath>
+        <itemPath>../src/app_command_fetch.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -804,6 +805,7 @@
         <itemPath>../src/util_string.c</itemPath>
         <itemPath>../src/util_math.c</itemPath>
         <itemPath>../src/util_url.c</itemPath>
+        <itemPath>../src/app_command_fetch.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">

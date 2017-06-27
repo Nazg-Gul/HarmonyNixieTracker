@@ -28,6 +28,7 @@
 // TODO(sergey): Find a way to avoid this global thing.
 static AppData* g_app_data;
 
+int cmd_fetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_flash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_iwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_ntp(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
@@ -35,6 +36,7 @@ int cmd_power(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmd_rtc(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 
 static const SYS_CMD_DESCRIPTOR commands[] = {
+  {"fetch", cmd_fetch, ": fetch HTTP(S) page"},
   {"flash", cmd_flash, ": Serial flash configuration"},
   // TODO(sergey): This should in theory be handled by iwconfig, but it is not.
   // So we work this around for particular Harmony version and device we use.
@@ -43,6 +45,10 @@ static const SYS_CMD_DESCRIPTOR commands[] = {
   {"power", cmd_power, ": Power supply configuration"},
   {"rtc", cmd_rtc, ": Real Time Clock configuration"},
 };
+
+int cmd_fetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_Fetch(g_app_data, cmd_io, argc, argv);
+}
 
 int cmd_flash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Flash(g_app_data, cmd_io, argc, argv);
@@ -79,6 +85,9 @@ void APP_Command_Tasks(AppData* app_data) {
   switch (app_data->command.state) {
     case APP_COMMAND_STATE_NONE:
       // Nothing to do.
+      break;
+    case APP_COMMAND_STATE_FETCH:
+      APP_Command_Fetch_Tasks(app_data);
       break;
     case APP_COMMAND_STATE_RTC:
       APP_Command_RTC_Tasks(app_data);

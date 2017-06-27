@@ -38,8 +38,8 @@
 // Callback information for various events happening during HTTP(S) request.
 typedef struct AppHttpsClientCallbacks {
   // This callback is called when new buffer is received from the server.
-  void (*buffer_received)(const uint8_t* buffer, 
-                          uint16_t num_butes, 
+  void (*buffer_received)(const uint8_t* buffer,
+                          uint16_t num_bytes,
                           void* user_data);
 
   // Request is fully handled, all data was received and communicated over
