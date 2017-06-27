@@ -33,8 +33,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Internal routines.
 
-static int app_command_power_usage(SYS_CMD_DEVICE_NODE* cmd_io,
-                                   const char* argv0) {
+static int appCmdPowerUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   COMMAND_PRINT("Usage: %s command arguments ...\r\n", argv0);
   COMMAND_MESSAGE(
 "where 'command' is one of the following:\r\n"
@@ -50,11 +49,11 @@ static int app_command_power_usage(SYS_CMD_DEVICE_NODE* cmd_io,
 
 // ============ HV ============
 
-static int app_command_hv(AppData* app_data,
-                          SYS_CMD_DEVICE_NODE* cmd_io,
-                          int argc, char** argv) {
+static int appCmdPowerHV(AppData* app_data,
+                         SYS_CMD_DEVICE_NODE* cmd_io,
+                         int argc, char** argv) {
   if (argc != 3) {
-    return app_command_power_usage(cmd_io, argv[0]);
+    return appCmdPowerUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[2], "enable")) {
     APP_Power_Enable(APP_POWER_SUPPLY_HV, true);
@@ -63,7 +62,7 @@ static int app_command_hv(AppData* app_data,
     APP_Power_Enable(APP_POWER_SUPPLY_HV, false);
     COMMAND_MESSAGE("High voltage power supply has been disabled.\r\n");
   } else {
-    return app_command_power_usage(cmd_io, argv[0]);
+    return appCmdPowerUsage(cmd_io, argv[0]);
   }
   return true;
 }
@@ -78,13 +77,13 @@ int APP_Command_Power(AppData* app_data,
     return true;
   }
   if (argc == 1) {
-    return app_command_power_usage(cmd_io, argv[0]);
+    return appCmdPowerUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[1], "hv")) {
-    return app_command_hv(app_data, cmd_io, argc, argv);
+    return appCmdPowerHV(app_data, cmd_io, argc, argv);
   } else {
     // For unknown command show usage.
-    return app_command_power_usage(cmd_io, argv[0]);
+    return appCmdPowerUsage(cmd_io, argv[0]);
   }
   return true;
 }

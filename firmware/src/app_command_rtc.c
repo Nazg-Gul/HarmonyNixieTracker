@@ -37,8 +37,7 @@ static const char* days_of_week[] = {"Mon", "Tue", "Wed", "Thu",
 static const char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-static int app_command_rtc_usage(SYS_CMD_DEVICE_NODE* cmd_io,
-                                 const char* argv0) {
+static int appCmdRTCUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   COMMAND_PRINT("Usage: %s command arguments ...\r\n", argv0);
   COMMAND_MESSAGE(
 "where 'command' is one of the following:\r\n"
@@ -72,66 +71,65 @@ static int app_command_rtc_usage(SYS_CMD_DEVICE_NODE* cmd_io,
   return true;
 }
 
-static void app_command_rtc_set_callback(AppData* app_data,
-                                         SYS_CMD_DEVICE_NODE* cmd_io,
-                                         AppCommandRTCCallback callback) {
+static void appCmdRTCSetCallback(AppData* app_data,
+                                 SYS_CMD_DEVICE_NODE* cmd_io,
+                                 AppCommandRTCCallback callback) {
   app_data->command.rtc.callback = callback;
   app_data->command.rtc.callback_cmd_io = cmd_io;
 }
 
-static void app_command_rtc_start_task(AppData* app_data,
-                                       SYS_CMD_DEVICE_NODE* cmd_io,
-                                       AppCommandRTCCallback callback) {
+static void appCmdRTCStartTask(AppData* app_data,
+                               SYS_CMD_DEVICE_NODE* cmd_io,
+                               AppCommandRTCCallback callback) {
   SYS_ASSERT(app_data->command.rtc.state == APP_COMMAND_RTC_STATE_NONE,
              "\r\nAttempt to start task while another one is in process\r\n");
   app_data->command.state = APP_COMMAND_STATE_RTC;
   app_data->command.rtc.state = APP_COMMAND_RTC_STATE_WAIT_AVAILABLE;
-  app_command_rtc_set_callback(app_data, cmd_io, callback);
+  appCmdRTCSetCallback(app_data, cmd_io, callback);
 }
 
-static void app_command_rtc_finish_task(AppData* app_data) {
+static void appCmdRTCFinishTask(AppData* app_data) {
   SYS_ASSERT(app_data->command.rtc.state != APP_COMMAND_RTC_STATE_NONE,
              "\r\nAttempt to finish non-existing task\r\n");
   app_data->command.state = APP_COMMAND_STATE_NONE;
   app_data->command.rtc.state = APP_COMMAND_RTC_STATE_NONE;
   // TODO(sergey): Ignore for release builds to save CPU ticks?
-  app_data->command.rtc.callback = NULL;
-  app_data->command.rtc.callback_cmd_io = NULL;
+  appCmdRTCSetCallback(app_data, NULL, NULL);
 }
 
-static void oscillator_start(AppData* app_data,
-                             SYS_CMD_DEVICE_NODE* cmd_io,
-                             AppCommandRTCCallbackMode mode) {
+static void performOscillatorStart(AppData* app_data,
+                                   SYS_CMD_DEVICE_NODE* cmd_io,
+                                   AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableOscillator(&app_data->rtc.rtc_handle, true);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static void oscillator_stop(AppData* app_data,
-                            SYS_CMD_DEVICE_NODE* cmd_io,
-                            AppCommandRTCCallbackMode mode) {
+static void performOscillatorStop(AppData* app_data,
+                                  SYS_CMD_DEVICE_NODE* cmd_io,
+                                  AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableOscillator(&app_data->rtc.rtc_handle, false);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static void oscillator_status(AppData* app_data,
-                              SYS_CMD_DEVICE_NODE* cmd_io,
-                              AppCommandRTCCallbackMode mode) {
+static void performOscillatorStatus(AppData* app_data,
+                                    SYS_CMD_DEVICE_NODE* cmd_io,
+                                    AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_OscillatorStatus(
@@ -144,33 +142,33 @@ static void oscillator_status(AppData* app_data,
             "Oscillator status: %s\r\n",
             app_data->command.rtc._private.oscillator.status ? "ENABLED"
                                                              : "DISABLED");
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static int app_command_rtc_oscillator(AppData* app_data,
-                                      SYS_CMD_DEVICE_NODE* cmd_io,
-                                      int argc, char** argv) {
+static int appCmdRTCOscillator(AppData* app_data,
+                               SYS_CMD_DEVICE_NODE* cmd_io,
+                               int argc, char** argv) {
   if (argc != 3) {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[2], "start")) {
-    app_command_rtc_start_task(app_data, cmd_io, &oscillator_start);
+    appCmdRTCStartTask(app_data, cmd_io, &performOscillatorStart);
   } else if (STREQ(argv[2], "stop")) {
-    app_command_rtc_start_task(app_data, cmd_io, &oscillator_stop);
+    appCmdRTCStartTask(app_data, cmd_io, &performOscillatorStop);
   } else if (STREQ(argv[2], "status")) {
-    app_command_rtc_start_task(app_data, cmd_io, &oscillator_status);
+    appCmdRTCStartTask(app_data, cmd_io, &performOscillatorStatus);
   } else {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }
 
-static void date_show(AppData* app_data,
-                      SYS_CMD_DEVICE_NODE* cmd_io,
-                      AppCommandRTCCallbackMode mode) {
+static void performDateShow(AppData* app_data,
+                            SYS_CMD_DEVICE_NODE* cmd_io,
+                            AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_ReadDateAndTime(
@@ -189,15 +187,15 @@ static void date_show(AppData* app_data,
                       date_time->hours,
                       date_time->minutes,
                       date_time->seconds);
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static void date_set(AppData* app_data,
-                     SYS_CMD_DEVICE_NODE* cmd_io,
-                     AppCommandRTCCallbackMode mode) {
+static void performDateSet(AppData* app_data,
+                           SYS_CMD_DEVICE_NODE* cmd_io,
+                           AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_WriteDateAndTime(
@@ -206,14 +204,13 @@ static void date_set(AppData* app_data,
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static bool date_decode(char** argv,
-                        RTC_MCP7940N_DateTime* date_time) {
+static bool dateDecode(char** argv, RTC_MCP7940N_DateTime* date_time) {
   int day_of_week, day, month, year, hour, minute, second, i;
   const char* month_name;
   const char* day_of_week_name;
@@ -275,57 +272,57 @@ static bool date_decode(char** argv,
   return true;
 }
 
-static int app_command_rtc_date(AppData* app_data,
-                                SYS_CMD_DEVICE_NODE* cmd_io,
-                                int argc, char** argv) {
+static int appCmdRTCDate(AppData* app_data,
+                         SYS_CMD_DEVICE_NODE* cmd_io,
+                         int argc, char** argv) {
   if (argc == 2) {
-    app_command_rtc_start_task(app_data, cmd_io, &date_show);
+    appCmdRTCStartTask(app_data, cmd_io, &performDateShow);
   } else if (argc == 7) {
-    if (date_decode(argv, &app_data->command.rtc._private.date.date_time)) {
-      app_command_rtc_start_task(app_data, cmd_io, &date_set);
+    if (dateDecode(argv, &app_data->command.rtc._private.date.date_time)) {
+      appCmdRTCStartTask(app_data, cmd_io, &performDateSet);
     } else {
       COMMAND_MESSAGE("Failed to parse date.\r\n");
       COMMAND_MESSAGE("Expected format: ddd DD MMM YYYY HH:MM:SS.\r\n");
     }
   } else {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }
 
-static void battery_enable(AppData* app_data,
-                           SYS_CMD_DEVICE_NODE* cmd_io,
-                           AppCommandRTCCallbackMode mode) {
+static void performBatteryEnable(AppData* app_data,
+                                 SYS_CMD_DEVICE_NODE* cmd_io,
+                                 AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, true);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static void battery_disable(AppData* app_data,
-                            SYS_CMD_DEVICE_NODE* cmd_io,
-                            AppCommandRTCCallbackMode mode) {
+static void performBatteryDisable(AppData* app_data,
+                                  SYS_CMD_DEVICE_NODE* cmd_io,
+                                  AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, false);
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static void battery_status(AppData* app_data,
-                           SYS_CMD_DEVICE_NODE* cmd_io,
-                           AppCommandRTCCallbackMode mode) {
+static void performBatteryStatus(AppData* app_data,
+                                 SYS_CMD_DEVICE_NODE* cmd_io,
+                                 AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_BatteryBackupStatus(
@@ -338,26 +335,26 @@ static void battery_status(AppData* app_data,
             "Battery status: %s\r\n",
             app_data->command.rtc._private.battery.status ? "ENABLED"
                                                           : "DISABLED");
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static int app_command_rtc_battery(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   int argc, char** argv) {
+static int appCmdRTCBattery(AppData* app_data,
+                            SYS_CMD_DEVICE_NODE* cmd_io,
+                            int argc, char** argv) {
   if (argc != 3) {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[2], "enable")) {
-    app_command_rtc_start_task(app_data, cmd_io, &battery_enable);
+    appCmdRTCStartTask(app_data, cmd_io, &performBatteryEnable);
   } else if (STREQ(argv[2], "disable")) {
-    app_command_rtc_start_task(app_data, cmd_io, &battery_disable);
+    appCmdRTCStartTask(app_data, cmd_io, &performBatteryDisable);
   } else if (STREQ(argv[2], "status")) {
-    app_command_rtc_start_task(app_data, cmd_io, &battery_status);
+    appCmdRTCStartTask(app_data, cmd_io, &performBatteryStatus);
   } else {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }
@@ -377,9 +374,9 @@ static void printRegisters(SYS_CMD_DEVICE_NODE* cmd_io,
   }
 }
 
-static void rtc_dump(AppData* app_data,
-                     SYS_CMD_DEVICE_NODE* cmd_io,
-                     AppCommandRTCCallbackMode mode) {
+static void performRTCDump(AppData* app_data,
+                           SYS_CMD_DEVICE_NODE* cmd_io,
+                           AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_ReadNumRegisters(
@@ -392,25 +389,25 @@ static void rtc_dump(AppData* app_data,
         printRegisters(cmd_io,
                         app_data->command.rtc._private.dump.registers_storage,
                         RTC_MCP7940N_NUM_REGISTERS);
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static int app_command_rtc_dump(AppData* app_data,
-                                SYS_CMD_DEVICE_NODE* cmd_io,
-                                int argc, char** argv) {
+static int appCmdRTCDump(AppData* app_data,
+                         SYS_CMD_DEVICE_NODE* cmd_io,
+                         int argc, char** argv) {
   if (argc != 2) {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
-  app_command_rtc_start_task(app_data, cmd_io, &rtc_dump);
+  appCmdRTCStartTask(app_data, cmd_io, &performRTCDump);
   return true;
 }
 
-static void rtc_register_read(AppData* app_data,
-                              SYS_CMD_DEVICE_NODE* cmd_io,
-                              AppCommandRTCCallbackMode mode) {
+static void performRTCRegisterRead(AppData* app_data,
+                                   SYS_CMD_DEVICE_NODE* cmd_io,
+                                   AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_ReadRegister(
@@ -422,15 +419,15 @@ static void rtc_register_read(AppData* app_data,
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         COMMAND_PRINT("Register value: 0x%02x.\r\n",
                       app_data->command.rtc._private.reg.register_value);
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static void rtc_register_write(AppData* app_data,
-                               SYS_CMD_DEVICE_NODE* cmd_io,
-                               AppCommandRTCCallbackMode mode) {
+static void performRTCRegisterWrite(AppData* app_data,
+                                    SYS_CMD_DEVICE_NODE* cmd_io,
+                                    AppCommandRTCCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_WriteRegister(
@@ -440,27 +437,27 @@ static void rtc_register_write(AppData* app_data,
       break;
     case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        app_command_rtc_finish_task(app_data);
+        appCmdRTCFinishTask(app_data);
       }
       break;
   }
 }
 
-static int app_command_rtc_register(AppData* app_data,
-                                    SYS_CMD_DEVICE_NODE* cmd_io,
-                                    int argc, char** argv) {
+static int appCmdRTCRegister(AppData* app_data,
+                             SYS_CMD_DEVICE_NODE* cmd_io,
+                             int argc, char** argv) {
   if (argc < 4) {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   if (argc == 4 && STREQ(argv[2], "read")) {
     app_data->command.rtc._private.reg.register_address = atoi(argv[3]);
-    app_command_rtc_start_task(app_data, cmd_io, &rtc_register_read);
+    appCmdRTCStartTask(app_data, cmd_io, &performRTCRegisterRead);
   } else if (argc == 5 && STREQ(argv[2], "write")) {
     app_data->command.rtc._private.reg.register_address = atoi(argv[3]);
     app_data->command.rtc._private.reg.register_value = atoi(argv[4]);
-    app_command_rtc_start_task(app_data, cmd_io, &rtc_register_write);
+    appCmdRTCStartTask(app_data, cmd_io, &performRTCRegisterWrite);
   } else {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }
@@ -470,8 +467,7 @@ void APP_Command_RTC_Initialize(AppData* app_data) {
   memset(&app_data->command.rtc, 0, sizeof(app_data->command.rtc));
   app_data->command.rtc.state = APP_COMMAND_RTC_STATE_NONE;
   // TODO(sergey): Ignore for release builds to save CPU ticks?
-  app_data->command.rtc.callback = NULL;
-  app_data->command.rtc.callback_cmd_io = NULL;
+  appCmdRTCSetCallback(app_data, NULL, NULL);
 }
 
 void APP_Command_RTC_Tasks(struct AppData* app_data) {
@@ -505,21 +501,21 @@ int APP_Command_RTC(AppData* app_data,
     return true;
   }
   if (argc == 1) {
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[1], "oscillator")) {
-    return app_command_rtc_oscillator(app_data, cmd_io, argc, argv);
+    return appCmdRTCOscillator(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "date")) {
-    return app_command_rtc_date(app_data, cmd_io, argc, argv);
+    return appCmdRTCDate(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "battery")) {
-    return app_command_rtc_battery(app_data, cmd_io, argc, argv);
+    return appCmdRTCBattery(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "dump")) {
-    return app_command_rtc_dump(app_data, cmd_io, argc, argv);
+    return appCmdRTCDump(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "register")) {
-    return app_command_rtc_register(app_data, cmd_io, argc, argv);
+    return appCmdRTCRegister(app_data, cmd_io, argc, argv);
   } else {
     // For unknown command show usage.
-    return app_command_rtc_usage(cmd_io, argv[0]);
+    return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }

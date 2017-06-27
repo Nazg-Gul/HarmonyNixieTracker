@@ -64,7 +64,6 @@ static const SYS_FS_MEDIA_FUNCTIONS sst25_media_functions = {
   .tasks              = DRV_SST25_Tasks,
 };
 
-
 void APP_Flash_Initialize(AppFlashData* app_flash_data,
                           SYSTEM_OBJECTS* system_objects) {
   // TODO(sergey): Think about passing explicit flash handle.

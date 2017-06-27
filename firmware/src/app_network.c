@@ -26,7 +26,7 @@
 #include "app_network_utils.h"
 #include "system_definitions.h"
 
-static bool app_network_tcpip_init_wait(AppNetworkData* app_network_data) {
+static bool appNetworkTCPIPInitWait(AppNetworkData* app_network_data) {
   SYS_STATUS tcpip_status =
       TCPIP_STACK_Status(app_network_data->system_objects->tcpip);
   if (tcpip_status < 0) {
@@ -57,7 +57,7 @@ static bool app_network_tcpip_init_wait(AppNetworkData* app_network_data) {
   return false;
 }
 
-static bool app_network_wifi_config(AppNetworkData* app_network_data) {
+static bool appNetworkWifiConfig(AppNetworkData* app_network_data) {
   // THe following condition is required in case Wi-Fi interface is reset
   // due to connection error.
   IWPRIV_GET_PARAM wifi_get_param;
@@ -76,16 +76,16 @@ static bool app_network_wifi_config(AppNetworkData* app_network_data) {
   return false;
 }
 
-static void app_network_tcpip_module_enable(AppNetworkData* app_network_data) {
+static void appNetworkTCPIPModuleEnable(AppNetworkData* app_network_data) {
   int i, num_networks = TCPIP_STACK_NumberOfNetworksGet();
   SYS_CONSOLE_PRINT("APP NETWORK: Enabling %d modules\r\n", num_networks);
   for (i = 0; i < num_networks; ++i) {
-    app_network_tcpip_ifmodules_enable(TCPIP_STACK_IndexToNet(i));
+    APP_Network_TPCIP_IfModulesEnable(TCPIP_STACK_IndexToNet(i));
   }
   app_network_data->state = APP_NETWORK_TCPIP_TRANSACT;
 }
 
-static void app_network_run(AppNetworkData* app_network_data) {
+static void appNetworkRun(AppNetworkData* app_network_data) {
   // NOTE: This app supports 2 interfaces so far.
   // TODO(sergey): Move static variables to application state.
   static bool is_wifi_power_save_configured = false;
@@ -109,9 +109,9 @@ static void app_network_run(AppNetworkData* app_network_data) {
                           "resetting Wi-Fi module and trying to reconnect, "
                           "retries left: %u\r\n",
                           WIFI_RECONNECTION_RETRY_LIMIT - reconn_retries);
-        app_network_tcpip_ifmodules_disable(wifi_net_handle);
-        app_network_tcpip_iface_down(wifi_net_handle);
-        app_network_tcpip_iface_up(wifi_net_handle);
+        APP_Network_TCPIP_IfModulesDisable(wifi_net_handle);
+        APP_Network_TCPIP_IfaceDown(wifi_net_handle);
+        APP_Network_TCPIP_IfaceUp(wifi_net_handle);
         is_wifi_power_save_configured = false;
         app_network_data->state = APP_NETWORK_WIFI_CONFIG;
         return;
@@ -135,14 +135,14 @@ static void app_network_run(AppNetworkData* app_network_data) {
     if (!TCPIP_STACK_NetIsUp(net) && was_net_up[i]) {
       const char *net_name = TCPIP_STACK_NetNameGet(net);
       was_net_up[i] = false;
-      app_network_tcpip_ifmodules_disable(net);
+      APP_Network_TCPIP_IfModulesDisable(net);
       if (IS_WIFI_INTERFACE(net_name)) {
         is_wifi_power_save_configured = false;
       }
     }
     if (TCPIP_STACK_NetIsUp(net) && !was_net_up[i]) {
       was_net_up[i] = true;
-      app_network_tcpip_ifmodules_enable(net);
+      APP_Network_TPCIP_IfModulesEnable(net);
     }
   }
 
@@ -151,11 +151,11 @@ static void app_network_run(AppNetworkData* app_network_data) {
   if (!is_wifi_power_save_configured &&
     TCPIP_STACK_NetIsUp(wifi_net_handle) &&
     (TCPIP_STACK_NetAddress(wifi_net_handle) != app_network_data->wifi_default_ip.Val)) {
-    app_network_wifi_powersave_config(true);
+    APP_Network_Wifi_PowersaveConfig(true);
     is_wifi_power_save_configured = true;
   }
 
-  app_network_wifi_DHCPS_sync(wifi_net_handle);
+  APP_Network_Wifi_DHCPSSync(wifi_net_handle);
 
   // If the IP address of an interface has changed, 
   // display the new value on console.
@@ -207,19 +207,19 @@ void APP_Network_Initialize(AppNetworkData* app_network_data,
 void APP_Network_Tasks(AppNetworkData* app_network_data) {
   switch (app_network_data->state) {
     case APP_NETWORK_TCPIP_WAIT_INIT:
-      if (!app_network_tcpip_init_wait(app_network_data)) {
+      if (!appNetworkTCPIPInitWait(app_network_data)) {
         break;
       }
     case APP_NETWORK_WIFI_CONFIG:
-      if (!app_network_wifi_config(app_network_data)) {
+      if (!appNetworkWifiConfig(app_network_data)) {
         break;
       }
     case APP_NETWORK_TCPIP_MODULES_ENABLE:
-      app_network_tcpip_module_enable(app_network_data);
+      appNetworkTCPIPModuleEnable(app_network_data);
       timestamp_dhcp_kickin(app_network_data->ip_wait);
       break;
     case APP_NETWORK_TCPIP_TRANSACT:
-      app_network_run(app_network_data);
+      appNetworkRun(app_network_data);
       break;
     case APP_NETWORK_TCPIP_ERROR:
       // TODO(sergey): Do we need to do something here?

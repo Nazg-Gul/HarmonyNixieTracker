@@ -47,8 +47,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Internal routines.
 
-static int app_command_ntp_usage(SYS_CMD_DEVICE_NODE* cmd_io,
-                                 const char* argv0) {
+static int appCmdNTPUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   COMMAND_PRINT("Usage: %s command arguments ...\r\n", argv0);
   COMMAND_MESSAGE(
 "where 'command' is one of the following:\r\n"
@@ -62,12 +61,12 @@ static int app_command_ntp_usage(SYS_CMD_DEVICE_NODE* cmd_io,
 ////////////////////////////////////////////////////////////////////////////////
 // Commands implementation.
 
-static int app_command_ntp_seconds(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   int argc, char** argv) {
+static int appCmdNTPSeconds(AppData* app_data,
+                            SYS_CMD_DEVICE_NODE* cmd_io,
+                            int argc, char** argv) {
   (void) app_data;  /* Ignored. */
   if (argc != 2) {
-    return app_command_ntp_usage(cmd_io, argv[0]);
+    return appCmdNTPUsage(cmd_io, argv[0]);
   }
   uint32_t seconds = TCPIP_SNTP_UTCSecondsGet();
   COMMAND_PRINT("UTC seconds: %d\r\n", seconds);
@@ -81,14 +80,14 @@ int APP_Command_NTP(struct AppData* app_data,
                     struct SYS_CMD_DEVICE_NODE* cmd_io,
                     int argc, char** argv) {
   if (argc == 1) {
-    return app_command_ntp_usage(cmd_io, argv[0]);
+    return appCmdNTPUsage(cmd_io, argv[0]);
     return true;
   }
   if (STREQ(argv[1], "seconds")) {
-    return app_command_ntp_seconds(app_data, cmd_io, argc, argv);
+    return appCmdNTPSeconds(app_data, cmd_io, argc, argv);
   } else {
     // For unknown command show usage.
-    return app_command_ntp_usage(cmd_io, argv[0]);
+    return appCmdNTPUsage(cmd_io, argv[0]);
   }
   return true;
 }

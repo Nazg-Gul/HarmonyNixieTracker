@@ -31,45 +31,44 @@
 #define LOG_PREFIX "APP CMD FETCH: "
 #define DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
-static int app_command_fetch_usage(SYS_CMD_DEVICE_NODE* cmd_io,
-                                   const char* argv0) {
+static int appCmdFetchUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   COMMAND_PRINT("Usage: %s <url>\r\n", argv0);
   return true;
 }
 
 // TODO(sergey): Consider de-duplicating task logic with RTC commands.
 
-static void app_command_fetch_set_callback(AppData* app_data,
-                                           SYS_CMD_DEVICE_NODE* cmd_io,
-                                           AppCommandFetchCallback callback) {
+static void appCmdFetchSetCallback(AppData* app_data,
+                                   SYS_CMD_DEVICE_NODE* cmd_io,
+                                   AppCommandFetchCallback callback) {
   app_data->command.fetch.callback = callback;
   app_data->command.fetch.callback_cmd_io = cmd_io;
 }
 
-static void app_command_fetch_start_task(AppData* app_data,
-                                         SYS_CMD_DEVICE_NODE* cmd_io,
-                                         AppCommandFetchCallback callback) {
+static void appCmdFetchStartTask(AppData* app_data,
+                                 SYS_CMD_DEVICE_NODE* cmd_io,
+                                 AppCommandFetchCallback callback) {
   SYS_ASSERT(app_data->command.fetch.state == APP_COMMAND_FETCH_STATE_NONE,
              "\r\nAttempt to start task while another one is in process\r\n");
   app_data->command.state = APP_COMMAND_STATE_FETCH;
   app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_WAIT_AVAILABLE;
-  app_command_fetch_set_callback(app_data, cmd_io, callback);
+  appCmdFetchSetCallback(app_data, cmd_io, callback);
 }
 
-static void app_command_fetch_finish_task(AppData* app_data) {
+static void appCmdFetchFinishTask(AppData* app_data) {
   SYS_ASSERT(app_data->command.fetch.state != APP_COMMAND_FETCH_STATE_NONE,
              "\r\nAttempt to finish non-existing task\r\n");
   app_data->command.state = APP_COMMAND_STATE_NONE;
   app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_NONE;
   // TODO(sergey): Ignore for release builds to save CPU ticks?
-  app_data->command.fetch.callback = NULL;
-  app_data->command.fetch.callback_cmd_io = NULL;
+  appCmdFetchSetCallback(app_data, NULL, NULL);
 }
 
 static void bufferReceivedCallback(const uint8_t* buffer,
                                   uint16_t num_bytes,
                                   void* user_data) {
   AppData* app_data = (AppData*)user_data;
+  // TOFO(sergey): This doesn't look nice.
   SYS_CMD_DEVICE_NODE* cmd_io = app_data->command.fetch.callback_cmd_io;
   uint16_t i;
   // TODO(sergey): This is because of some nasty defines in stdio which is
@@ -92,9 +91,9 @@ static void errorCallback(void* user_data) {
   app_data->command.fetch.request_active = false;
 }
 
-static void perform_fetch(AppData* app_data,
-                          SYS_CMD_DEVICE_NODE* cmd_io,
-                          AppCommandFetchCallbackMode mode) {
+static void performFetch(AppData* app_data,
+                         SYS_CMD_DEVICE_NODE* cmd_io,
+                         AppCommandFetchCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_FETCH_MODE_CALLBACK_INVOKE: {
       AppHttpsClientCallbacks callbacks = {NULL};
@@ -106,28 +105,28 @@ static void perform_fetch(AppData* app_data,
       if (!APP_HTTPS_Client_Request(&app_data->https_client,
                                     app_data->command.fetch.url,
                                     &callbacks)) {
-        app_command_fetch_finish_task(app_data);
+        appCmdFetchFinishTask(app_data);
       }
       break;
     }
     case APP_COMMAND_FETCH_MODE_CALLBACK_UPDATE:
       if (!app_data->command.fetch.request_active) {
-        app_command_fetch_finish_task(app_data);
+        appCmdFetchFinishTask(app_data);
       }
       break;
   }
 }
 
-static int app_command_fetch(AppData* app_data,
-                             SYS_CMD_DEVICE_NODE* cmd_io,
-                             int argc, char** argv) {
+static int appCmdFetch(AppData* app_data,
+                       SYS_CMD_DEVICE_NODE* cmd_io,
+                       int argc, char** argv) {
   if (argc != 2) {
-    return app_command_fetch_usage(cmd_io, argv[0]);
+    return appCmdFetchUsage(cmd_io, argv[0]);
   }
   safe_strncpy(app_data->command.fetch.url,
                argv[1],
                sizeof(app_data->command.fetch.url));
-  app_command_fetch_start_task(app_data, cmd_io, &perform_fetch);
+  appCmdFetchStartTask(app_data, cmd_io, &performFetch);
   return true;
 }
 
@@ -136,8 +135,7 @@ void APP_Command_Fetch_Initialize(AppData* app_data) {
   memset(&app_data->command.fetch, 0, sizeof(app_data->command.fetch));
   app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_NONE;
   // TODO(sergey): Ignore for release builds to save CPU ticks?
-  app_data->command.fetch.callback = NULL;
-  app_data->command.fetch.callback_cmd_io = NULL;
+  appCmdFetchSetCallback(app_data, NULL, NULL);
 }
 
 void APP_Command_Fetch_Tasks(struct AppData* app_data) {
@@ -173,8 +171,8 @@ int APP_Command_Fetch(AppData* app_data,
     return true;
   }
   if (argc == 1) {
-    return app_command_fetch_usage(cmd_io, argv[0]);
+    return appCmdFetchUsage(cmd_io, argv[0]);
   }
-  app_command_fetch(app_data, cmd_io, argc, argv);
+  appCmdFetch(app_data, cmd_io, argc, argv);
   return true;
 }

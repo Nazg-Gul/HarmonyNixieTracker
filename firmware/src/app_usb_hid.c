@@ -58,7 +58,7 @@ void APP_USB_HID_Tasks(AppUSBHIDData* app_usb_hid_data) {
         // Register a callback with device layer to get event notification
         // (for end point 0).
         USB_DEVICE_EventHandlerSet(app_usb_hid_data->us_handle,
-                                   app_usb_device_event_handler,
+                                   APP_USB_DeviceEventHandler,
                                    0);
         app_usb_hid_data->state = APP_USB_HID_STATE_WAIT_FOR_CONFIGURATION;
       } else {

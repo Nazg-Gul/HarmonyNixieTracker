@@ -51,7 +51,7 @@
 
 extern AppUSBHIDData* g_app_usb_hid_data;
 
-USB_DEVICE_HID_EVENT_RESPONSE app_usb_device_hid_event_handler(
+USB_DEVICE_HID_EVENT_RESPONSE APP_USB_DeviceHIDEventHandler(
     USB_DEVICE_HID_INDEX iHID,
     USB_DEVICE_HID_EVENT event,
     void* event_data,
@@ -108,9 +108,9 @@ USB_DEVICE_HID_EVENT_RESPONSE app_usb_device_hid_event_handler(
   return USB_DEVICE_HID_EVENT_RESPONSE_NONE;
 }
 
-void app_usb_device_event_handler(USB_DEVICE_EVENT event,
-                                  void* event_data,
-                                  uintptr_t context) {
+void APP_USB_DeviceEventHandler(USB_DEVICE_EVENT event,
+                                void* event_data,
+                                uintptr_t context) {
   switch (event) {
     case USB_DEVICE_EVENT_RESET:
     case USB_DEVICE_EVENT_DECONFIGURED:
@@ -131,7 +131,7 @@ void app_usb_device_event_handler(USB_DEVICE_EVENT event,
           ((USB_DEVICE_EVENT_DATA_CONFIGURED*)event_data)->configurationValue;
       // Register application HID event handler.
       USB_DEVICE_HID_EventHandlerSet(USB_DEVICE_HID_INDEX_0,
-                                     app_usb_device_hid_event_handler, 
+                                     APP_USB_DeviceHIDEventHandler, 
                                      (uintptr_t)g_app_usb_hid_data);
       break;
 

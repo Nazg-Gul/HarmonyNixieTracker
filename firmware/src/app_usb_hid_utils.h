@@ -25,14 +25,14 @@
 
 #include "system_definitions.h"
 
-USB_DEVICE_HID_EVENT_RESPONSE app_usb_device_hid_event_handler(
+USB_DEVICE_HID_EVENT_RESPONSE APP_USB_DeviceHIDEventHandler(
     USB_DEVICE_HID_INDEX iHID,
     USB_DEVICE_HID_EVENT event,
     void* event_data,
     uintptr_t user_data);
 
-void app_usb_device_event_handler(USB_DEVICE_EVENT event,
-                                  void* event_data,
-                                   uintptr_t context);
+void APP_USB_DeviceEventHandler(USB_DEVICE_EVENT event,
+                                void* event_data,
+                                 uintptr_t context);
 
 #endif  // _APP_USB_HID_UTILS_H

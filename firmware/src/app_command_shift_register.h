@@ -69,14 +69,6 @@ typedef struct AppCommandShiftRegisterData {
   // - Shift register state machine calls the specified callback.
   AppCommandShiftRegisterCallback callback;
   struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
-
-  // Per-command storage.
-  union {
-    // Storage for enable/disable commands.
-    struct {
-      bool do_enable;
-    } enable;
-  } _private;
 } AppCommandShiftRegisterData;
 
 // Initialize shift register related command processor state and data.

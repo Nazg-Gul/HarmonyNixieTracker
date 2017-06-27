@@ -49,7 +49,7 @@
 
 #include "driver/wifi/mrf24w/src/drv_wifi_iwpriv.h"
 
-void app_network_wifi_ipv6_multicast_filter_set(TCPIP_NET_HANDLE net) {
+void APP_Network_Wifi_Ipv6MulticastFilterSet(TCPIP_NET_HANDLE net) {
 #ifdef TCPIP_STACK_USE_IPV6
   const uint8_t *mac_addr = TCPIP_STACK_NetAddressMac(net);
   int i;
@@ -76,7 +76,7 @@ void app_network_wifi_ipv6_multicast_filter_set(TCPIP_NET_HANDLE net) {
 #endif
 }
 
-void app_network_wifi_powersave_config(bool enable) {
+void APP_Network_Wifi_PowersaveConfig(bool enable) {
 #if DRV_WIFI_DEFAULT_POWER_SAVE == DRV_WIFI_ENABLED
   IWPRIV_SET_PARAM wifi_set_param;
   wifi_set_param.powerSave.enabled = enable;
@@ -84,7 +84,7 @@ void app_network_wifi_powersave_config(bool enable) {
 #endif
 }
 
-void app_network_wifi_DHCPS_sync(TCPIP_NET_HANDLE net) {
+void APP_Network_Wifi_DHCPSSync(TCPIP_NET_HANDLE net) {
 #ifdef TCPIP_STACK_USE_DHCP_SERVER
   bool updated;
   TCPIP_MAC_ADDR addr;
@@ -100,13 +100,13 @@ void app_network_wifi_DHCPS_sync(TCPIP_NET_HANDLE net) {
 #endif
 }
 
-void app_network_tcpip_ifmodules_enable(TCPIP_NET_HANDLE net) {
+void APP_Network_TPCIP_IfModulesEnable(TCPIP_NET_HANDLE net) {
   int net_index = TCPIP_STACK_NetIndexGet(net);
   const char *net_name = TCPIP_STACK_NetNameGet(net);
   TCPIP_DHCP_Enable(net);
   TCPIP_DNS_Enable(net, TCPIP_DNS_ENABLE_DEFAULT);
   if (IS_WIFI_INTERFACE(net_name)) {
-    app_network_wifi_ipv6_multicast_filter_set(net);
+    APP_Network_Wifi_Ipv6MulticastFilterSet(net);
   }
 #ifdef TCPIP_STACK_USE_NBNS
   const char *netbios_name = TCPIP_STACK_NetBIOSName(net);
@@ -129,21 +129,21 @@ void app_network_tcpip_ifmodules_enable(TCPIP_NET_HANDLE net) {
 #endif
 }
 
-void app_network_tcpip_ifmodules_disable(TCPIP_NET_HANDLE net) {
+void APP_Network_TCPIP_IfModulesDisable(TCPIP_NET_HANDLE net) {
   const char *net_name = TCPIP_STACK_NetNameGet(net);
   if (IS_WIFI_INTERFACE(net_name) && TCPIP_STACK_NetIsUp(net)) {
-    app_network_wifi_powersave_config(false);
+    APP_Network_Wifi_PowersaveConfig(false);
   }
   TCPIP_DHCP_Disable(net);
   TCPIP_DNS_Disable(net, true);
   TCPIP_MDNS_ServiceDeregister(net);
 }
 
-void app_network_tcpip_iface_down(TCPIP_NET_HANDLE net) {
+void APP_Network_TCPIP_IfaceDown(TCPIP_NET_HANDLE net) {
   TCPIP_STACK_NetDown(net);
 }
 
-void app_network_tcpip_iface_up(TCPIP_NET_HANDLE net) {
+void APP_Network_TCPIP_IfaceUp(TCPIP_NET_HANDLE net) {
   SYS_MODULE_OBJ tcpip_stack_object;
   TCPIP_STACK_INIT tcpip_init_data;
   const TCPIP_NETWORK_CONFIG *network_config;

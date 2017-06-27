@@ -33,8 +33,8 @@
 #define LOG_PREFIX "APP CMD SHIFT REGISTER: "
 #define DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
-static int app_command_shift_register_usage(SYS_CMD_DEVICE_NODE* cmd_io,
-                                            const char* argv0) {
+static int appCmdShiftRegisterUsage(SYS_CMD_DEVICE_NODE* cmd_io,
+                                    const char* argv0) {
   COMMAND_PRINT("Usage: %s command arguments ...\r\n", argv0);
   COMMAND_MESSAGE(
 "where 'command' is one of the following:\r\n"
@@ -48,7 +48,7 @@ static int app_command_shift_register_usage(SYS_CMD_DEVICE_NODE* cmd_io,
 
 // TODO(sergey): Consider de-duplicating task logic with RTC commands.
 
-static void app_command_shift_register_set_callback(
+static void appCmdShiftRegisterSetCallback(
     AppData* app_data,
     SYS_CMD_DEVICE_NODE* cmd_io,
     AppCommandShiftRegisterCallback callback) {
@@ -56,7 +56,7 @@ static void app_command_shift_register_set_callback(
   app_data->command.shift_register.callback_cmd_io = cmd_io;
 }
 
-static void app_command_shift_register_start_task(
+static void appCmdShiftRegisterStartTask(
     AppData* app_data,
     SYS_CMD_DEVICE_NODE* cmd_io,
     AppCommandShiftRegisterCallback callback) {
@@ -66,31 +66,41 @@ static void app_command_shift_register_start_task(
   app_data->command.state = APP_COMMAND_STATE_SHIFT_REGISTER;
   app_data->command.shift_register.state =
       APP_COMMAND_SHIFT_REGISTER_STATE_WAIT_AVAILABLE;
-  app_command_shift_register_set_callback(app_data, cmd_io, callback);
+  appCmdShiftRegisterSetCallback(app_data, cmd_io, callback);
 }
 
-static void app_command_shift_register_finish_task(AppData* app_data) {
+static void appCmdShiftRegisterFinishTask(AppData* app_data) {
   SYS_ASSERT(
       app_data->command.shift_register.state != APP_COMMAND_SHIFT_REGISTER_STATE_NONE,  // NOLINT
      "\r\nAttempt to finish non-existing task\r\n");
   app_data->command.state = APP_COMMAND_STATE_NONE;
   app_data->command.shift_register.state = APP_COMMAND_SHIFT_REGISTER_STATE_NONE;
   // TODO(sergey): Ignore for release builds to save CPU ticks?
-  app_data->command.shift_register.callback = NULL;
-  app_data->command.shift_register.callback_cmd_io = NULL;
+  appCmdShiftRegisterSetCallback(app_data, NULL, NULL);
 }
 
-static void setEnabled(AppData* app_data,
-                       SYS_CMD_DEVICE_NODE* cmd_io,
-                       AppCommandShiftRegisterCallbackMode mode) {
+static void performSetEnabled(AppData* app_data,
+                              SYS_CMD_DEVICE_NODE* cmd_io,
+                              AppCommandShiftRegisterCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_SHIFT_REGISTER_MODE_CALLBACK_INVOKE:
-      APP_ShiftRegister_SetEnabled(
-          &app_data->shift_register,
-          app_data->command.shift_register._private.enable.do_enable);
+      APP_ShiftRegister_SetEnabled(&app_data->shift_register, true);
       break;
     case APP_COMMAND_SHIFT_REGISTER_MODE_CALLBACK_UPDATE:
-      app_command_shift_register_finish_task(app_data);
+      appCmdShiftRegisterFinishTask(app_data);
+      break;
+  }
+}
+
+static void performSetDisabled(AppData* app_data,
+                               SYS_CMD_DEVICE_NODE* cmd_io,
+                               AppCommandShiftRegisterCallbackMode mode) {
+  switch (mode) {
+    case APP_COMMAND_SHIFT_REGISTER_MODE_CALLBACK_INVOKE:
+      APP_ShiftRegister_SetEnabled(&app_data->shift_register, false);
+      break;
+    case APP_COMMAND_SHIFT_REGISTER_MODE_CALLBACK_UPDATE:
+      appCmdShiftRegisterFinishTask(app_data);
       break;
   }
 }
@@ -100,10 +110,14 @@ static int commandShiftRegisterSetEnabled(AppData* app_data,
                                           int argc, char** argv,
                                           bool is_enabled) {
   if (argc != 2) {
-    return app_command_shift_register_usage(cmd_io, argv[0]);
+    return appCmdShiftRegisterUsage(cmd_io, argv[0]);
+  } else if (STREQ(argv[1], "enable")) {
+    appCmdShiftRegisterStartTask(app_data, cmd_io, &performSetEnabled);
+  } else if (STREQ(argv[1], "disable")) {
+    appCmdShiftRegisterStartTask(app_data, cmd_io, &performSetDisabled);
+  } else {
+     appCmdShiftRegisterUsage(cmd_io, argv[0]);
   }
-  app_data->command.shift_register._private.enable.do_enable = is_enabled;
-  app_command_shift_register_start_task(app_data, cmd_io, &setEnabled);
   return true;
 }
 
@@ -114,8 +128,7 @@ void APP_Command_ShiftRegister_Initialize(AppData* app_data) {
          sizeof(app_data->command.shift_register));
   app_data->command.shift_register.state = APP_COMMAND_SHIFT_REGISTER_STATE_NONE;  // NOLINT
   // TODO(sergey): Ignore for release builds to save CPU ticks?
-  app_data->command.shift_register.callback = NULL;
-  app_data->command.shift_register.callback_cmd_io = NULL;
+  appCmdShiftRegisterSetCallback(app_data, NULL, NULL);
 }
 
 void APP_Command_ShiftRegister_Tasks(struct AppData* app_data) {
@@ -152,13 +165,13 @@ int APP_Command_ShiftRegister(AppData* app_data,
     return true;
   }
   if (argc == 1) {
-    return app_command_shift_register_usage(cmd_io, argv[0]);
+    return appCmdShiftRegisterUsage(cmd_io, argv[0]);
   } else if (argc == 2 && STREQ(argv[1], "enable")) {
     commandShiftRegisterSetEnabled(app_data, cmd_io, argc, argv, true);
   } else if (argc == 2 && STREQ(argv[1], "disable")) {
     commandShiftRegisterSetEnabled(app_data, cmd_io, argc, argv, false);
   } else {
-    return app_command_shift_register_usage(cmd_io, argv[0]);
+    return appCmdShiftRegisterUsage(cmd_io, argv[0]);
   }
   return true;
 }

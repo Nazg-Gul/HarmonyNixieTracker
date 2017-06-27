@@ -27,7 +27,7 @@
 #include "app_usb_hid.h"
 #include "app_version.h"
 
-static void app_greetings(AppData* app_data) {
+static void appGreetings(AppData* app_data) {
   SYS_CONSOLE_MESSAGE("\r\n");
   SYS_CONSOLE_MESSAGE("System initialization finished.\r\n");
   SYS_CONSOLE_MESSAGE("\r\n");
@@ -62,7 +62,7 @@ void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects) {
 void APP_Tasks(AppData* app_data) {
   switch (app_data->state) {
     case APP_STATE_GREETINGS:
-      app_greetings(app_data);
+      appGreetings(app_data);
       break;
     case APP_STATE_RUN_SERVICES:
       APP_Network_Tasks(&app_data->network);

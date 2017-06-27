@@ -34,13 +34,13 @@
     x = (TCPIP_DHCP_CLIENT_ENABLED ? 1 : 0); \
   } while (0)
 
-void app_network_wifi_ipv6_multicast_filter_set(TCPIP_NET_HANDLE net);
-void app_network_wifi_powersave_config(bool enable);
-void app_network_wifi_DHCPS_sync(TCPIP_NET_HANDLE net);
+void APP_Network_Wifi_Ipv6MulticastFilterSet(TCPIP_NET_HANDLE net);
+void APP_Network_Wifi_PowersaveConfig(bool enable);
+void APP_Network_Wifi_DHCPSSync(TCPIP_NET_HANDLE net);
 
-void app_network_tcpip_ifmodules_enable(TCPIP_NET_HANDLE net);
-void app_network_tcpip_ifmodules_disable(TCPIP_NET_HANDLE net);
-void app_network_tcpip_iface_down(TCPIP_NET_HANDLE net);
-void app_network_tcpip_iface_up(TCPIP_NET_HANDLE net);
+void APP_Network_TPCIP_IfModulesEnable(TCPIP_NET_HANDLE net);
+void APP_Network_TCPIP_IfModulesDisable(TCPIP_NET_HANDLE net);
+void APP_Network_TCPIP_IfaceDown(TCPIP_NET_HANDLE net);
+void APP_Network_TCPIP_IfaceUp(TCPIP_NET_HANDLE net);
 
 #endif  // _APP_NETWORK_UTILS_H
