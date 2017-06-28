@@ -99,9 +99,9 @@ static void performSectors(AppData* app_data,
   }
 }
 
-static int appCmdFashSectors(AppData* app_data,
-                             SYS_CMD_DEVICE_NODE* cmd_io,
-                             int argc, char** argv) {
+static int appCmdFlashSectors(AppData* app_data,
+                              SYS_CMD_DEVICE_NODE* cmd_io,
+                              int argc, char** argv) {
   if (argc != 2) {
     return appCmdFlashUsage(cmd_io, argv[0]);
   }
@@ -188,7 +188,7 @@ int APP_Command_Flash(AppData* app_data,
     return appCmdFlashUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[1], "sectors")) {
-    return appCmdFashSectors(app_data, cmd_io, argc, argv);
+    return appCmdFlashSectors(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "format")) {
     return appCmdFlashFormat(app_data, cmd_io, argc, argv);
   } else {

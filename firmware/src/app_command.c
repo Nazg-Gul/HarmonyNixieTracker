@@ -31,6 +31,7 @@ static AppData* g_app_data;
 int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+int cmdNixie(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmdNTP(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmdPower(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 int cmdRTC(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
@@ -42,6 +43,7 @@ static const SYS_CMD_DESCRIPTOR commands[] = {
   // TODO(sergey): This should in theory be handled by iwconfig, but it is not.
   // So we work this around for particular Harmony version and device we use.
   {"iwsecurity", cmdIwsecurity, ": WiFi security configuration"},
+  {"nixie", cmdNixie, ": Nixie tube display configuration"},
   {"ntp", cmdNTP, ": NTP client configuration"},
   {"power", cmdPower, ": Power supply configuration"},
   {"rtc", cmdRTC, ": Real Time Clock configuration"},
@@ -58,6 +60,10 @@ int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
 
 int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_IwSecurity(g_app_data, cmd_io, argc, argv);
+}
+
+int cmdNixie(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_Nixie(g_app_data, cmd_io, argc, argv);
 }
 
 int cmdNTP(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
@@ -85,6 +91,7 @@ void APP_Command_Initialize(AppData* app_data) {
   app_data->command.state = APP_COMMAND_STATE_NONE;
   APP_Command_Fetch_Initialize(app_data);
   APP_Command_Flash_Initialize(app_data);
+  APP_Command_Nixie_Initialize(app_data);
   APP_Command_RTC_Initialize(app_data);
   APP_Command_ShiftRegister_Initialize(app_data);
 }
@@ -99,6 +106,9 @@ void APP_Command_Tasks(AppData* app_data) {
       break;
     case APP_COMMAND_STATE_FLASH:
       APP_Command_Flash_Tasks(app_data);
+      break;
+    case APP_COMMAND_STATE_NIXIE:
+      APP_Command_Nixie_Tasks(app_data);
       break;
     case APP_COMMAND_STATE_RTC:
       APP_Command_RTC_Tasks(app_data);

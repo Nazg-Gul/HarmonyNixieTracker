@@ -35,6 +35,7 @@
 #include "app_flash.h"
 #include "app_https_client.h"
 #include "app_network.h"
+#include "app_nixie.h"
 #include "app_power.h"
 #include "app_rtc.h"
 #include "app_shift_register.h"
@@ -59,6 +60,7 @@ typedef struct AppData {
   AppFlashData flash;
   AppHTTPSClientData https_client;
   AppNetworkData network;
+  AppNixieData nixie;
   AppRTCData rtc;
   AppShiftRegisterData shift_register;
   AppUSBHIDData usb_hid;

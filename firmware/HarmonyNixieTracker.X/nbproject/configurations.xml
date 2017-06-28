@@ -58,6 +58,8 @@
         <itemPath>../src/app_command_fetch.h</itemPath>
         <itemPath>../src/app_command_shift_register.h</itemPath>
         <itemPath>../src/app_shift_register.h</itemPath>
+        <itemPath>../src/app_nixie.h</itemPath>
+        <itemPath>../src/app_command_nixie.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -810,6 +812,8 @@
         <itemPath>../src/app_command_fetch.c</itemPath>
         <itemPath>../src/app_shift_register.c</itemPath>
         <itemPath>../src/app_command_shift_register.c</itemPath>
+        <itemPath>../src/app_nixie.c</itemPath>
+        <itemPath>../src/app_command_nixie.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
