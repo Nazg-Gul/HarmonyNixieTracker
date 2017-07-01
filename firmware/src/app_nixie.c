@@ -205,6 +205,7 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
   // ======== Nixie display information =======
   // Fill in nixies information.
   // TODO(sergey): Make it some sort of runtime configuration?
+  // TODO(sergey): Make it a proper wiring diagram here.
   NIXIE_REGISTER_BEGIN(app_nixie_data);
     NIXIE_TUBE_BEGIN(NIXIE_TYPE_IN12A);
       NIXIE_CATHODE('0', 2,  0, 0);
