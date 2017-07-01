@@ -75,7 +75,9 @@ void APP_Tasks(AppData* app_data) {
       APP_ShiftRegister_Tasks(&app_data->shift_register);
       APP_Nixie_Tasks(&app_data->nixie);
       APP_Command_Tasks(app_data);
-      SYS_CMD_READY_TO_READ();
+      if (!APP_Command_IsBusy(app_data)) {
+        SYS_CMD_READY_TO_READ();
+      }
       break;
     case APP_STATE_ERROR:
       // TODO(sergey): Do we need to do something here?
