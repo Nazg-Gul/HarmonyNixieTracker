@@ -81,7 +81,8 @@ static void performDisplay(AppData* app_data,
                            AppCommandNixieCallbackMode mode) {
   switch (mode) {
     case APP_COMMAND_NIXIE_MODE_CALLBACK_INVOKE: {
-      // TODO(sergey): Needs implementation.
+      APP_Nixie_Display(&app_data->nixie,
+                        app_data->command.nixie._private.display.value);
       break;
     }
     case APP_COMMAND_NIXIE_MODE_CALLBACK_UPDATE:
@@ -96,7 +97,15 @@ static int appCmdNixieDisplay(AppData* app_data,
   if (argc != 3) {
     return appCmdNixieUsage(cmd_io, argv[0]);
   }
-  app_data->command.nixie._private.display.value = atoi(argv[2]);
+  const char* value = argv[2];
+  // Make sure all possibly unused digits are zeroed.
+  memset(app_data->command.nixie._private.display.value,
+         0,
+         sizeof(app_data->command.nixie._private.display.value));
+  // Copy at max of display size digits.
+  strncpy(app_data->command.nixie._private.display.value,
+          value,
+          sizeof(app_data->command.nixie._private.display.value));
   appCmdNixieStartTask(app_data, cmd_io, &performDisplay);
   return true;
 }

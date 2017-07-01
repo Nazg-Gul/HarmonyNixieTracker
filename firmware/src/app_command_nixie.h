@@ -25,6 +25,8 @@
 
 #include <stdint.h>
 
+#include "app_nixie.h"
+
 struct AppData;
 struct SYS_CMD_DEVICE_NODE;
 
@@ -72,7 +74,7 @@ typedef struct AppCommandNixieData {
   union {
     struct {
       // Value to be displayed.
-      int32_t value;
+      char value[MAX_NIXIE_TUBES];
     } display;
   } _private;
 } AppCommandNixieData;

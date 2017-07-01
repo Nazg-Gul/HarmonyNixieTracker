@@ -108,6 +108,7 @@ void APP_ShiftRegister_SendData(
     AppShiftRegisterData* app_shift_register_data,
     uint8_t* data,
     size_t num_bytes) {
+  // TODO(sergey): Check shift registers are ready for data transmit.
   SHIFT_REGISTER_DEBUG_PRINT("Begin transmittance of %d bytes.\r\n", num_bytes);
   memcpy(app_shift_register_data->_private.send.data,
          data,

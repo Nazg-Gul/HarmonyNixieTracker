@@ -57,7 +57,7 @@ void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects) {
   APP_Power_Initialize();
   APP_HTTPS_Client_Initialize(&app_data->https_client);
   APP_ShiftRegister_Initialize(&app_data->shift_register);
-  APP_Nixie_Initialize(&app_data->nixie);
+  APP_Nixie_Initialize(&app_data->nixie, &app_data->shift_register);
 }
 
 void APP_Tasks(AppData* app_data) {
