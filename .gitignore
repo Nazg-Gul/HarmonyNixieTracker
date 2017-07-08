@@ -6,3 +6,6 @@
 # Makefiles auto-generators
 /firmware/HarmonyNixieTracker.X/nbproject/Makefile-*
 /firmware/HarmonyNixieTracker.X/nbproject/Package-*
+
+# Private locally-generated files
+/firmware/HarmonyNixieTracker.X/nbproject/private/
