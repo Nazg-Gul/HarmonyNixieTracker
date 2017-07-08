@@ -26,10 +26,18 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-// Similar to strchr but only considers given number of characters.
+// Similar to strstr but only considers given number of characters from
+// haystack.
 char* strchr_len(const char* haystack,
                  const char needle,
                  const size_t haystack_length);
+
+// Similar to strstr but only considers given number of characters from
+// haystack.
+char* strstr_len(const char* haystack,
+                 const char* needle,
+                 const size_t haystack_len);
+
 
 // Find first occurrence of any character from needles in haystack.
 //

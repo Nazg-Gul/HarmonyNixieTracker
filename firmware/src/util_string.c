@@ -20,12 +20,15 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
+#define _GNU_SOURCE
+
 #include "util_string.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "gcc/memmem.h"
 #include "util_math.h"
 
 char* strchr_len(const char* haystack,
@@ -41,6 +44,12 @@ char* strchr_len(const char* haystack,
     }
   }
   return NULL;
+}
+
+char* strstr_len(const char* haystack,
+                 const char* needle,
+                 const size_t haystack_len) {
+  return memmem(haystack, haystack_len, needle, strlen(needle));
 }
 
 char* strchr_any_len(const char* haystack,

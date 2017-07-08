@@ -26,6 +26,7 @@
 
 #include "system_definitions.h"
 #include "utildefines.h"
+#include "util_string.h"
 
 #include "app_shift_register.h"
 
@@ -77,6 +78,112 @@ static int8_t IN12B_SymbolToCathodeIndex(char symbol) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal routines.
+
+////////////////////////////////////////
+// submit HTTP(S) request.
+
+// Get value from buffer pointing to the beginning of the value.
+static void parseValueFromBuffer(AppNixieData* app_nixie_data,
+                                 const char* buffer,
+                                 const size_t buffer_len) {
+  size_t index = 0;
+  size_t num_bytes = min(buffer_len, app_nixie_data->num_nixies);
+  // Make sure all possibly unused digits are zeroed.
+  memset(app_nixie_data->display_value,
+         0,
+         sizeof(app_nixie_data->display_value));
+  // Copy value from the buffer.
+  while (index < num_bytes) {
+    const char ch = buffer[index];
+    if (ch >= '0' && ch <= '9') {
+      app_nixie_data->display_value[index] = ch;
+    } else {
+      break;
+    }
+    ++index;
+  }
+  NIXIE_DEBUG_PRINT("Parsed value " NIXIE_DISPLAY_FORMAT,
+                    NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
+  app_nixie_data->value_parsed = true;
+}
+
+static void bufferReceivedCallback(const uint8_t* buffer,
+                                   uint16_t num_bytes,
+                                   void* user_data) {
+  const char* buffer_char = (char*)buffer;
+  AppNixieData* app_nixie_data = (AppNixieData*)user_data;
+  const size_t token_len = app_nixie_data->token_len;
+  const char* found;
+  if (app_nixie_data->value_parsed) {
+    // Value is already parsed, no need to waste time trying to find token
+    // and such here now.
+    return;
+  }
+  found = strstr_len(buffer_char, app_nixie_data->token, num_bytes);
+  if (found != NULL) {
+    const size_t token_pos = buffer_char - found;
+    NIXIE_DEBUG_MESSAGE("Found token.\r\n");
+    // Check whether there is enough bytes after the token (it is possible that
+    // value we are looking for is cut somewhere in the middle, meaning we need
+    // to wait for the next chunk to get proper value).
+    const size_t remainder = num_bytes - token_pos;
+    if (remainder < app_nixie_data->num_nixies) {
+      // TODO(sergey): Delay parsing for the next buffers, when we have more
+      // data and less chance of cutting the value.
+    } else {
+      parseValueFromBuffer(app_nixie_data,
+                           (char*)buffer + token_pos + token_len,
+                           num_bytes - token_len);
+    }
+  } else {
+    // TODO(sergey): Check whether combination of existing buffer with the new
+    // one gives proper answer.
+  }
+}
+
+void requestHandledCallback(void* user_data) {
+  AppNixieData* app_nixie_data = (AppNixieData*)user_data;
+  NIXIE_DEBUG_PRINT("HTTP(S) transaction finished.\r\n");
+  app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
+}
+
+void errorCallback(void* user_data) {
+  AppNixieData* app_nixie_data = (AppNixieData*)user_data;
+  NIXIE_ERROR_MESSAGE("Error occurred during HTTP(S) transaction.\r\n");
+  app_nixie_data->state = APP_NIXIE_STATE_ERROR;
+}
+
+static void waitHttpsClientAndSendRequest(AppNixieData* app_nixie_data) {
+  if (APP_HTTPS_Client_IsBusy(app_nixie_data->app_https_client_data)) {
+    return;
+  }
+  // Reset some values form previous run.
+  app_nixie_data->value_parsed = false;
+  app_nixie_data->cyclic_buffer_len = 0;
+  // Prepare callbacks for HTTP(S) module.
+  AppHttpsClientCallbacks callbacks;
+  callbacks.buffer_received = bufferReceivedCallback;
+  callbacks.request_handled = requestHandledCallback;
+  callbacks.error = errorCallback;
+  callbacks.user_data = app_nixie_data;
+  // NOTE: It is important to submit request now, because HTTP(s) client might
+  // become busy at the next state machine iteration.
+  if (!APP_HTTPS_Client_Request(app_nixie_data->app_https_client_data,
+                                app_nixie_data->request_url,
+                                &callbacks)) {
+    // TODO(sergey): Provide some more details?
+    NIXIE_ERROR_PRINT("Error submitting HTTP(S) request to %s.\r\n",
+                      app_nixie_data->request_url);
+    app_nixie_data->state = APP_NIXIE_STATE_ERROR;
+    return;
+  }
+  NIXIE_DEBUG_PRINT("Submitted HTTP(S) request to %s.\r\n",
+                    app_nixie_data->request_url);
+  app_nixie_data->state = APP_NIXIE_WTATE_WAIT_HTTPS_RESPONSE;
+}
+
+////////////////////////////////////////
+// Display requested value.
 
 const char* nixieTypeStringify(NixieType type) {
   switch (type) {
@@ -174,6 +281,7 @@ static void writeShiftRegister(AppNixieData* app_nixie_data) {
 // Public API.
 
 void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
+                          AppHTTPSClientData* app_https_client_data,
                           AppShiftRegisterData* app_shift_register_data) {
 #define NIXIE_REGISTER_BEGIN(app_nixie_data)                           \
   do {                                                                 \
@@ -200,7 +308,19 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
   } while (false)
 
   app_nixie_data->state = APP_NIXIE_STATE_IDLE;
+  app_nixie_data->app_https_client_data = app_https_client_data;
   app_nixie_data->app_shift_register_data = app_shift_register_data;
+
+  // ======== HTTP(S) server information.
+
+  // TODO(sergey)L Make it some sort of stored configuration.
+  safe_strncpy(app_nixie_data->request_url,
+               "https://dveloper.blender.org/app_nixie_data->request_url",
+               sizeof(app_nixie_data->request_url));
+  safe_strncpy(app_nixie_data->token,
+               ">Open Tasks (",
+               sizeof(app_nixie_data->token));
+  app_nixie_data->token_len = strlen(app_nixie_data->token);
 
   // ======== Nixie display information =======
   // Fill in nixies information.
@@ -274,6 +394,21 @@ void APP_Nixie_Tasks(AppNixieData* app_nixie_data) {
       // TODO(sergey): Check timer, and start fetching new value from server.
       break;
 
+    case APP_NIXIE_STATE_ERROR:
+      // TODO(sergey): Check whether it was a recoverable error.
+      app_nixie_data->state = APP_NIXIE_STATE_IDLE;
+      break;
+
+    case APP_NIXIE_STATE_BEGIN_HTTP_REQUEST:
+      app_nixie_data->state = APP_NIXIE_STATE_WAIT_HTTPS_CLIENT;
+      break;
+    case APP_NIXIE_STATE_WAIT_HTTPS_CLIENT:
+      waitHttpsClientAndSendRequest(app_nixie_data);
+      break;
+    case APP_NIXIE_WTATE_WAIT_HTTPS_RESPONSE:
+      // NOTE: Nothing to do, all interaction is done via HTTP(S) callbacks.
+      break;
+
     case APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE:
       app_nixie_data->state = APP_NIXIE_STATE_DECODE_DISPLAY_VALUE;
       break;
@@ -302,7 +437,7 @@ bool APP_Nixie_Display(AppNixieData* app_nixie_data,
                     NIXIE_DISPLAY_VALUES(value));
   // Make sure all possibly unused digits are zeroed.
   memset(app_nixie_data->display_value,
-         0, 
+         0,
          sizeof(app_nixie_data->display_value));
   // Copy at max of display size digits.
   strncpy(app_nixie_data->display_value,

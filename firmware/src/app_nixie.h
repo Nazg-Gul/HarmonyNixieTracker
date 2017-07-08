@@ -24,8 +24,12 @@
 #define _APP_NIXIE_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
+#include "app_https_client.h"
+
+struct AppHTTPSClientData;
 struct AppShiftRegisterData;
 
 // Maximum number of nixie tubes in the display.
@@ -34,6 +38,8 @@ struct AppShiftRegisterData;
 #define NUM_NIXIE_SHIFT_REGISTERS 6
 // Maximum number of cathodes in supported nixie tube type.
 #define MAX_NIXIE_CATHODE 12
+// Maximal length of token used for parsing HTML page.
+#define MAX_NIXIE_TOKEN 64
 
 typedef enum {
   NIXIE_TYPE_IN12A,
@@ -43,6 +49,16 @@ typedef enum {
 typedef enum {
   // None of nixie type related tasks is to be performed.
   APP_NIXIE_STATE_IDLE,
+  // Error was encountered.
+  APP_NIXIE_STATE_ERROR,
+
+  // Request value from server.
+  APP_NIXIE_STATE_BEGIN_HTTP_REQUEST,
+  // Wait HTTP(S) client to become available.
+  // Will immediately send request to server,
+  APP_NIXIE_STATE_WAIT_HTTPS_CLIENT,
+  // Wait for the response from server.
+  APP_NIXIE_WTATE_WAIT_HTTPS_RESPONSE,
 
   // Display sequence gets value from AppNixieData::display_value and does all
   // the tasks needed to get that value shown on nixies.
@@ -66,6 +82,7 @@ typedef struct NixieCathodeBit {
 } NixieCathodeBit;
 
 typedef struct AppNixieData {
+  struct AppHTTPSClientData* app_https_client_data;
   struct AppShiftRegisterData* app_shift_register_data;
 
   AppNixieState state;
@@ -81,6 +98,20 @@ typedef struct AppNixieData {
   NixieCathodeBit cathode_mapping[MAX_NIXIE_TUBES][MAX_NIXIE_CATHODE];
   // Number of shift registers guarding the display.
   int8_t num_shift_registers;
+
+  // ======== HTTP(S) request to server.
+  char request_url[MAX_URL];
+  // Token which comes prior to the "interesting" value in the HTML page.
+  char token[MAX_NIXIE_TOKEN];
+  size_t token_len;
+  bool value_parsed;
+  // Buffer which contains N bytes from the tail of the previously
+  // received buffers.
+  //
+  // Used to deal with fragmentation, when response from server might be split
+  // into several buffers.
+  char cyclic_buffer[MAX_NIXIE_TOKEN + MAX_NIXIE_TUBES + 2];
+  size_t cyclic_buffer_len;
 
   // ======== Display routines ========
   // Value requested to be displayed.
@@ -98,6 +129,7 @@ typedef struct AppNixieData {
 
 // Initialize nixie types and state machine.
 void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
+                          struct AppHTTPSClientData* app_https_client_data,
                           struct AppShiftRegisterData* app_shift_register_data);
 
 // Perform periodic tasks related on nixie types.
