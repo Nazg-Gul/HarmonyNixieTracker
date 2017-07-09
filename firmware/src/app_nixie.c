@@ -26,6 +26,7 @@
 
 #include "system_definitions.h"
 #include "utildefines.h"
+#include "util_math.h"
 #include "util_string.h"
 
 #include "app_shift_register.h"
@@ -88,10 +89,6 @@ static void parseValueFromBuffer(AppNixieData* app_nixie_data,
                                  const size_t buffer_len) {
   size_t index = 0;
   size_t num_bytes = min(buffer_len, app_nixie_data->num_nixies);
-  // Make sure all possibly unused digits are zeroed.
-  memset(app_nixie_data->display_value,
-         0,
-         sizeof(app_nixie_data->display_value));
   // Copy value from the buffer.
   while (index < num_bytes) {
     const char ch = buffer[index];
@@ -102,49 +99,147 @@ static void parseValueFromBuffer(AppNixieData* app_nixie_data,
     }
     ++index;
   }
+  // Zero out all unused digits.
+  // TODO(sergey): Shift to the right, and set MSB to 0?
+  while (index < sizeof(app_nixie_data->display_value)) {
+    app_nixie_data->display_value[index++] = '\0';
+  }
   NIXIE_DEBUG_PRINT("Parsed value " NIXIE_DISPLAY_FORMAT,
                     NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
-  app_nixie_data->value_parsed = true;
+  app_nixie_data->is_value_parsed = true;
 }
 
 static void bufferReceivedCallback(const uint8_t* buffer,
                                    uint16_t num_bytes,
                                    void* user_data) {
-  const char* buffer_char = (char*)buffer;
   AppNixieData* app_nixie_data = (AppNixieData*)user_data;
-  const size_t token_len = app_nixie_data->token_len;
   const char* found;
-  if (app_nixie_data->value_parsed) {
+  if (app_nixie_data->is_value_parsed) {
     // Value is already parsed, no need to waste time trying to find token
     // and such here now.
     return;
   }
-  found = strstr_len(buffer_char, app_nixie_data->token, num_bytes);
+  // Number of bytes required to be received from server starting at the
+  // token.
+  const size_t required_len = app_nixie_data->token_len +
+                              app_nixie_data->num_nixies;
+  // Maximum number of bytes we can append to the existing cyclic buffer.
+  const size_t append_suffux_len =
+      min_zz(num_bytes, app_nixie_data->max_cyclic_buffer_len -
+                        app_nixie_data->cyclic_buffer_len);
+  // Append bytes to the existing cyclic buffer.
+  memcpy(app_nixie_data->cyclic_buffer + app_nixie_data->cyclic_buffer_len,
+         buffer,
+         append_suffux_len);
+  app_nixie_data->cyclic_buffer_len += append_suffux_len;
+  // Check whether token is in the cyclic buffer with all the possible data
+  // added from the new buffer.
+  found = strstr_len(app_nixie_data->cyclic_buffer,
+                     app_nixie_data->token,
+                     app_nixie_data->cyclic_buffer_len);
   if (found != NULL) {
-    const size_t token_pos = buffer_char - found;
-    NIXIE_DEBUG_MESSAGE("Found token.\r\n");
-    // Check whether there is enough bytes after the token (it is possible that
-    // value we are looking for is cut somewhere in the middle, meaning we need
-    // to wait for the next chunk to get proper value).
-    const size_t remainder = num_bytes - token_pos;
-    if (remainder < app_nixie_data->num_nixies) {
-      // TODO(sergey): Delay parsing for the next buffers, when we have more
-      // data and less chance of cutting the value.
-    } else {
-      parseValueFromBuffer(app_nixie_data,
-                           (char*)buffer + token_pos + token_len,
-                           num_bytes - token_len);
+    // If token is in the cyclic buffer, we always make it starting at the
+    // beginning of the buffer.
+    const size_t prefix_len = found - app_nixie_data->cyclic_buffer;
+    if (prefix_len != 0) {
+      memmove(app_nixie_data->cyclic_buffer,
+              found,
+              app_nixie_data->cyclic_buffer_len - prefix_len);
+      app_nixie_data->cyclic_buffer_len -= prefix_len;
+      // Fill in freed bytes with extra data from received buffer.
+      if (num_bytes != append_suffux_len) {
+        const size_t extra_suffix_len = min_zz(prefix_len,
+                                               num_bytes - append_suffux_len);
+        memcpy(
+            app_nixie_data->cyclic_buffer + app_nixie_data->cyclic_buffer_len,
+               buffer + append_suffux_len,
+               extra_suffix_len);
+        app_nixie_data->cyclic_buffer_len += extra_suffix_len;
+      }
     }
+    // Check whether we've got enough bytes from server to not cut value in
+    // the middle.
+    if (app_nixie_data->cyclic_buffer_len < required_len) {
+      // Wait for extra bytes from server.
+      //
+      // NOTE: At this point we've used as much data of the buffer as we could
+      // possibly do.
+      return;
+    }
+    // Parse value from the buffer.
+    parseValueFromBuffer(
+        app_nixie_data,
+        app_nixie_data->cyclic_buffer + app_nixie_data->token_len,
+        app_nixie_data->cyclic_buffer_len - app_nixie_data->token_len);
+    return;
+  }
+  // Check whether token is in the new buffer.
+  found = strstr_len((char*)buffer, app_nixie_data->token, num_bytes);
+  if (found == NULL) {
+    // Discards the previously appended suffix to avoid possible data
+    // duplication.
+    app_nixie_data->cyclic_buffer_len -= append_suffux_len;
+    // If token can't be found in the buffer, we chop some suffix from if and
+    // store in the cyclic buffer for the further investigation when new data
+    // comes in.
+    //
+    // NOTE: We keep max of token_len + num_nixies bytes in the cyclic buffer.
+    const size_t max_store_bytes = app_nixie_data->token_len +
+                                   app_nixie_data->num_nixies;
+    // Number of bytes to be copied from tail of the new buffer.
+    const size_t num_new_bytes = min_zz(num_bytes, max_store_bytes);
+    // Number of bytes to be kept from the existing cyclic buffer.
+    const size_t num_old_bytes = min_zz(app_nixie_data->cyclic_buffer_len,
+                                        max_store_bytes - num_new_bytes);
+    if (num_old_bytes != 0) {
+      memmove(
+          app_nixie_data->cyclic_buffer,
+          app_nixie_data->cyclic_buffer + app_nixie_data->cyclic_buffer_len
+                                        - num_old_bytes,
+          num_old_bytes);
+    }
+    memcpy(app_nixie_data->cyclic_buffer + num_old_bytes,
+           buffer,
+           num_new_bytes);
+    app_nixie_data->cyclic_buffer_len = num_new_bytes + num_old_bytes;
   } else {
-    // TODO(sergey): Check whether combination of existing buffer with the new
-    // one gives proper answer.
+    const size_t prefix_len = found - app_nixie_data->cyclic_buffer;
+    if (num_bytes - prefix_len >= required_len) {
+      // We have enough bytes in input buffer to get the whole value.
+      parseValueFromBuffer(
+          app_nixie_data,
+          (char*)buffer + prefix_len + app_nixie_data->token_len,
+          num_bytes - app_nixie_data->token_len - prefix_len);
+    } else {
+      // Need to wait for more bytes from server.
+      memcpy(app_nixie_data->cyclic_buffer,
+             found,
+             num_bytes - prefix_len);
+      app_nixie_data->cyclic_buffer_len = num_bytes - prefix_len;
+    }
   }
 }
 
 void requestHandledCallback(void* user_data) {
   AppNixieData* app_nixie_data = (AppNixieData*)user_data;
   NIXIE_DEBUG_PRINT("HTTP(S) transaction finished.\r\n");
-  app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
+  if (!app_nixie_data->is_value_parsed) {
+    const char*   found = strstr_len(app_nixie_data->cyclic_buffer,
+                                     app_nixie_data->token,
+                                     app_nixie_data->cyclic_buffer_len);
+    if (found != NULL) {
+      parseValueFromBuffer(
+          app_nixie_data,
+          app_nixie_data->cyclic_buffer + app_nixie_data->token_len,
+          app_nixie_data->cyclic_buffer_len - app_nixie_data->token_len);
+    }
+  }
+  if (app_nixie_data->is_value_parsed) {
+    app_nixie_data->state = APP_NIXIE_STATE_SHUFFLE_SERVER_VALUE;
+  } else {
+    NIXIE_ERROR_PRINT("Value was not found in the server response.\r\n");
+    app_nixie_data->state = APP_NIXIE_STATE_IDLE;
+  }
 }
 
 void errorCallback(void* user_data) {
@@ -158,7 +253,7 @@ static void waitHttpsClientAndSendRequest(AppNixieData* app_nixie_data) {
     return;
   }
   // Reset some values form previous run.
-  app_nixie_data->value_parsed = false;
+  app_nixie_data->is_value_parsed = false;
   app_nixie_data->cyclic_buffer_len = 0;
   // Prepare callbacks for HTTP(S) module.
   AppHttpsClientCallbacks callbacks;
@@ -179,7 +274,29 @@ static void waitHttpsClientAndSendRequest(AppNixieData* app_nixie_data) {
   }
   NIXIE_DEBUG_PRINT("Submitted HTTP(S) request to %s.\r\n",
                     app_nixie_data->request_url);
-  app_nixie_data->state = APP_NIXIE_WTATE_WAIT_HTTPS_RESPONSE;
+  app_nixie_data->state = APP_NIXIE_STATE_WAIT_HTTPS_RESPONSE;
+}
+
+void shuffleServerValueDigits(AppNixieData* app_nixie_data) {
+  int a;
+  int num_trailing_null = 0;
+  for (a = app_nixie_data->num_nixies - 1; a >= 0; --a) {
+    if (app_nixie_data->display_value[a] != '\0') {
+      break;
+    }
+    ++num_trailing_null;
+  }
+  if (num_trailing_null == 0) {
+    return;
+  }
+  memmove(app_nixie_data->display_value + num_trailing_null,
+          app_nixie_data->display_value,
+          app_nixie_data->num_nixies - num_trailing_null);
+  for (a = 0; a < num_trailing_null; ++a) {
+    app_nixie_data->display_value[a] = '0';
+  }
+  NIXIE_DEBUG_PRINT("Value after shuffle " NIXIE_DISPLAY_FORMAT,
+                    NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
 }
 
 ////////////////////////////////////////
@@ -311,17 +428,6 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
   app_nixie_data->app_https_client_data = app_https_client_data;
   app_nixie_data->app_shift_register_data = app_shift_register_data;
 
-  // ======== HTTP(S) server information.
-
-  // TODO(sergey)L Make it some sort of stored configuration.
-  safe_strncpy(app_nixie_data->request_url,
-               "https://dveloper.blender.org/app_nixie_data->request_url",
-               sizeof(app_nixie_data->request_url));
-  safe_strncpy(app_nixie_data->token,
-               ">Open Tasks (",
-               sizeof(app_nixie_data->token));
-  app_nixie_data->token_len = strlen(app_nixie_data->token);
-
   // ======== Nixie display information =======
   // Fill in nixies information.
   // TODO(sergey): Make it some sort of runtime configuration?
@@ -376,6 +482,20 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
       NIXIE_CATHODE('1', 11, 0, 0);
     NIXIE_TUBE_END();
   NIXIE_REGISTER_END();
+
+  // ======== HTTP(S) server information.
+
+  // TODO(sergey)L Make it some sort of stored configuration.
+  safe_strncpy(app_nixie_data->request_url,
+               "https://dveloper.blender.org/app_nixie_data->request_url",
+               sizeof(app_nixie_data->request_url));
+  safe_strncpy(app_nixie_data->token,
+               ">Open Tasks (",
+               sizeof(app_nixie_data->token));
+  app_nixie_data->token_len = strlen(app_nixie_data->token);
+  app_nixie_data->max_cyclic_buffer_len =
+    2 * (app_nixie_data->token_len + app_nixie_data->num_nixies);
+
   // ======== Support components information ========
   app_nixie_data->num_shift_registers = 6;
   // Everything is done.
@@ -405,8 +525,11 @@ void APP_Nixie_Tasks(AppNixieData* app_nixie_data) {
     case APP_NIXIE_STATE_WAIT_HTTPS_CLIENT:
       waitHttpsClientAndSendRequest(app_nixie_data);
       break;
-    case APP_NIXIE_WTATE_WAIT_HTTPS_RESPONSE:
+    case APP_NIXIE_STATE_WAIT_HTTPS_RESPONSE:
       // NOTE: Nothing to do, all interaction is done via HTTP(S) callbacks.
+      break;
+    case APP_NIXIE_STATE_SHUFFLE_SERVER_VALUE:
+      shuffleServerValueDigits(app_nixie_data);
       break;
 
     case APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE:

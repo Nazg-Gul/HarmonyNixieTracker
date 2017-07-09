@@ -58,7 +58,9 @@ typedef enum {
   // Will immediately send request to server,
   APP_NIXIE_STATE_WAIT_HTTPS_CLIENT,
   // Wait for the response from server.
-  APP_NIXIE_WTATE_WAIT_HTTPS_RESPONSE,
+  APP_NIXIE_STATE_WAIT_HTTPS_RESPONSE,
+  // Shuffle digits in value to replace trailing '\0' with leading '0'.
+  APP_NIXIE_STATE_SHUFFLE_SERVER_VALUE,
 
   // Display sequence gets value from AppNixieData::display_value and does all
   // the tasks needed to get that value shown on nixies.
@@ -104,14 +106,19 @@ typedef struct AppNixieData {
   // Token which comes prior to the "interesting" value in the HTML page.
   char token[MAX_NIXIE_TOKEN];
   size_t token_len;
-  bool value_parsed;
-  // Buffer which contains N bytes from the tail of the previously
-  // received buffers.
-  //
-  // Used to deal with fragmentation, when response from server might be split
-  // into several buffers.
-  char cyclic_buffer[MAX_NIXIE_TOKEN + MAX_NIXIE_TUBES + 2];
+  // Will be set to truth when proper value is parsed from the incoming buffers.
+  bool is_value_parsed;
+  // This buffer contains tail of the previously received data from server.
+  // We are storing `MAX_NIXIE_TOKEN + MAX_NIXIE_TUBES` actual bytes there, rest
+  // of the memory is reserved for run-time glueing of previous buffer with the
+  // new buffer for token lookup.
+  char cyclic_buffer[2 * (MAX_NIXIE_TOKEN + MAX_NIXIE_TUBES)];
+  // Number of bytes in the cyclic buffer.
   size_t cyclic_buffer_len;
+  // Maximum size of the cyclic size.
+  // We only store actually required number of bytes, so we don't waste extra
+  // time on substring search and memory shift.
+  size_t max_cyclic_buffer_len;
 
   // ======== Display routines ========
   // Value requested to be displayed.
