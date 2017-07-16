@@ -9,3 +9,6 @@
 
 # Private locally-generated files
 /firmware/HarmonyNixieTracker.X/nbproject/private/
+
+# Build directory of sofware
+/software/build

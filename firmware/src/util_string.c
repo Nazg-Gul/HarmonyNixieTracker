@@ -101,7 +101,7 @@ size_t strnlen(const char* s, const size_t max_len) {
 }
 
 size_t safe_vsnprintf(char* buffer,
-                      size_t size, 
+                      size_t size,
                       const char* format,
                       va_list arg) {
   size_t n = vsnprintf(buffer, size, format, arg);
