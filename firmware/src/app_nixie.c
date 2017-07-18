@@ -33,10 +33,10 @@
 
 #define NIXIE_DISPLAY_FORMAT "%c%c%c%c"
 #define NIXIE_DISPLAY_VALUES(value)  \
-  value[3] ? value[3] : ' ',         \
-  value[2] ? value[2] : ' ',         \
-  value[1] ? value[1] : ' ',         \
-  value[0] ? value[0] : ' '
+  value[3] ? value[3] : '_',         \
+  value[2] ? value[2] : '_',         \
+  value[1] ? value[1] : '_',         \
+  value[0] ? value[0] : '_'
 
 #define LOG_PREFIX "APP NIXIE: "
 
@@ -88,12 +88,12 @@ static void parseValueFromBuffer(AppNixieData* app_nixie_data,
                                  const char* buffer,
                                  const size_t buffer_len) {
   size_t index = 0;
-  size_t num_bytes = min(buffer_len, app_nixie_data->num_nixies);
+  size_t num_bytes = min_zz(buffer_len, app_nixie_data->num_nixies);
   // Copy value from the buffer.
   while (index < num_bytes) {
     const char ch = buffer[index];
     if (ch >= '0' && ch <= '9') {
-      app_nixie_data->display_value[index] = ch;
+      app_nixie_data->display_value[app_nixie_data->num_nixies - index - 1] = ch;
     } else {
       break;
     }
@@ -102,9 +102,9 @@ static void parseValueFromBuffer(AppNixieData* app_nixie_data,
   // Zero out all unused digits.
   // TODO(sergey): Shift to the right, and set MSB to 0?
   while (index < sizeof(app_nixie_data->display_value)) {
-    app_nixie_data->display_value[index++] = '\0';
+    app_nixie_data->display_value[app_nixie_data->num_nixies - index++ - 1] = '\0';
   }
-  NIXIE_DEBUG_PRINT("Parsed value " NIXIE_DISPLAY_FORMAT,
+  NIXIE_DEBUG_PRINT("Parsed value " NIXIE_DISPLAY_FORMAT "\r\n",
                     NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
   app_nixie_data->is_value_parsed = true;
 }
@@ -124,14 +124,14 @@ static void bufferReceivedCallback(const uint8_t* buffer,
   const size_t required_len = app_nixie_data->token_len +
                               app_nixie_data->num_nixies;
   // Maximum number of bytes we can append to the existing cyclic buffer.
-  const size_t append_suffux_len =
+  const size_t append_suffix_len =
       min_zz(num_bytes, app_nixie_data->max_cyclic_buffer_len -
                         app_nixie_data->cyclic_buffer_len);
   // Append bytes to the existing cyclic buffer.
   memcpy(app_nixie_data->cyclic_buffer + app_nixie_data->cyclic_buffer_len,
          buffer,
-         append_suffux_len);
-  app_nixie_data->cyclic_buffer_len += append_suffux_len;
+         append_suffix_len);
+  app_nixie_data->cyclic_buffer_len += append_suffix_len;
   // Check whether token is in the cyclic buffer with all the possible data
   // added from the new buffer.
   found = strstr_len(app_nixie_data->cyclic_buffer,
@@ -147,12 +147,12 @@ static void bufferReceivedCallback(const uint8_t* buffer,
               app_nixie_data->cyclic_buffer_len - prefix_len);
       app_nixie_data->cyclic_buffer_len -= prefix_len;
       // Fill in freed bytes with extra data from received buffer.
-      if (num_bytes != append_suffux_len) {
+      if (num_bytes != append_suffix_len) {
         const size_t extra_suffix_len = min_zz(prefix_len,
-                                               num_bytes - append_suffux_len);
+                                               num_bytes - append_suffix_len);
         memcpy(
             app_nixie_data->cyclic_buffer + app_nixie_data->cyclic_buffer_len,
-               buffer + append_suffux_len,
+               buffer + append_suffix_len,
                extra_suffix_len);
         app_nixie_data->cyclic_buffer_len += extra_suffix_len;
       }
@@ -178,7 +178,7 @@ static void bufferReceivedCallback(const uint8_t* buffer,
   if (found == NULL) {
     // Discards the previously appended suffix to avoid possible data
     // duplication.
-    app_nixie_data->cyclic_buffer_len -= append_suffux_len;
+    app_nixie_data->cyclic_buffer_len -= append_suffix_len;
     // If token can't be found in the buffer, we chop some suffix from if and
     // store in the cyclic buffer for the further investigation when new data
     // comes in.
@@ -199,11 +199,11 @@ static void bufferReceivedCallback(const uint8_t* buffer,
           num_old_bytes);
     }
     memcpy(app_nixie_data->cyclic_buffer + num_old_bytes,
-           buffer,
+           buffer + num_bytes - num_new_bytes,
            num_new_bytes);
     app_nixie_data->cyclic_buffer_len = num_new_bytes + num_old_bytes;
   } else {
-    const size_t prefix_len = found - app_nixie_data->cyclic_buffer;
+    const size_t prefix_len = found - (char*)buffer;
     if (num_bytes - prefix_len >= required_len) {
       // We have enough bytes in input buffer to get the whole value.
       parseValueFromBuffer(
@@ -220,13 +220,13 @@ static void bufferReceivedCallback(const uint8_t* buffer,
   }
 }
 
-void requestHandledCallback(void* user_data) {
+static void requestHandledCallback(void* user_data) {
   AppNixieData* app_nixie_data = (AppNixieData*)user_data;
   NIXIE_DEBUG_PRINT("HTTP(S) transaction finished.\r\n");
   if (!app_nixie_data->is_value_parsed) {
-    const char*   found = strstr_len(app_nixie_data->cyclic_buffer,
-                                     app_nixie_data->token,
-                                     app_nixie_data->cyclic_buffer_len);
+    const char* found = strstr_len(app_nixie_data->cyclic_buffer,
+                                   app_nixie_data->token,
+                                   app_nixie_data->cyclic_buffer_len);
     if (found != NULL) {
       parseValueFromBuffer(
           app_nixie_data,
@@ -242,7 +242,7 @@ void requestHandledCallback(void* user_data) {
   }
 }
 
-void errorCallback(void* user_data) {
+static void errorCallback(void* user_data) {
   AppNixieData* app_nixie_data = (AppNixieData*)user_data;
   NIXIE_ERROR_MESSAGE("Error occurred during HTTP(S) transaction.\r\n");
   app_nixie_data->state = APP_NIXIE_STATE_ERROR;
@@ -277,32 +277,35 @@ static void waitHttpsClientAndSendRequest(AppNixieData* app_nixie_data) {
   app_nixie_data->state = APP_NIXIE_STATE_WAIT_HTTPS_RESPONSE;
 }
 
-void shuffleServerValueDigits(AppNixieData* app_nixie_data) {
+static void shuffleServerValueDigits(AppNixieData* app_nixie_data) {
   int a;
-  int num_trailing_null = 0;
-  for (a = app_nixie_data->num_nixies - 1; a >= 0; --a) {
+  int num_leading_null = 0;
+  for (a = 0; a < app_nixie_data->num_nixies; ++a) {
     if (app_nixie_data->display_value[a] != '\0') {
       break;
     }
-    ++num_trailing_null;
+    ++num_leading_null;
   }
-  if (num_trailing_null == 0) {
+  if (num_leading_null == 0) {
+    NIXIE_DEBUG_MESSAGE("Leaving value unchanged.\r\n");
+    app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
     return;
   }
-  memmove(app_nixie_data->display_value + num_trailing_null,
-          app_nixie_data->display_value,
-          app_nixie_data->num_nixies - num_trailing_null);
-  for (a = 0; a < num_trailing_null; ++a) {
-    app_nixie_data->display_value[a] = '0';
+  memmove(app_nixie_data->display_value,
+          app_nixie_data->display_value + num_leading_null,
+          app_nixie_data->num_nixies - num_leading_null);
+  for (a = 0; a < num_leading_null; ++a) {
+    app_nixie_data->display_value[app_nixie_data->num_nixies - a - 1] = '0';
   }
-  NIXIE_DEBUG_PRINT("Value after shuffle " NIXIE_DISPLAY_FORMAT,
+  NIXIE_DEBUG_PRINT("Value after shuffle " NIXIE_DISPLAY_FORMAT "\r\n",
                     NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
+  app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
 }
 
 ////////////////////////////////////////
 // Display requested value.
 
-const char* nixieTypeStringify(NixieType type) {
+static const char* nixieTypeStringify(NixieType type) {
   switch (type) {
     case NIXIE_TYPE_IN12A:
       return "IN-12A";
@@ -487,7 +490,7 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
 
   // TODO(sergey)L Make it some sort of stored configuration.
   safe_strncpy(app_nixie_data->request_url,
-               "https://dveloper.blender.org/app_nixie_data->request_url",
+               "https://dveloper.blender.org/maniphest/project/2/type/Bug/query/open/",  // NOLINT
                sizeof(app_nixie_data->request_url));
   safe_strncpy(app_nixie_data->token,
                ">Open Tasks (",

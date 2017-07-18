@@ -23,6 +23,7 @@
 set(FIRMWARE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../firmware/src/")
 
 set(INC
+  .
   ${FIRMWARE_SOURCE_DIR}
 )
 
@@ -36,4 +37,8 @@ add_library(fw_test_util_math ${FIRMWARE_SOURCE_DIR}/util_math.c)
 add_library(fw_test_util_string ${FIRMWARE_SOURCE_DIR}/util_string.c)
 target_link_libraries(fw_test_util_string fw_test_util_math)
 
+add_library(fw_test_app_nixie ${FIRMWARE_SOURCE_DIR}/app_nixie.c)
+target_link_libraries(fw_test_app_nixie "fw_test_util_math;fw_test_util_string")
+
+NIXIETRACKER_TEST(app_nixie   MODULE firmware LIBRARIES fw_test_app_nixie)
 NIXIETRACKER_TEST(util_string MODULE firmware LIBRARIES fw_test_util_string)

@@ -66,4 +66,7 @@ size_t safe_vsnprintf(char* buffer,
                       va_list arg);
 size_t safe_snprintf(char* dst, size_t size, const char* format, ...);
 
+// Reverse the given null-terminated string in place.
+void string_inplace_reverse(char *string);
+
 #endif  // _UTIL_STRING_H
