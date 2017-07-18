@@ -57,7 +57,7 @@ char* safe_strncpy_len(char* dst,
                        const size_t max_copy);
 
 // Similar to strlen but stops searching for null-terminator after len bytes.
-size_t strnlen(const char* s, const size_t max_len);
+size_t safe_strnlen(const char* s, const size_t max_len);
 
 // Safe and portable versions of snprintf(). Ensures NULL-terminator.
 size_t safe_vsnprintf(char* buffer, 

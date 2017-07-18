@@ -216,20 +216,20 @@ TEST(safe_strncpy_len, TruncateSource) {
 ////////////////////////////////////////////////////////////////////////////////
 // strnlen
 
-TEST(strnlen, Empty) {
-  EXPECT_EQ(strnlen("", 0), 0);
+TEST(safe_strnlen, Empty) {
+  EXPECT_EQ(safe_strnlen("", 0), 0);
 }
 
-TEST(strnlen, Long) {
-  EXPECT_EQ(strnlen("1234567890", 10), 10);
+TEST(safe_strnlen, Long) {
+  EXPECT_EQ(safe_strnlen("1234567890", 10), 10);
 }
 
-TEST(strnlen, LongWithLargeSize) {
-  EXPECT_EQ(strnlen("1234567890", 20), 10);
+TEST(safe_strnlen, LongWithLargeSize) {
+  EXPECT_EQ(safe_strnlen("1234567890", 20), 10);
 }
 
-TEST(strnlen, LongWithSmallSize) {
-  EXPECT_EQ(strnlen("1234567890", 4), 4);
+TEST(safe_strnlen, LongWithSmallSize) {
+  EXPECT_EQ(safe_strnlen("1234567890", 4), 4);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

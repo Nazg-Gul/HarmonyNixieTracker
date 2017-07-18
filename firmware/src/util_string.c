@@ -71,7 +71,7 @@ char* safe_strncpy(char* dst, const char* src, const size_t max_copy) {
   if (dst == NULL || src == NULL || max_copy == 0) {
     return NULL;
   }
-  const size_t src_len = strnlen(src, max_copy - 1);
+  const size_t src_len = safe_strnlen(src, max_copy - 1);
   memcpy(dst, src, src_len);
   dst[src_len] = '\0';
   return dst;
@@ -90,7 +90,7 @@ char* safe_strncpy_len(char* dst,
   return dst;
 }
 
-size_t strnlen(const char* s, const size_t max_len) {
+size_t safe_strnlen(const char* s, const size_t max_len) {
   size_t len;
   for (len = 0; len < max_len; ++len, ++s) {
     if (*s == '\0') {
