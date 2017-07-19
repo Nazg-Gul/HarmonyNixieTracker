@@ -33,8 +33,12 @@ set(INC_SYS
 include_directories(${INC})
 include_directories(SYSTEM ${INC_SYS})
 
-add_library(fw_test_util_math ${FIRMWARE_SOURCE_DIR}/util_math.c)
-add_library(fw_test_util_string ${FIRMWARE_SOURCE_DIR}/util_string.c)
+add_library(fw_test_util_math ${FIRMWARE_SOURCE_DIR}/util_math.c
+                              ${FIRMWARE_SOURCE_DIR}/util_math.h)
+add_library(fw_test_util_string ${FIRMWARE_SOURCE_DIR}/util_string.c
+                                ${FIRMWARE_SOURCE_DIR}/util_string.h
+                                ${FIRMWARE_SOURCE_DIR}/gcc/memmem.c
+                                ${FIRMWARE_SOURCE_DIR}/gcc/memmem.h)
 target_link_libraries(fw_test_util_string fw_test_util_math)
 
 add_library(fw_test_app_nixie ${FIRMWARE_SOURCE_DIR}/app_nixie.c)
