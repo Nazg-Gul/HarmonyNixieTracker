@@ -68,11 +68,15 @@ typedef struct AppData {
   AppCommandData command;
 } AppData;
 
+// Stubs for default Harmony code.
+#define APP_Initialize()
+#define APP_Tasks()
 
 // Initialize all application specific data.
-void APP_Initialize(AppData* app_data, struct SystemObjects* system_objects);
+void APP_Initialize_Real(AppData* app_data,
+                         struct SystemObjects* system_objects);
 
 // Perform all application tasks.
-void APP_Tasks(AppData* app_data);
+void APP_Tasks_Real(AppData* app_data);
 
 #endif  // _APP_H

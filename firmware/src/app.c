@@ -47,7 +47,7 @@ static void appGreetings(AppData* app_data) {
   app_data->state = APP_STATE_RUN_SERVICES;
 }
 
-void APP_Initialize(AppData* app_data, SystemObjects* system_objects) {
+void APP_Initialize_Real(AppData* app_data, SystemObjects* system_objects) {
   app_data->system_objects = system_objects;
   app_data->state = APP_STATE_GREETINGS;
   APP_Command_Initialize(app_data);
@@ -63,7 +63,7 @@ void APP_Initialize(AppData* app_data, SystemObjects* system_objects) {
                        &app_data->shift_register);
 }
 
-void APP_Tasks(AppData* app_data) {
+void APP_Tasks_Real(AppData* app_data) {
   switch (app_data->state) {
     case APP_STATE_GREETINGS:
       appGreetings(app_data);

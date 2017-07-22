@@ -35,12 +35,12 @@ int main(void) {
   SYS_Initialize(NULL);
   // Initialize application specific modules.
   system_objects.global_objects = &sysObj;
-  APP_Initialize(&app_data, &system_objects);
+  APP_Initialize_Real(&app_data, &system_objects);
   while (true) {
     // Maintain state machines of all polled MPLAB Harmony modules.
     SYS_Tasks();
     // Maintain the application's state machine.
-    APP_Tasks(&app_data);
+    APP_Tasks_Real(&app_data);
   }
   // Execution should not come here during normal operation.
   return EXIT_FAILURE;

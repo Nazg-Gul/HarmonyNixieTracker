@@ -1133,6 +1133,9 @@ void SYS_Initialize ( void* data )
 
     /* Enable Global Interrupts */
     SYS_INT_Enable();
+
+    /* Initialize the Application */
+    APP_Initialize();
 }
 
 
