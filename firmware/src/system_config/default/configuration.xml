@@ -2582,7 +2582,6 @@
         <Name dnOrder="0">system_init.c</Name>
         <Path dnOrder="1">Source Files/app/system_config/default</Path>
         <Checksum dnOrder="2">13F33DDE4925CBFD43CE16C39DC61186</Checksum>
-        <ProjectFileChecksum dnOrder="3">B73532002FA3D01B81F57457DBD80D9B</ProjectFileChecksum>
       </Template>
       <Template dnOrder="12">
         <Name dnOrder="0">main.c</Name>
@@ -2592,6 +2591,7 @@
         <Name dnOrder="0">config.h</Name>
         <Path dnOrder="1">Header Files/app/system_config/default</Path>
         <Checksum dnOrder="2">042F28509DCCA05C0E056A5DA94201E3</Checksum>
+        <ProjectFileChecksum dnOrder="3">E5B9423F7AE346467308E87BCA568779</ProjectFileChecksum>
       </Template>
       <Template dnOrder="14">
         <Name dnOrder="0">system_definitions.h</Name>
@@ -2621,7 +2621,6 @@
         <Name dnOrder="0">system_tasks.c</Name>
         <Path dnOrder="1">Source Files/app/system_config/default</Path>
         <Checksum dnOrder="2">3855686E1C3696586EAEB2CB383C3C73</Checksum>
-        <ProjectFileChecksum dnOrder="3">3817748038F52BC4B6F9D99EC3AF06C4</ProjectFileChecksum>
       </Template>
       <Template dnOrder="20">
         <Name dnOrder="0">sys_devcon_pic32mx.c</Name>
