@@ -73,11 +73,14 @@ static void bufferReceivedCallback(const uint8_t* buffer,
   uint16_t i;
   // TODO(sergey): This is because of some nasty defines in stdio which is
   // indirectly included via system_definitions.h -> tpcpip.h.
-#ifdef putc
-#  undef putc
-#endif
+  // TODO(sergey): Using putc() doesn't work here, always gives error about
+  // console being busy.
+//#ifdef putc
+//#  undef putc
+//#endif
   for (i = 0; i < num_bytes; ++i) {
-    cmd_io->pCmdApi->putc(cmd_io->cmdIoParam, 'x');
+    // cmd_io->pCmdApi->putc(cmd_io->cmdIoParam, 'x');
+    COMMAND_PRINT("%c", buffer[i]);
   }
 }
 

@@ -368,7 +368,7 @@ static void sendRequest(AppHTTPSClientData* app_https_client_data) {
   // TODO(sergey): Ensure null terminator?
   const uint16_t len = safe_snprintf(data->network_buffer,
                                      sizeof(data->network_buffer),
-                                     "GET /%s HTTP/1.1\r\n"
+                                     "GET %s HTTP/1.1\r\n"
                                      "Host: %s\r\n"
                                      "Connection: close\r\n\r\n",
                                      data->path, data->host);
