@@ -29,8 +29,7 @@
 #include "driver/wifi/mrf24w/src/drv_wifi_config_data.h"
 #include "driver/wifi/mrf24w/src/drv_wifi_iwpriv.h"
 
-#include "system_definitions.h"
-
+struct SystemObjects;
 struct DRV_ETHPHY_OBJECT_BASE_TYPE;
 
 typedef enum {
@@ -51,7 +50,7 @@ typedef enum {
 } AppNetworkState;
 
 typedef struct {
-  SYSTEM_OBJECTS* system_objects;
+  struct SystemObjects* system_objects;
 
   AppNetworkState state;
 
@@ -66,7 +65,7 @@ typedef struct {
 
 // Initialize networking-related application routines.
 void APP_Network_Initialize(AppNetworkData* app_network_data,
-                            SYSTEM_OBJECTS* system_objects);
+                            struct SystemObjects* system_objects);
 
 // Perform all networking related tasks.
 void APP_Network_Tasks(AppNetworkData* app_network_data);

@@ -23,7 +23,7 @@
 #ifndef _APP_USB_HID_UTILS_H
 #define _APP_USB_HID_UTILS_H
 
-#include "system_definitions.h"
+#include <usb/usb_device_hid.h>
 
 USB_DEVICE_HID_EVENT_RESPONSE APP_USB_DeviceHIDEventHandler(
     USB_DEVICE_HID_INDEX iHID,
@@ -33,6 +33,6 @@ USB_DEVICE_HID_EVENT_RESPONSE APP_USB_DeviceHIDEventHandler(
 
 void APP_USB_DeviceEventHandler(USB_DEVICE_EVENT event,
                                 void* event_data,
-                                 uintptr_t context);
+                                uintptr_t context);
 
 #endif  // _APP_USB_HID_UTILS_H

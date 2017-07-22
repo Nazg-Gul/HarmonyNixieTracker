@@ -24,11 +24,12 @@
 
 #include "app.h"
 #include "app_network_utils.h"
-#include "system_definitions.h"
+#include "system_objects.h"
 
 static bool appNetworkTCPIPInitWait(AppNetworkData* app_network_data) {
   SYS_STATUS tcpip_status =
-      TCPIP_STACK_Status(app_network_data->system_objects->tcpip);
+      TCPIP_STACK_Status(
+          app_network_data->system_objects->global_objects->tcpip);
   if (tcpip_status < 0) {
     SYS_CONSOLE_MESSAGE("TCP/IP stack initialization failed.\r\n");
     app_network_data->state = APP_NETWORK_TCPIP_ERROR;
@@ -191,7 +192,7 @@ static void appNetworkRun(AppNetworkData* app_network_data) {
 }
 
 void APP_Network_Initialize(AppNetworkData* app_network_data,
-                            SYSTEM_OBJECTS* system_objects) {
+                            SystemObjects* system_objects) {
   app_network_data->system_objects = system_objects;
 
   app_network_data->state = APP_NETWORK_TCPIP_WAIT_INIT;

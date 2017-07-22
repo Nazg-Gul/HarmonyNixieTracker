@@ -20,46 +20,13 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _APP_USB_HID_H
-#define _APP_USB_HID_H
+#ifndef _SYSTEM_OBJECTS_H
+#define _SYSTEM_OBJECTS_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <usb/usb_device_hid.h>
+#include "system_definitions.h"
 
-typedef enum {
-  // USB HID is initializing.
-  APP_USB_HID_STATE_INIT,
-  // USB HID is waiting for configuration.
-  APP_USB_HID_STATE_WAIT_FOR_CONFIGURATION,
-  // USB HID is running the main tasks.
-  APP_USB_HID_STATE_MAIN_TASK,
-  // USB HID system encountered an error.
-  APP_USB_HID_STATE_ERROR,
-} AppUSBHIDState;
+typedef struct SystemObjects {
+  SYSTEM_OBJECTS* global_objects;
+} SystemObjects;
 
-typedef struct {
-  AppUSBHIDState state;
-
-  USB_DEVICE_HANDLE  us_handle;
-
-  uint8_t* receive_data_buffer;
-  uint8_t* transmit_data_buffer;
-
-  bool is_device_configured;
-
-  USB_DEVICE_HID_TRANSFER_HANDLE tx_transfer_handle;
-  USB_DEVICE_HID_TRANSFER_HANDLE rx_transfer_handle;
-
-  uint8_t configuration_value;
-
-  bool is_hid_data_received;
-  bool is_hid_data_transmitted;
-
-  uint8_t idle_rate;
-} AppUSBHIDData;
-
-void APP_USB_HID_Initialize(AppUSBHIDData* app_usb_hid_data);
-void APP_USB_HID_Tasks(AppUSBHIDData* app_usb_hid_data);
-
-#endif  // _APP_USB_HID_H
+#endif  // _SYSTEM_OBJECTS_H

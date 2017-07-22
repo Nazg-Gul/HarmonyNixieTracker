@@ -22,6 +22,7 @@
 
 #include "app_flash.h"
 
+#include "system_objects.h"
 #include "utildefines.h"
 
 #define LOG_PREFIX "APP FLASH: "
@@ -46,7 +47,7 @@
 // TODO(sergey): This of the future, how to nicely support multiple external
 // flash drivers?
 static SYS_MODULE_OBJ flash_driver_get(AppFlashData* app_flash_data) {
-  return app_flash_data->system_objects->drvSst25Obj0;
+  return app_flash_data->system_objects->global_objects->drvSst25Obj0;
 }
 
 static const SYS_FS_MEDIA_FUNCTIONS sst25_media_functions = {
@@ -65,7 +66,7 @@ static const SYS_FS_MEDIA_FUNCTIONS sst25_media_functions = {
 };
 
 void APP_Flash_Initialize(AppFlashData* app_flash_data,
-                          SYSTEM_OBJECTS* system_objects) {
+                          SystemObjects* system_objects) {
   // TODO(sergey): Think about passing explicit flash handle.
   app_flash_data->system_objects = system_objects;
   app_flash_data->state = APP_FLASH_STATE_REGISTER_MEDIA;

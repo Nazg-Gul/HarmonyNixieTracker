@@ -28,7 +28,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "system_config.h"
-#include "system_definitions.h"
 
 // TODO(sergey): Think how we can reduce header hell dependency here.
 #include "app_command.h"
@@ -51,7 +50,7 @@ typedef enum {
 } AppState;
 
 typedef struct AppData {
-  SYSTEM_OBJECTS* system_objects;
+  struct SystemObjects* system_objects;
 
   // Current state of the global state machine.
   AppState state;
@@ -71,7 +70,7 @@ typedef struct AppData {
 
 
 // Initialize all application specific data.
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects);
+void APP_Initialize(AppData* app_data, struct SystemObjects* system_objects);
 
 // Perform all application tasks.
 void APP_Tasks(AppData* app_data);

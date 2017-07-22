@@ -26,13 +26,16 @@
 #include "system_definitions.h"
 
 #include "app.h"
+#include "system_objects.h"
 
 int main(void) {
+  SystemObjects system_objects;
   AppData app_data;
   // Initialize all MPLAB Harmony modules.
   SYS_Initialize(NULL);
   // Initialize application specific modules.
-  APP_Initialize(&app_data, &sysObj);
+  system_objects.global_objects = &sysObj;
+  APP_Initialize(&app_data, &system_objects);
   while (true) {
     // Maintain state machines of all polled MPLAB Harmony modules.
     SYS_Tasks();

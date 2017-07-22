@@ -24,6 +24,7 @@
 
 #include "app.h"
 #include "app_usb_hid_utils.h"
+#include "system_definitions.h"
 
 #define BUFFER_DMA_READY
 

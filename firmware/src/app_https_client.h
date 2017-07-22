@@ -26,7 +26,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "system_definitions.h"
+#include <tcpip/tcpip.h>
 
 #define MAX_URL         128
 #define MAX_URL_SCHEME  6

@@ -23,9 +23,10 @@
 #ifndef _APP_FLASH_H
 #define _APP_FLASH_H
 
-#include "system_definitions.h"
-
 #include <stdbool.h>
+#include <stdint.h>
+
+struct SystemObjects;
 
 typedef enum {
   // Initial initialization: register file system media.
@@ -43,7 +44,7 @@ typedef enum {
 } AppFlashState;
 
 typedef struct AppFlashData {
-  SYSTEM_OBJECTS* system_objects;
+  struct SystemObjects* system_objects;
   AppFlashState state;
   // Initial format attempted, do not try it again if format fails.
   bool format_attempted;
@@ -51,7 +52,7 @@ typedef struct AppFlashData {
 
 // Initialize flash related application routines.
 void APP_Flash_Initialize(AppFlashData* app_flash_data,
-                          SYSTEM_OBJECTS* system_objects);
+                          struct SystemObjects* system_objects);
 
 // Perform all flash related tasks.
 void APP_Flash_Tasks(AppFlashData* app_flash_data);

@@ -26,6 +26,7 @@
 #include "app_network.h"
 #include "app_usb_hid.h"
 #include "app_version.h"
+#include "system_objects.h"
 
 static void appGreetings(AppData* app_data) {
   SYS_CONSOLE_MESSAGE("\r\n");
@@ -46,7 +47,7 @@ static void appGreetings(AppData* app_data) {
   app_data->state = APP_STATE_RUN_SERVICES;
 }
 
-void APP_Initialize(AppData* app_data, SYSTEM_OBJECTS* system_objects) {
+void APP_Initialize(AppData* app_data, SystemObjects* system_objects) {
   app_data->system_objects = system_objects;
   app_data->state = APP_STATE_GREETINGS;
   APP_Command_Initialize(app_data);

@@ -48,6 +48,7 @@
 #include "app_network_utils.h"
 
 #include "driver/wifi/mrf24w/src/drv_wifi_iwpriv.h"
+#include "system_definitions.h"
 
 void APP_Network_Wifi_Ipv6MulticastFilterSet(TCPIP_NET_HANDLE net) {
 #ifdef TCPIP_STACK_USE_IPV6

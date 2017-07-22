@@ -23,7 +23,10 @@
 #ifndef _APP_NETWORK_UTILS_H
 #define _APP_NETWORK_UTILS_H
 
-#include "system_definitions.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <tcpip/tcpip.h>
 
 #define WIFI_INTERFACE_NAME "MRF24W"
 #define WIFI_RECONNECTION_RETRY_LIMIT 16

@@ -48,6 +48,7 @@
 #include "app_usb_hid_utils.h"
 
 #include "app_usb_hid.h"
+#include "system_definitions.h"
 
 extern AppUSBHIDData* g_app_usb_hid_data;
 
