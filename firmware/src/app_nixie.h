@@ -41,6 +41,13 @@ struct AppShiftRegisterData;
 // Maximal length of token used for parsing HTML page.
 #define MAX_NIXIE_TOKEN 64
 
+#define NIXIE_DISPLAY_FORMAT "%c%c%c%c"
+#define NIXIE_DISPLAY_VALUES(value)  \
+  value[3] ? value[3] : '_',         \
+  value[2] ? value[2] : '_',         \
+  value[1] ? value[1] : '_',         \
+  value[0] ? value[0] : '_'
+
 typedef enum {
   NIXIE_TYPE_IN12A,
   NIXIE_TYPE_IN12B,
@@ -132,6 +139,11 @@ typedef struct AppNixieData {
   // TODO(sergey): Make it more obvious name, and thing of naming conflict with
   // `app_*_data` names, since this array is kind of a data.
   int8_t register_shift_state[NUM_NIXIE_SHIFT_REGISTERS];
+
+  // ======== Fetch routines ========
+  // Pointer to store fetched value to.
+  char* display_value_out;
+  bool* is_fetched_out;
 } AppNixieData;
 
 // Initialize nixie types and state machine.
@@ -150,5 +162,10 @@ bool APP_Nixie_IsBusy(AppNixieData* app_nixie_data);
 // Returns truth on success.
 bool APP_Nixie_Display(AppNixieData* app_nixie_data,
                        const char value[MAX_NIXIE_TUBES]);
+
+// Fetch value form server and store in in given buffer.
+bool APP_Nixie_Fetch(AppNixieData* app_nixie_data,
+                     bool* is_fetched,
+                     char value[MAX_NIXIE_TUBES]);
 
 #endif  // _APP_NIXIE_H

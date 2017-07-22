@@ -76,6 +76,12 @@ typedef struct AppCommandNixieData {
       // Value to be displayed.
       char value[MAX_NIXIE_TUBES];
     } display;
+    struct {
+      // Boolean value indicating whether value was received from server.
+      bool is_fetched;
+      // Fetched value.
+      char value[MAX_NIXIE_TUBES];
+    } fetch;
   } _private;
 } AppCommandNixieData;
 

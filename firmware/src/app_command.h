@@ -29,6 +29,7 @@
 #include "app_command_ntp.h"
 #include "app_command_rtc.h"
 #include "app_command_shift_register.h"
+#include "app_command_phy.h"
 #include "app_command_power.h"
 #include "app_command_wifi.h"
 

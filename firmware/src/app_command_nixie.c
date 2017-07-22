@@ -39,6 +39,8 @@ static int appCmdNixieUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
 "\r\n"
 "    display <value>\r\n"
 "        Display given number on nixie display.\r\n"
+"    fetch\r\n"
+"        Fetch value from server and show it in the console.\r\n"
     );
   return true;
 }
@@ -109,6 +111,44 @@ static int appCmdNixieDisplay(AppData* app_data,
   appCmdNixieStartTask(app_data, cmd_io, &performDisplay);
   return true;
 }
+
+// ============ Fetch ============
+
+static void performFetch(AppData* app_data,
+                         SYS_CMD_DEVICE_NODE* cmd_io,
+                         AppCommandNixieCallbackMode mode) {
+  switch (mode) {
+    case APP_COMMAND_NIXIE_MODE_CALLBACK_INVOKE: {
+      APP_Nixie_Fetch(&app_data->nixie,
+                      &app_data->command.nixie._private.fetch.is_fetched,
+                      app_data->command.nixie._private.fetch.value);
+      break;
+    }
+    case APP_COMMAND_NIXIE_MODE_CALLBACK_UPDATE:
+      if (!APP_Nixie_IsBusy(&app_data->nixie)) {
+        if (app_data->command.nixie._private.fetch.is_fetched) {
+          COMMAND_PRINT("Value from server: " NIXIE_DISPLAY_FORMAT "\r\n",
+                        NIXIE_DISPLAY_VALUES(
+                            app_data->command.nixie._private.fetch.value));
+        } else {
+          COMMAND_MESSAGE("Error fetching value from server.\r\n");
+        }
+        appCmdNixieFinishTask(app_data);
+      }
+      break;
+  }
+}
+
+static int appCmdNixieFetch(AppData* app_data,
+                            SYS_CMD_DEVICE_NODE* cmd_io,
+                            int argc, char** argv) {
+  if (argc != 2) {
+    return appCmdNixieUsage(cmd_io, argv[0]);
+  }
+  appCmdNixieStartTask(app_data, cmd_io, &performFetch);
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Public API.
 
@@ -154,6 +194,8 @@ int APP_Command_Nixie(AppData* app_data,
   }
   if (STREQ(argv[1], "display")) {
     return appCmdNixieDisplay(app_data, cmd_io, argc, argv);
+  } else if (STREQ(argv[1], "fetch")) {
+    return appCmdNixieFetch(app_data, cmd_io, argc, argv);
   } else {
     // For unknown command show usage.
     return appCmdNixieUsage(cmd_io, argv[0]);

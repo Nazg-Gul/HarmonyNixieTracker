@@ -266,7 +266,7 @@ static void startNetworkConnection(AppHTTPSClientData* app_https_client_data) {
       socket_type = IP_ADDRESS_TYPE_IPV4;
       break;
     case APP_HTTPS_CLIENT_IP_MODE_IPV6:
-      HTTPS_DEBUG_PRINT("Starting TCP/IPv4 connection to "
+      HTTPS_DEBUG_PRINT("Starting TCP/IPv6 connection to "
                         "%x:%x:%x:%x:%x:%x:%x:%x, port %d.\r\n",
                         data->ip_address.v6Add.w[0],
                         data->ip_address.v6Add.w[1],
@@ -395,6 +395,8 @@ static void handleError(AppHTTPSClientData* app_https_client_data) {
   if (data->callbacks.error != NULL) {
     data->callbacks.error(data->callbacks.user_data);
   }
+  // We go back to an idle state to wait for further commands.
+  app_https_client_data->state = APP_HTTPS_CLIENT_STATE_IDLE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

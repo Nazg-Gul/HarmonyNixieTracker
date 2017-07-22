@@ -232,3 +232,19 @@ void APP_Network_PHY_Reset(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj) {
   ETH_NRSTOff();
   ETH_NRSTOn();
 }
+
+void APP_Network_PHY_Down(AppNetworkData* app_network_data) {
+  ETH_NRSTOff();
+}
+
+void APP_Network_PHY_Up(AppNetworkData* app_network_data) {
+  ETH_NRSTOff();
+}
+
+void APP_Network_PHY_SetEnabled(AppNetworkData* app_network_data, bool enabled) {
+  if (enabled) {
+    APP_Network_PHY_Up(app_network_data);
+  } else {
+    APP_Network_PHY_Down(app_network_data);
+  }
+}

@@ -28,14 +28,15 @@
 // TODO(sergey): Find a way to avoid this global thing.
 static AppData* g_app_data;
 
-int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdNixie(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdNTP(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdPower(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdRTC(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
-int cmdShiftRegister(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdNixie(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdNTP(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdPhy(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdPower(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdRTC(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
+static int cmdShiftRegister(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 
 static const SYS_CMD_DESCRIPTOR commands[] = {
   {"fetch", cmdFetch, ": fetch HTTP(S) page"},
@@ -45,40 +46,46 @@ static const SYS_CMD_DESCRIPTOR commands[] = {
   {"iwsecurity", cmdIwsecurity, ": WiFi security configuration"},
   {"nixie", cmdNixie, ": Nixie tube display configuration"},
   {"ntp", cmdNTP, ": NTP client configuration"},
+  {"phy", cmdPhy, ": Ethrenat PHY configuration"},
   {"power", cmdPower, ": Power supply configuration"},
   {"rtc", cmdRTC, ": Real Time Clock configuration"},
   {"shift_register", cmdShiftRegister, ": Shift register manipulation"},
 };
 
-int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Fetch(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Flash(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_IwSecurity(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdNixie(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdNixie(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Nixie(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdNTP(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdNTP(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_NTP(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdPower(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdPower(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Power(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdRTC(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdPhy(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_Phy(g_app_data, cmd_io, argc, argv);
+}
+
+static int cmdRTC(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_RTC(g_app_data, cmd_io, argc, argv);
 }
 
-int cmdShiftRegister(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+static int cmdShiftRegister(SYS_CMD_DEVICE_NODE* cmd_io,
+                            int argc, char** argv) {
   return APP_Command_ShiftRegister(g_app_data, cmd_io, argc, argv);
 }
 

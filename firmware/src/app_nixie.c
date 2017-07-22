@@ -31,13 +31,6 @@
 
 #include "app_shift_register.h"
 
-#define NIXIE_DISPLAY_FORMAT "%c%c%c%c"
-#define NIXIE_DISPLAY_VALUES(value)  \
-  value[3] ? value[3] : '_',         \
-  value[2] ? value[2] : '_',         \
-  value[1] ? value[1] : '_',         \
-  value[0] ? value[0] : '_'
-
 #define LOG_PREFIX "APP NIXIE: "
 
 // Regular print / message.
@@ -288,18 +281,25 @@ static void shuffleServerValueDigits(AppNixieData* app_nixie_data) {
   }
   if (num_leading_null == 0) {
     NIXIE_DEBUG_MESSAGE("Leaving value unchanged.\r\n");
+  } else {
+    memmove(app_nixie_data->display_value,
+            app_nixie_data->display_value + num_leading_null,
+            app_nixie_data->num_nixies - num_leading_null);
+    for (a = 0; a < num_leading_null; ++a) {
+      app_nixie_data->display_value[app_nixie_data->num_nixies - a - 1] = '0';
+    }
+    NIXIE_DEBUG_PRINT("Value after shuffle " NIXIE_DISPLAY_FORMAT "\r\n",
+                      NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
+  }
+  if (app_nixie_data->display_value_out != NULL) {
+    app_nixie_data->state = APP_NIXIE_STATE_IDLE;
+    memcpy(app_nixie_data->display_value_out,
+           app_nixie_data->display_value,
+           sizeof(app_nixie_data->display_value));
+    *app_nixie_data->is_fetched_out = true;
+  } else {
     app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
-    return;
   }
-  memmove(app_nixie_data->display_value,
-          app_nixie_data->display_value + num_leading_null,
-          app_nixie_data->num_nixies - num_leading_null);
-  for (a = 0; a < num_leading_null; ++a) {
-    app_nixie_data->display_value[app_nixie_data->num_nixies - a - 1] = '0';
-  }
-  NIXIE_DEBUG_PRINT("Value after shuffle " NIXIE_DISPLAY_FORMAT "\r\n",
-                    NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
-  app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
 }
 
 ////////////////////////////////////////
@@ -430,6 +430,7 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
   app_nixie_data->state = APP_NIXIE_STATE_IDLE;
   app_nixie_data->app_https_client_data = app_https_client_data;
   app_nixie_data->app_shift_register_data = app_shift_register_data;
+  app_nixie_data->display_value_out = NULL;
 
   // ======== Nixie display information =======
   // Fill in nixies information.
@@ -490,7 +491,7 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
 
   // TODO(sergey)L Make it some sort of stored configuration.
   safe_strncpy(app_nixie_data->request_url,
-               "https://dveloper.blender.org/maniphest/project/2/type/Bug/query/open/",  // NOLINT
+               "https://developer.blender.org/maniphest/project/2/type/Bug/query/open/",  // NOLINT
                sizeof(app_nixie_data->request_url));
   safe_strncpy(app_nixie_data->token,
                ">Open Tasks (",
@@ -559,7 +560,7 @@ bool APP_Nixie_Display(AppNixieData* app_nixie_data,
   if (APP_Nixie_IsBusy(app_nixie_data)) {
     return false;
   }
-  NIXIE_DEBUG_PRINT("Requested to display " NIXIE_DISPLAY_FORMAT,
+  NIXIE_DEBUG_PRINT("Requested to display " NIXIE_DISPLAY_FORMAT "\r\n",
                     NIXIE_DISPLAY_VALUES(value));
   // Make sure all possibly unused digits are zeroed.
   memset(app_nixie_data->display_value,
@@ -570,5 +571,19 @@ bool APP_Nixie_Display(AppNixieData* app_nixie_data,
           value,
           sizeof(app_nixie_data->display_value));
   app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
+  return true;
+}
+
+bool APP_Nixie_Fetch(AppNixieData* app_nixie_data,
+                     bool* is_fetched,
+                     char value[MAX_NIXIE_TUBES]) {
+  *is_fetched = false;
+  if (APP_Nixie_IsBusy(app_nixie_data)) {
+    return false;
+  }
+  NIXIE_DEBUG_MESSAGE("Requested to fetch value.\r\n");
+  app_nixie_data->state = APP_NIXIE_STATE_BEGIN_HTTP_REQUEST;
+  app_nixie_data->is_fetched_out = is_fetched;
+  app_nixie_data->display_value_out = value;
   return true;
 }

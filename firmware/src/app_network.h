@@ -74,4 +74,9 @@ void APP_Network_Tasks(AppNetworkData* app_network_data);
 // Reset LAN8720 Eth PHY when it's requested.
 void APP_Network_PHY_Reset(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj);
 
+// Control enabled state of the Ethernet PHY.
+void APP_Network_PHY_Down(AppNetworkData* app_network_data);
+void APP_Network_PHY_Up(AppNetworkData* app_network_data);
+void APP_Network_PHY_SetEnabled(AppNetworkData* app_network_data, bool enabled);
+
 #endif  // _APP_NETWORK_H
