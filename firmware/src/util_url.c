@@ -204,11 +204,10 @@ static bool urlParse_pastScheme(const char* url_part, size_t len,
   }
   // If there is no path component, zero out all remaining outputs.
   if (url_part == NULL) {
-    // TODO(sergey): Shall we use / instead?
-    safe_strncpy_len(path, "\0", 1, max_path);
+    safe_strncpy_len(path, "/", 1, max_path);
     safe_strncpy_len(query, "\0", 1, max_query);
     safe_strncpy_len(fragment, "\0", 1, max_fragment);
-    safe_strncpy_len(path_suffix, "\0", 1, max_path_suffix);
+    safe_strncpy_len(path_suffix, "/", 1, max_path_suffix);
     return true;
   }
   safe_strncpy_len(path_suffix, url_part, len, max_path_suffix);
