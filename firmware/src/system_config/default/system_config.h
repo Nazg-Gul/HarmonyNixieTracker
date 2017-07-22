@@ -559,15 +559,6 @@ extern "C" {
 #define TCPIP_ICMP_CLIENT_USER_NOTIFICATION   true
 #define TCPIP_ICMP_ECHO_REQUEST_TIMEOUT       500
 #define TCPIP_ICMP_TASK_TICK_RATE             33
-/*** iperf Configuration ***/
-#define TCPIP_STACK_USE_IPERF
-#define TCPIP_IPERF_TX_BUFFER_SIZE		4096
-#define TCPIP_IPERF_RX_BUFFER_SIZE  	4096
-#define TCPIP_IPERF_TX_WAIT_TMO     	400
-#define TCPIP_IPERF_TX_QUEUE_LIMIT  	2
-#define TCPIP_IPERF_TIMING_ERROR_MARGIN 0
-#define TCPIP_IPERF_MAX_INSTANCES       1
-#define TCPIP_IPERF_TX_BW_LIMIT  		100
 
 
 /*** NBNS Configuration ***/
@@ -679,13 +670,6 @@ extern "C" {
 #define DRV_ETHPHY_RESET_CLR_TMO				500
 #define DRV_ETHPHY_USE_DRV_MIIM                     true
 
-
-/*** telnet Configuration ***/
-#define TCPIP_STACK_USE_TELNET_SERVER
-#define TCPIP_TELNET_MAX_CONNECTIONS    2
-#define TCPIP_TELNET_USERNAME           "admin"
-#define TCPIP_TELNET_PASSWORD           "microchip"
-#define TCPIP_TELNET_TASK_TICK_RATE     100
 
 
 /*** UDP Configuration ***/

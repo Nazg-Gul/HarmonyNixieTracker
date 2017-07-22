@@ -51,6 +51,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <net/pres/net_pres_socketapi.h>
+#include <config.h>
+#include <wolfssl/ssl.h>
+#include <wolfssl/wolfcrypt/logging.h>
+
 #include "system_definitions.h"
 #include "utildefines.h"
 
@@ -71,8 +76,20 @@
   APP_DEBUG_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
 #define HTTPS_DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
+#ifdef SYS_DEBUG_ENABLE
+#  define WITH_WOLFSSL_DEBUG
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // Internal helpers.
+
+#ifdef WITH_WOLFSSL_DEBUG
+// Logging function for WolfSSL.
+void wolfssl_logging_cb(const int level, const char* const message) {
+  (void) level; // Ignored,
+  APP_PRINT("WolfSSL: ", "%s\r\n", message);
+}
+#endif
 
 static void enterErrorState(AppHTTPSClientData* app_https_client_data) {
   // TODO(sergey): Add some sort of error code.
@@ -403,6 +420,10 @@ static void handleError(AppHTTPSClientData* app_https_client_data) {
 // Public API.
 
 void APP_HTTPS_Client_Initialize(AppHTTPSClientData* app_https_client_data) {
+#ifdef WITH_WOLFSSL_DEBUG
+  wolfSSL_SetLoggingCb(wolfssl_logging_cb);
+  wolfSSL_Debugging_ON();
+#endif
   app_https_client_data->state = APP_HTTPS_CLIENT_STATE_IDLE;
   app_https_client_data->ip_mode_config = APP_HTTPS_CLIENT_IP_MODE_IPV4;
 }

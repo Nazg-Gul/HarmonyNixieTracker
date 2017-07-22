@@ -1022,6 +1022,8 @@
             <logicalFolder name="f1" displayName="common" projectFiles="true">
               <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/common/helpers.c</itemPath>
             </logicalFolder>
+            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/telnet.c</itemPath>
+            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/iperf.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/ipv4.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/tcp.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/udp.c</itemPath>
@@ -1033,12 +1035,10 @@
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/icmp.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/nbns.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/sntp.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/telnet.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_helper.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_link_local.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_multicast_dns.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/tcpip_announce.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/iperf.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/tcpip_commands.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/hash_fnv.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/oahash.c</itemPath>

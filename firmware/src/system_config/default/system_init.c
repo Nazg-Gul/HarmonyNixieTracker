@@ -522,10 +522,6 @@ const TCPIP_ARP_MODULE_CONFIG tcpipARPInitData =
     .gratProbeCount     = TCPIP_ARP_GRATUITOUS_PROBE_COUNT,
 };
 
-/*** telnet Server Initialization Data ***/
-const TCPIP_TELNET_MODULE_CONFIG tcpipTelnetInitData =
-{ 
-};
 
 /*** Announce Discovery Initialization Data ***/
 const TCPIP_ANNOUNCE_MODULE_CONFIG tcpipAnnounceInitData =
@@ -702,7 +698,6 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
     {TCPIP_MODULE_NBNS,             &tcpipNBNSInitData},            // TCPIP_MODULE_NBNS
     {TCPIP_MODULE_SNTP,             &tcpipSNTPInitData},            // TCPIP_MODULE_SNTP
 
-    {TCPIP_MODULE_TELNET_SERVER,    &tcpipTelnetInitData},          // TCPIP_MODULE_TELNET_SERVER
     {TCPIP_MODULE_ZCLL,             0},                             // TCPIP_MODULE_ZCLL,
     {TCPIP_MODULE_MDNS,             0},                             // TCPIP_MODULE_MDNS,
     { TCPIP_MODULE_MANAGER,         &tcpipHeapConfig },             // TCPIP_MODULE_MANAGER

@@ -81,6 +81,7 @@ extern "C" {
 #define NO_HC128
 #define NO_SESSION_CACHE
 
+#define DEBUG_WOLFSSL
 
 #define NO_OLD_TLS
 
