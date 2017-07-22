@@ -64,6 +64,7 @@
         <itemPath>../src/app_nixie.h</itemPath>
         <itemPath>../src/app_command_nixie.h</itemPath>
         <itemPath>../src/app_command_phy.h</itemPath>
+        <itemPath>../src/app_command_debug.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -824,6 +825,7 @@
         <itemPath>../src/app_nixie.c</itemPath>
         <itemPath>../src/app_command_nixie.c</itemPath>
         <itemPath>../src/app_command_phy.c</itemPath>
+        <itemPath>../src/app_command_debug.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -1120,7 +1122,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.43</languageToolchainVersion>
-        <platform>2</platform>
+        <platform>3</platform>
       </toolsSet>
       <compileType>
         <linkerTool>

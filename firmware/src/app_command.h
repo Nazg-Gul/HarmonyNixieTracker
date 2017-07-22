@@ -23,6 +23,7 @@
 #ifndef _APP_COMMAND_H
 #define _APP_COMMAND_H
 
+#include "app_command_debug.h"
 #include "app_command_fetch.h"
 #include "app_command_flash.h"
 #include "app_command_nixie.h"

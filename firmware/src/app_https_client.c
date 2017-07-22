@@ -81,11 +81,19 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+// Global variables.
+
+static bool g_wolfssl_debug = false;
+
+////////////////////////////////////////////////////////////////////////////////
 // Internal helpers.
 
 #ifdef WITH_WOLFSSL_DEBUG
 // Logging function for WolfSSL.
 void wolfssl_logging_cb(const int level, const char* const message) {
+  if (!g_wolfssl_debug) {
+    return;
+  }
   (void) level; // Ignored,
   APP_PRINT("WolfSSL: ", "%s\r\n", message);
 }
@@ -495,4 +503,9 @@ bool APP_HTTPS_Client_Request(AppHTTPSClientData* app_https_client_data,
   // Enter the request routines.
   app_https_client_data->state = APP_HTTPS_CLIENT_STATE_BEGIN_SEQUENCE;
   return true;
+}
+
+void APP_HTTPS_Client_SetWolfSSLDebug(bool enabled)
+{
+  g_wolfssl_debug = enabled;
 }

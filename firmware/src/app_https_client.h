@@ -171,4 +171,7 @@ bool APP_HTTPS_Client_Request(AppHTTPSClientData* app_https_client_data,
                               const char url[MAX_URL],
                               const AppHttpsClientCallbacks* callbacks);
 
+// Set enabled flag on WolfSSL library.
+void APP_HTTPS_Client_SetWolfSSLDebug(bool enabled);
+
 #endif  // _APP_HTTPS_CLIENT_H

@@ -28,6 +28,7 @@
 // TODO(sergey): Find a way to avoid this global thing.
 static AppData* g_app_data;
 
+static int cmdDebug(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 static int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 static int cmdFlash(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 static int cmdIwsecurity(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
@@ -39,6 +40,7 @@ static int cmdRTC(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 static int cmdShiftRegister(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv);
 
 static const SYS_CMD_DESCRIPTOR commands[] = {
+  {"debug", cmdDebug, ": Debug configuration"},
   {"fetch", cmdFetch, ": fetch HTTP(S) page"},
   {"flash", cmdFlash, ": Serial flash configuration"},
   // TODO(sergey): This should in theory be handled by iwconfig, but it is not.
@@ -51,6 +53,10 @@ static const SYS_CMD_DESCRIPTOR commands[] = {
   {"rtc", cmdRTC, ": Real Time Clock configuration"},
   {"shift_register", cmdShiftRegister, ": Shift register manipulation"},
 };
+
+static int cmdDebug(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
+  return APP_Command_Debug(g_app_data, cmd_io, argc, argv);
+}
 
 static int cmdFetch(SYS_CMD_DEVICE_NODE* cmd_io, int argc, char** argv) {
   return APP_Command_Fetch(g_app_data, cmd_io, argc, argv);
