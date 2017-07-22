@@ -200,7 +200,7 @@ static bool urlParse_pastScheme(const char* url_part, size_t len,
     }
     // Move parsing point to possible path and following.
     url_part = path_start;
-    len = first_part_length;
+    len -= first_part_length;
   }
   // If there is no path component, zero out all remaining outputs.
   if (url_part == NULL) {
