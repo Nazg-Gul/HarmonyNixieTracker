@@ -40,6 +40,8 @@
 #define SHIFT_REGISTER_DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
 static void transmitStep(AppShiftRegisterData* app_shift_register_data) {
+  // NOTE: We are wired via inverter for shifting the level, so we are inverting
+  // bits here as well.
   AppShiftRegisterData* data = app_shift_register_data;
   // Move to the next byte when needed.
   if (data->_private.send.current_bit == 8) {
@@ -51,8 +53,8 @@ static void transmitStep(AppShiftRegisterData* app_shift_register_data) {
     // Toggle RCK to copy data from shift register to storage.
     //
     // TODO(sergey): Do we need a delay here, so the pulse has enough length?
-    SHIFT_RCK_On();
     SHIFT_RCK_Off();
+    SHIFT_RCK_On();
     // Transaction finished.
     data->state = APP_SHIFT_REGISTER_STATE_IDLE;
     return;
@@ -60,15 +62,15 @@ static void transmitStep(AppShiftRegisterData* app_shift_register_data) {
   const uint8_t current_byte =
       data->_private.send.data[data->_private.send.current_byte];
   const uint8_t value = (current_byte & (1 << data->_private.send.current_bit))
-                            ? 1
-                            : 0;
+                            ? 0
+                            : 1;
   // Set new value on the serial output.
   SHIFT_DATA_StateSet(value);
   // NOTE: Sampling happens on the raising edge.
   //
   // TODO(sergey): Do we need a delay here, so the pulse has enough length?
-  SHIFT_SRCK_On();
   SHIFT_SRCK_Off();
+  SHIFT_SRCK_On();
   // Advance to the next bit.
   ++data->_private.send.current_bit;
 }
