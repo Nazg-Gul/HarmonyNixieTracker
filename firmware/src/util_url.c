@@ -40,10 +40,10 @@ static bool urlParse_scheme(const char* url_part,  size_t len,
   }
   // Special case to get default port based on scheme.
   // TODO(sergey): Make it case-insensitive comparison.
-  if (STREQ_LEN(url_part, "http", 4)) {
-    *port = 80;
-  } else if (STREQ_LEN(url_part, "https", 5)) {
+  if (STREQ_LEN(url_part, "https", 5)) {
     *port = 443;
+  } else if (STREQ_LEN(url_part, "http", 4)) {
+    *port = 80;
   } else {
     // TODO(sergey): Handle ftp protocol, and maybe some others?
   }
