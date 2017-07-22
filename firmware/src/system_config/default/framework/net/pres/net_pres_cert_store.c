@@ -1,19 +1,18 @@
 /*******************************************************************************
-  Application Header
+ Source file for the Net Pres Certificate Store functions to work with Harmony
 
-  File Name:
-    config.h
 
   Summary:
- config file for CyaSSL to avoid custom build options
+
 
   Description:
- config file for CyaSSL to avoid custom build options
- *******************************************************************************/
 
-//DOM-IGNORE-BEGIN
+*******************************************************************************/
+
 /*******************************************************************************
-Copyright (c) 2011-2012 released Microchip Technology Inc.  All rights reserved.
+File Name: net_pres_cert_stroe.c
+Copyright (c) 2015 released Microchip Technology Inc.  All rights
+reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -23,7 +22,7 @@ controller that is integrated into your product or third party product
 You should refer to the license agreement accompanying this Software for
 additional information regarding your rights and obligations.
 
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
+SOFTWARE AND DOCUMENTATION ARE PROVIDED ?AS IS? WITHOUT WARRANTY OF ANY KIND,
 EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
 MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
 IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
@@ -33,63 +32,14 @@ INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
 CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
 SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
-//DOM-IGNORE-END
+*******************************************************************************/
+#include "net/pres/net_pres_certstore.h"
+#define USE_CERT_BUFFERS_2048
+#include "wolfssl/certs_test.h"
 
-
-#ifndef CONFIG_H
-#define	CONFIG_H
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-
-#if defined(INLINE)
-#undef INLINE
-#define INLINE inline
-#endif
-
-#define MICROCHIP_MPLAB_HARMONY
-#define MICROCHIP_PIC32
-#define MICROCHIP_TCPIP
-#define WOLFSSL_HAVE_MIN
-#define WOLFSSL_HAVE_MAX
-
-
-#define MICROCHIP_PIC32_RNG
-#define NEED_AES_TABLES
-#define SIZEOF_LONG_LONG 8
-#define WOLFSSL_USER_IO
-#define NO_WRITEV
-#define NO_DEV_RANDOM
-#define NO_FILESYSTEM
-#define WOLFSSL_STATIC_RSA
-
-
-#define SINGLE_THREADED
-
-#define USE_FAST_MATH
-#define TFM_TIMING_RESISTANT
-#define NO_WOLFSSL_SERVER
-#define NO_DES3
-#define NO_DH
-#define NO_PSK
-#define NO_PWDBASED
-#define NO_RC4
-#define NO_RABBIT
-#define NO_HC128
-#define NO_SESSION_CACHE
-
-
-#define NO_OLD_TLS
-
-
-
-
-
-#ifdef	__cplusplus
+bool NET_PRES_CertStoreGetCACerts(const uint8_t ** certPtr, int32_t * certSize, uint8_t certIndex)
+{
+    *certPtr = client_cert_der_2048;
+    *certSize = sizeof_client_cert_der_2048;
+    return true;
 }
-#endif
-
-#endif	/* CONFIG_H */
