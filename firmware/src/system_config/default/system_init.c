@@ -451,15 +451,6 @@ SYS_CONSOLE_INIT consUsartInit0 =
     .consDevDesc = &consUsartDevDesc,
 };
 // </editor-fold>
-// <editor-fold defaultstate="collapsed" desc="SYS_DEBUG Initialization Data">
-/*** System Debug Initialization Data ***/
-
-SYS_DEBUG_INIT debugInit =
-{
-    .moduleInit = {0},
-    .errorLevel = SYS_ERROR_DEBUG
-};
-// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="SYS_FS Initialization Data">
 /*** File System Initialization Data ***/
 
@@ -469,21 +460,15 @@ const SYS_FS_MEDIA_MOUNT_DATA sysfsMountTable[SYS_FS_VOLUME_NUMBER] =
 };
 
 
+
+
 const SYS_FS_REGISTRATION_TABLE sysFSInit [ SYS_FS_MAX_FILE_SYSTEM_TYPE ] =
 {
     {
         .nativeFileSystemType = FAT,
         .nativeFileSystemFunctions = &FatFsFunctions
-    },
-    {
-        .nativeFileSystemType = MPFS2,
-        .nativeFileSystemFunctions = &MPFSFunctions
     }
-
 };
-
-
-
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="SYS_TMR Initialization Data">
 /*** TMR Service Initialization Data ***/
@@ -523,10 +508,6 @@ const TCPIP_ARP_MODULE_CONFIG tcpipARPInitData =
 };
 
 
-/*** Announce Discovery Initialization Data ***/
-const TCPIP_ANNOUNCE_MODULE_CONFIG tcpipAnnounceInitData =
-{ 
-};
 
 /*** UDP Sockets Initialization Data ***/
 const TCPIP_UDP_MODULE_CONFIG tcpipUDPInitData =
@@ -575,10 +556,6 @@ const TCPIP_ICMP_MODULE_CONFIG tcpipICMPInitData =
 {
 };
 
-/*** NBNS Server Initialization Data ***/
-const TCPIP_NBNS_MODULE_CONFIG tcpipNBNSInitData =
-{ 
-};
 
 
 /*** ETH PHY Initialization Data ***/
@@ -620,10 +597,6 @@ const TCPIP_MODULE_MAC_MRF24W_CONFIG macMRF24WConfigData = {
 };
 
 
-/*** Zeroconfig initialization data ***/
-const ZCLL_MODULE_CONFIG tcpipZCLLInitData =
-{
-};
 
 
 
@@ -693,13 +666,9 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
     {TCPIP_MODULE_UDP,              &tcpipUDPInitData},             // TCPIP_MODULE_UDP
     {TCPIP_MODULE_TCP,              &tcpipTCPInitData},             // TCPIP_MODULE_TCP
     {TCPIP_MODULE_DHCP_CLIENT,      &tcpipDHCPInitData},            // TCPIP_MODULE_DHCP_CLIENT
-    {TCPIP_MODULE_ANNOUNCE,         &tcpipAnnounceInitData},        // TCPIP_MODULE_ANNOUNCE
     {TCPIP_MODULE_DNS_CLIENT,       &tcpipDNSClientInitData},       // TCPIP_MODULE_DNS_CLIENT
-    {TCPIP_MODULE_NBNS,             &tcpipNBNSInitData},            // TCPIP_MODULE_NBNS
     {TCPIP_MODULE_SNTP,             &tcpipSNTPInitData},            // TCPIP_MODULE_SNTP
 
-    {TCPIP_MODULE_ZCLL,             0},                             // TCPIP_MODULE_ZCLL,
-    {TCPIP_MODULE_MDNS,             0},                             // TCPIP_MODULE_MDNS,
     { TCPIP_MODULE_MANAGER,         &tcpipHeapConfig },             // TCPIP_MODULE_MANAGER
     // MAC modules
     {TCPIP_MODULE_MAC_PIC32INT,     &tcpipMACPIC32INTInitData},     // TCPIP_MODULE_MAC_PIC32INT
@@ -1076,9 +1045,6 @@ void SYS_Initialize ( void* data )
     SYS_CMD_Initialize((SYS_MODULE_INIT*)&sysCmdInit);
     sysObj.sysConsole0 = SYS_CONSOLE_Initialize(SYS_CONSOLE_INDEX_0, (SYS_MODULE_INIT *)&consUsartInit0);
 
-
-    /*** Debug Service Initialization Code ***/
-    sysObj.sysDebug = SYS_DEBUG_Initialize(SYS_DEBUG_INDEX_0, (SYS_MODULE_INIT*)&debugInit);
 
     /*** File System Service Initialization Code ***/
     SYS_FS_Initialize( (const void *) sysFSInit );

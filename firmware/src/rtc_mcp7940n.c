@@ -34,11 +34,16 @@
 #define ERROR_MESSAGE(message) \
     SYS_CONSOLE_MESSAGE(RTC_MCP7940N_LOG_PREFIX message)
 
-#define DEBUG_MESSAGE(message) \
+#ifdef SYS_CMD_REMAP_SYS_DEBUG_MESSAGE
+#  define DEBUG_MESSAGE(message) \
     SYS_DEBUG_MESSAGE(DEBUG_LEVEL, "[DEBUG] " RTC_MCP7940N_LOG_PREFIX message)
-
-#define DEBUG_PRINT(format, ...) \
-    SYS_DEBUG_PRINT(DEBUG_LEVEL, "[DEBUG] " RTC_MCP7940N_LOG_PREFIX format, ##__VA_ARGS__)
+#  define DEBUG_PRINT(format, ...) \
+    SYS_DEBUG_PRINT(DEBUG_LEVEL, \
+                    "[DEBUG] " RTC_MCP7940N_LOG_PREFIX format, ##__VA_ARGS__)
+#else
+#  define DEBUG_MESSAGE(message)
+#  define DEBUG_PRINT(format, ...)
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Mathematical utilities

@@ -102,7 +102,9 @@ void APP_Network_Wifi_DHCPSSync(TCPIP_NET_HANDLE net) {
 }
 
 void APP_Network_TPCIP_IfModulesEnable(TCPIP_NET_HANDLE net) {
+#if defined(TCPIP_STACK_USE_ZEROCONF_MDNS_SD)
   int net_index = TCPIP_STACK_NetIndexGet(net);
+#endif
   const char *net_name = TCPIP_STACK_NetNameGet(net);
   TCPIP_DHCP_Enable(net);
   TCPIP_DNS_Enable(net, TCPIP_DNS_ENABLE_DEFAULT);
@@ -137,7 +139,9 @@ void APP_Network_TCPIP_IfModulesDisable(TCPIP_NET_HANDLE net) {
   }
   TCPIP_DHCP_Disable(net);
   TCPIP_DNS_Disable(net, true);
+#if defined(TCPIP_STACK_USE_ZEROCONF_MDNS_SD)
   TCPIP_MDNS_ServiceDeregister(net);
+#endif
 }
 
 void APP_Network_TCPIP_IfaceDown(TCPIP_NET_HANDLE net) {

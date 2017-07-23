@@ -22,6 +22,8 @@
 
 #include "app_command_debug.h"
 
+#include <config.h>
+
 #include "app.h"
 #include "system_definitions.h"
 #include "utildefines.h"
@@ -52,6 +54,7 @@ static int appCmdDebugWolfSSL(AppData* app_data,
                               SYS_CMD_DEVICE_NODE* cmd_io,
                               int argc, char** argv) {
   (void) app_data;  // Ignored.
+#ifdef DEBUG_WOLFSSL
   if (argc != 3) {
     return appCmdDebugUsage(cmd_io, argv[0]);
   }
@@ -64,6 +67,9 @@ static int appCmdDebugWolfSSL(AppData* app_data,
   } else {
     return appCmdDebugUsage(cmd_io, argv[0]);
   }
+#else
+  COMMAND_MESSAGE("WolfSSL is compiled without debug support.\r\n");
+#endif
   return true;
 }
 

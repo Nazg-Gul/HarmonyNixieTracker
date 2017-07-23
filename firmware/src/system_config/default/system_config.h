@@ -126,10 +126,9 @@ extern "C" {
 /*** Command Processor System Service Configuration ***/
 #define SYS_CMD_ENABLE
 #define SYS_CMD_DEVICE_MAX_INSTANCES    SYS_CONSOLE_DEVICE_MAX_INSTANCES
-#define SYS_CMD_PRINT_BUFFER_SIZE       1024
+#define SYS_CMD_PRINT_BUFFER_SIZE       8192
 #define SYS_CMD_BUFFER_DMA_READY
 #define SYS_CMD_REMAP_SYS_CONSOLE_MESSAGE
-#define SYS_CMD_REMAP_SYS_DEBUG_MESSAGE
 
 /*** Console System Service Configuration ***/
 
@@ -139,16 +138,10 @@ extern "C" {
 #define SYS_CONSOLE_UART_IDX               DRV_USART_INDEX_0
 #define SYS_CONSOLE_UART_BAUD_RATE_IDX     DRV_USART_BAUD_RATE_IDX0
 #define SYS_CONSOLE_UART_RD_QUEUE_DEPTH    1
-#define SYS_CONSOLE_UART_WR_QUEUE_DEPTH    128
+#define SYS_CONSOLE_UART_WR_QUEUE_DEPTH    64
 #define SYS_CONSOLE_BUFFER_DMA_READY
 
 
-
-/*** Debug System Service Configuration ***/
-#define SYS_DEBUG_ENABLE
-#define DEBUG_PRINT_BUFFER_SIZE       512
-#define SYS_DEBUG_BUFFER_DMA_READY
-#define SYS_DEBUG_USE_CONSOLE
 
 /*** File System Service Configuration ***/
 
@@ -282,7 +275,7 @@ extern "C" {
 /*** SPI Driver Static Allocation Options ***/
 #define DRV_SPI_INSTANCES_NUMBER 		2
 #define DRV_SPI_CLIENTS_NUMBER 			2
-#define DRV_SPI_ELEMENTS_PER_QUEUE 		10
+#define DRV_SPI_ELEMENTS_PER_QUEUE 		8
 /* SPI Driver Instance 0 Configuration */
 #define DRV_SPI_SPI_ID_IDX0 				SPI_ID_4
 #define DRV_SPI_TASK_MODE_IDX0 				DRV_SPI_TASK_MODE_POLLED
@@ -297,7 +290,7 @@ extern "C" {
 #define DRV_SPI_INPUT_PHASE_IDX0 			SPI_INPUT_SAMPLING_PHASE_AT_END
 #define DRV_SPI_TRANSMIT_DUMMY_BYTE_VALUE_IDX0      0xFF
 
-#define DRV_SPI_QUEUE_SIZE_IDX0 			10
+#define DRV_SPI_QUEUE_SIZE_IDX0 			8
 #define DRV_SPI_RESERVED_JOB_IDX0 			1
 /* SPI Driver Instance 1 Configuration */
 #define DRV_SPI_SPI_ID_IDX1 				SPI_ID_1
@@ -319,7 +312,7 @@ extern "C" {
 #define DRV_SPI_INT_VECTOR_IDX1				INT_VECTOR_SPI1
 #define DRV_SPI_INT_PRIORITY_IDX1			INT_PRIORITY_LEVEL1
 #define DRV_SPI_INT_SUB_PRIORITY_IDX1		INT_SUBPRIORITY_LEVEL0        
-#define DRV_SPI_QUEUE_SIZE_IDX1 			10
+#define DRV_SPI_QUEUE_SIZE_IDX1 			8
 #define DRV_SPI_RESERVED_JOB_IDX1 			1
 // *****************************************************************************
 /* SST25 Driver Configuration Options
@@ -464,7 +457,7 @@ extern "C" {
 
 /* MPLAB Harmony Net Presentation Layer Definitions*/
 #define NET_PRES_NUM_INSTANCE 1
-#define NET_PRES_NUM_SOCKETS 10
+#define NET_PRES_NUM_SOCKETS 4
 
 
 
@@ -489,7 +482,7 @@ extern "C" {
 #define TCPIP_STACK_CONFIGURATION_SAVE_RESTORE   true
 /*** TCPIP Heap Configuration ***/
 #define TCPIP_STACK_USE_INTERNAL_HEAP
-#define TCPIP_STACK_DRAM_SIZE                       42000
+#define TCPIP_STACK_DRAM_SIZE                       32768
 #define TCPIP_STACK_DRAM_RUN_LIMIT                  2048
 #define TCPIP_STACK_MALLOC_FUNC                     malloc
 
@@ -498,7 +491,6 @@ extern "C" {
 #define TCPIP_STACK_FREE_FUNC                       free
 
 
-#define TCPIP_STACK_DRAM_DEBUG_ENABLE
 
 #define TCPIP_STACK_HEAP_USE_FLAGS                   TCPIP_STACK_HEAP_FLAG_ALLOC_UNCACHED
 
@@ -561,9 +553,6 @@ extern "C" {
 #define TCPIP_ICMP_TASK_TICK_RATE             33
 
 
-/*** NBNS Configuration ***/
-#define TCPIP_STACK_USE_NBNS
-#define TCPIP_NBNS_TASK_TICK_RATE   110
 
 
 
@@ -609,10 +598,6 @@ extern "C" {
 #define TCPIP_TCP_QUIET_TIME		        	    0
 #define TCPIP_TCP_COMMANDS   true
 
-/*** announce Configuration ***/
-#define TCPIP_STACK_USE_ANNOUNCE
-#define TCPIP_ANNOUNCE_MAX_PAYLOAD 	512
-#define TCPIP_ANNOUNCE_TASK_RATE    333
 
 /*** TCPIP MAC Configuration ***/
 #define TCPIP_EMAC_TX_DESCRIPTORS				8
@@ -681,39 +666,6 @@ extern "C" {
 #define TCPIP_UDP_USE_TX_CHECKSUM             			true
 #define TCPIP_UDP_USE_RX_CHECKSUM             			true
 #define TCPIP_UDP_COMMANDS   true
-
-#define TCPIP_STACK_USE_ZEROCONF_LINK_LOCAL
-#define TCPIP_ZC_LL_PROBE_WAIT 1
-#define TCPIP_ZC_LL_PROBE_MIN 1
-#define TCPIP_ZC_LL_PROBE_MAX 2
-#define TCPIP_ZC_LL_PROBE_NUM 3
-#define TCPIP_ZC_LL_ANNOUNCE_WAIT 2
-#define TCPIP_ZC_LL_ANNOUNCE_NUM 2
-#define TCPIP_ZC_LL_ANNOUNCE_INTERVAL 2
-#define TCPIP_ZC_LL_MAX_CONFLICTS 10
-#define TCPIP_ZC_LL_RATE_LIMIT_INTERVAL 60
-#define TCPIP_ZC_LL_DEFEND_INTERVAL 10
-#define TCPIP_ZC_LL_IPV4_LLBASE 0xa9fe0100
-#define TCPIP_ZC_LL_IPV4_LLBASE_MASK 0x0000FFFF
-#define TCPIP_ZC_LL_TASK_TICK_RATE 333
-#define TCPIP_STACK_USE_ZEROCONF_MDNS_SD
-#define TCPIP_ZC_MDNS_TASK_TICK_RATE 63
-#define TCPIP_ZC_MDNS_PORT 5353
-#define TCPIP_ZC_MDNS_MAX_HOST_NAME_SIZE 32
-#define TCPIP_ZC_MDNS_MAX_LABEL_SIZE 64
-#define TCPIP_ZC_MDNS_MAX_RR_NAME_SIZE 256
-#define TCPIP_ZC_MDNS_MAX_SRV_TYPE_SIZE 32
-#define TCPIP_ZC_MDNS_MAX_SRV_NAME_SIZE 64
-#define TCPIP_ZC_MDNS_MAX_TXT_DATA_SIZE 128
-#define TCPIP_ZC_MDNS_RESOURCE_RECORD_TTL_VAL 3600
-#define TCPIP_ZC_MDNS_MAX_RR_NUM 4
-#define TCPIP_ZC_MDNS_PROBE_WAIT 750
-#define TCPIP_ZC_MDNS_PROBE_INTERVAL 250
-#define TCPIP_ZC_MDNS_PROBE_NUM 3
-#define TCPIP_ZC_MDNS_MAX_PROBE_CONFLICT_NUM 30
-#define TCPIP_ZC_MDNS_ANNOUNCE_NUM 3
-#define TCPIP_ZC_MDNS_ANNOUNCE_INTERVAL 250
-#define TCPIP_ZC_MDNS_ANNOUNCE_WAIT 250
 
 /*** Network Configuration Index 0 ***/
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_NAME		"PIC32INT"

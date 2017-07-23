@@ -74,6 +74,9 @@ extern "C" {
 #define NO_WOLFSSL_SERVER
 #define NO_DES3
 #define NO_DH
+#define NO_DSA
+#define NO_ERROR_STRINGS
+#define NO_MD4
 #define NO_PSK
 #define NO_PWDBASED
 #define NO_RC4
@@ -81,7 +84,6 @@ extern "C" {
 #define NO_HC128
 #define NO_SESSION_CACHE
 
-#define DEBUG_WOLFSSL
 
 #define NO_OLD_TLS
 

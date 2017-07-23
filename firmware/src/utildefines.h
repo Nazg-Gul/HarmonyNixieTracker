@@ -54,9 +54,14 @@
   APP_MESSAGE_SEVERITY("[ERROR] ", prefix, message)
 
 // Debug print / message
-#define APP_DEBUG_PRINT(prefix, format, ...) \
+#ifdef SYS_CMD_REMAP_SYS_DEBUG_MESSAGE
+#  define APP_DEBUG_PRINT(prefix, format, ...) \
   SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "[DEBUG] "  prefix format, ##__VA_ARGS__)
-#define APP_DEBUG_MESSAGE(prefix, message) \
+#  define APP_DEBUG_MESSAGE(prefix, message) \
   SYS_DEBUG_MESSAGE(SYS_ERROR_DEBUG, "[DEBUG] " prefix message)
+#else
+#  define APP_DEBUG_PRINT(prefix, format, ...)
+#  define APP_DEBUG_MESSAGE(prefix, message)
+#endif
 
 #endif  // _UTILDEFINES_H

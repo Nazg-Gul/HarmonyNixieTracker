@@ -65,6 +65,7 @@
         <itemPath>../src/app_command_nixie.h</itemPath>
         <itemPath>../src/app_command_phy.h</itemPath>
         <itemPath>../src/app_command_debug.h</itemPath>
+        <itemPath>../src/utildefines.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="crypto" projectFiles="true">
@@ -289,9 +290,6 @@
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/console/sys_console.h</itemPath>
           </logicalFolder>
           <logicalFolder name="f9" displayName="debug" projectFiles="true">
-            <logicalFolder name="f1" displayName="src" projectFiles="true">
-              <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/debug/src/sys_debug_local.h</itemPath>
-            </logicalFolder>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/debug/sys_debug.h</itemPath>
           </logicalFolder>
           <logicalFolder name="f3" displayName="dma" projectFiles="true">
@@ -982,12 +980,7 @@
               <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/console/src/sys_console_uart.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f3" displayName="debug" projectFiles="true">
-            <logicalFolder name="f1" displayName="src" projectFiles="true">
-              <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/debug/src/sys_debug.c</itemPath>
-            </logicalFolder>
-          </logicalFolder>
-          <logicalFolder name="f4" displayName="fs" projectFiles="true">
+          <logicalFolder name="f3" displayName="fs" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
                 <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/fs/src/dynamic/sys_fs.c</itemPath>
@@ -996,24 +989,23 @@
             </logicalFolder>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/fs/fat_fs/src/file_system/ff.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/fs/fat_fs/src/hardware_access/diskio.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/fs/mpfs/src/mpfs.c</itemPath>
           </logicalFolder>
-          <logicalFolder name="f5" displayName="int" projectFiles="true">
+          <logicalFolder name="f4" displayName="int" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/int/src/sys_int_pic32.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f6" displayName="random" projectFiles="true">
+          <logicalFolder name="f5" displayName="random" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/random/src/sys_random.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f7" displayName="reset" projectFiles="true">
+          <logicalFolder name="f6" displayName="reset" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/reset/src/sys_reset.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f8" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f7" displayName="tmr" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/system/tmr/src/sys_tmr.c</itemPath>
             </logicalFolder>
@@ -1035,12 +1027,7 @@
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/dhcp.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/dns.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/icmp.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/nbns.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/sntp.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_helper.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_link_local.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/zero_conf_multicast_dns.c</itemPath>
-            <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/tcpip_announce.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/tcpip_commands.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/hash_fnv.c</itemPath>
             <itemPath>../../../../../../../opt/microchip/harmony/v2_02_00b/framework/tcpip/src/oahash.c</itemPath>
@@ -1110,6 +1097,9 @@
     <Elem>../src/default</Elem>
     <Elem>../src/system_config/default</Elem>
     <Elem>/opt/microchip/harmony/v2_02_00b</Elem>
+    <Elem>..\src</Elem>
+    <Elem>..\src\default</Elem>
+    <Elem>..\src\system_config\default</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -1158,7 +1148,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="/opt/microchip/harmony/v2_02_00b/framework;../src;../src/system_config/default;../src/default;../../../../../../../opt/microchip/harmony/v2_02_00b/framework;../src/system_config/default/framework;../../../../../../../opt/microchip/harmony/v2_02_00b/third_party/tcpip/wolfssl"/>
+                  value="/opt/microchip/harmony/v2_02_00b/framework;../../../../../../../opt/Microchip/harmony/v2_02_00b/framework;../src;../src/system_config/default;../src/default;../../../../../../../opt/microchip/harmony/v2_02_00b/framework;../src/system_config/default/framework;../../../../../../../opt/microchip/harmony/v2_02_00b/third_party/tcpip/wolfssl"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -1167,7 +1157,8 @@
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
-        <property key="preprocessor-macros" value="HAVE_CONFIG_H"/>
+        <property key="preprocessor-macros"
+                  value=";WOLFSSL_SMALL_STACK;USE_SLOW_SHA;HAVE_CONFIG_H"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="toplevel-reordering" value=""/>

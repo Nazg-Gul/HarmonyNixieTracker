@@ -305,6 +305,7 @@ static void shuffleServerValueDigits(AppNixieData* app_nixie_data) {
 ////////////////////////////////////////
 // Display requested value.
 
+#ifdef SYS_CMD_REMAP_SYS_DEBUG_MESSAGE
 static const char* nixieTypeStringify(NixieType type) {
   switch (type) {
     case NIXIE_TYPE_IN12A:
@@ -315,6 +316,7 @@ static const char* nixieTypeStringify(NixieType type) {
   SYS_ASSERT(0, "\r\nUnhandled nixie type.\r\n");
   return "unknown";
 }
+#endif
 
 // Returns -1 if there is no cathode for the requested symbol.
 static int8_t nixieSymbolToCathodeIndex(NixieType type, char symbol) {

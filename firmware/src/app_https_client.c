@@ -76,7 +76,7 @@
   APP_DEBUG_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
 #define HTTPS_DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
-#ifdef SYS_DEBUG_ENABLE
+#if defined(SYS_DEBUG_ENABLE) && defined(DEBUG_WOLFSSL)
 #  define WITH_WOLFSSL_DEBUG
 #endif
 
