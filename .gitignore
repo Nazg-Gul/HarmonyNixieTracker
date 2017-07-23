@@ -1,5 +1,7 @@
 # See http://microchipdeveloper.com/faq:72
 
+/*.patch
+
 /firmware/HarmonyNixieTracker.X/build/default/
 /firmware/HarmonyNixieTracker.X/dist/default/
 
