@@ -20,8 +20,8 @@
 //
 // Author: Sergey Sharybin (sergey.vfx@gmail.com)
 
-#ifndef _SYS_DEFINITIONS_STUB_H_
-#define _SYS_DEFINITIONS_STUB_H_
+#ifndef _TPCIP_TCPIP_STUB_H
+#define _TPCIP_TCPIP_STUB_H
 
 #include <assert.h>
 #include <stdint.h>
@@ -46,28 +46,4 @@ typedef struct {
 
 typedef void* NET_PRES_SKT_HANDLE_T;
 
-enum SysErrorType {
-  SYS_ERROR_DEBUG,
-};
-
-#if 0
-#  define SYS_DEBUG_PRINT(severity, format, ...) printf(format, ##__VA_ARGS__)
-#  define SYS_DEBUG_MESSAGE(severity, message)   printf("%s\n", message)
-
-#  define SYS_CONSOLE_PRINT(format, ...)  printf(format, ##__VA_ARGS__)
-#  define SYS_CONSOLE_MESSAGE(message)    printf("%s\n", message)
-
-#  define SYS_ASSERT(expression, message) assert((expression))
-#  define SYS_MESSAGE(message)            printf("%s\n", message)
-#else
-#  define SYS_DEBUG_PRINT(severity, format, ...)
-#  define SYS_DEBUG_MESSAGE(severity, message)
-
-#  define SYS_CONSOLE_PRINT(format, ...)
-#  define SYS_CONSOLE_MESSAGE(message)
-
-#  define SYS_ASSERT(expression, message)
-#  define SYS_MESSAGE(message)
-#endif
-
-#endif
+#endif  // _TPCIP_TCPIP_STUB_H_

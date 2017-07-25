@@ -24,6 +24,7 @@ set(FIRMWARE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../firmware/src/")
 
 set(INC
   .
+  ./stubs/
   ${FIRMWARE_SOURCE_DIR}
 )
 
@@ -40,9 +41,13 @@ add_library(fw_test_util_string ${FIRMWARE_SOURCE_DIR}/util_string.c
                                 ${FIRMWARE_SOURCE_DIR}/gcc/memmem.c
                                 ${FIRMWARE_SOURCE_DIR}/gcc/memmem.h)
 target_link_libraries(fw_test_util_string fw_test_util_math)
+add_library(fw_test_util_url ${FIRMWARE_SOURCE_DIR}/util_url.c
+                             ${FIRMWARE_SOURCE_DIR}/util_url.h)
+target_link_libraries(fw_test_util_url fw_test_util_string)
 
 add_library(fw_test_app_nixie ${FIRMWARE_SOURCE_DIR}/app_nixie.c)
 target_link_libraries(fw_test_app_nixie "fw_test_util_math;fw_test_util_string")
 
 NIXIETRACKER_TEST(app_nixie   MODULE firmware LIBRARIES fw_test_app_nixie)
 NIXIETRACKER_TEST(util_string MODULE firmware LIBRARIES fw_test_util_string)
+NIXIETRACKER_TEST(util_url    MODULE firmware LIBRARIES fw_test_util_url)
