@@ -29,8 +29,8 @@
 #include "util_math.h"
 #include "util_string.h"
 
-// Parse URL part prior to :// (aKa, scheme).
-static bool urlParse_scheme(const char* url_part,  size_t len, 
+// Parse URL part prior to :// (aka, scheme).
+static bool urlParse_scheme(const char* url_part, size_t len,
                             char* scheme, size_t max_scheme,
                             uint16_t* port) {
   safe_strncpy_len(scheme, url_part, len, max_scheme);
@@ -155,8 +155,8 @@ static bool urlParse_pathQueryAndFragment(
   // Get query.
   token = strchr_len(url_part, '?', len);
   if (token != NULL) {
-    safe_strncpy_len(query, 
-                     token + 1, 
+    safe_strncpy_len(query,
+                     token + 1,
                      len - (token - url_part) - 1,
                      max_query);
     // Move end of the url_path to only include [/path].
