@@ -39,6 +39,8 @@ typedef enum {
   APP_SHIFT_REGISTER_STATE_TRANSMIT_STEP,
   // End transmittance. Will toggle RCK and pull ~G down.
   APP_SHIFT_REGISTER_STATE_TRANSMIT_FINISH,
+  // Pause transmittance after byte was sent.
+  APP_SHIFT_REGISTER_STATE_TRANSMIT_PAUSE,
 } AppShiftRegisterState;
 
 typedef struct AppShiftRegisterData {

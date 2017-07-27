@@ -64,6 +64,14 @@
 #  define SHIFT_DATA_SET(x)      SHIFT_DATA_StateSet(x ? 1 : 0)
 #endif
 
+#define SMALL_DELAY()  \
+  do {                 \
+    Nop();             \
+    Nop();             \
+    Nop();             \
+    Nop();             \
+  } while (false)
+
 static void transmitBegin(AppShiftRegisterData* app_shift_register_data) {
   // Reset current status.
   app_shift_register_data->_private.send.current_byte = 0;
@@ -85,8 +93,9 @@ static void transmitStep(AppShiftRegisterData* app_shift_register_data) {
   // Handle falling edge and go to the next bit when needed.
   if (data->_private.send.counter == 1) {
     SHIFT_SRCK_PULL_DOWN();
+    SMALL_DELAY();
     // For the purposes of debug, we always bring DATA low.
-    SHIFT_DATA_PULL_DOWN();
+    // SHIFT_DATA_PULL_DOWN();
     // Advance to the next bit.
     ++data->_private.send.current_bit;
     data->_private.send.counter = 0;
@@ -96,19 +105,22 @@ static void transmitStep(AppShiftRegisterData* app_shift_register_data) {
   if (data->_private.send.current_bit == 8) {
     data->_private.send.current_bit = 0;
     ++data->_private.send.current_byte;
-  }
-  // Check whether all data was transferred.
-  if (data->_private.send.current_byte == data->_private.send.num_bytes) {
-    data->state = APP_SHIFT_REGISTER_STATE_TRANSMIT_FINISH;
+    // Check whether all data was transferred.
+    if (data->_private.send.current_byte == data->_private.send.num_bytes) {
+      data->state = APP_SHIFT_REGISTER_STATE_TRANSMIT_FINISH;
+    } else {
+      data->state = APP_SHIFT_REGISTER_STATE_TRANSMIT_PAUSE;
+    }
     return;
   }
   const uint8_t current_byte =
       data->_private.send.data[data->_private.send.current_byte];
-  const uint8_t value = current_byte & (1 << (8 - data->_private.send.current_bit));
+  const uint8_t value = current_byte & (1 << (7 - data->_private.send.current_bit));
   // Set new value on the serial output.
   SHIFT_DATA_SET(value);
   // NOTE: Sampling happens on the raising edge.
   // NOTE: Falling edge will happen on the next iteration of the state machine.
+  SMALL_DELAY();
   SHIFT_SRCK_PULL_UP();
   ++data->_private.send.counter;
 }
@@ -124,6 +136,16 @@ static void transmitFinish(AppShiftRegisterData* app_shift_register_data) {
   }
   // Toggle RCK to copy data from shift register to storage.
   SHIFT_RCK_PULL_UP();
+  ++data->_private.send.counter;
+}
+
+static void transmitPause(AppShiftRegisterData* app_shift_register_data) {
+  AppShiftRegisterData* data = app_shift_register_data;
+  if (data->_private.send.counter == 1) {
+    data->_private.send.counter = 0;
+    app_shift_register_data->state = APP_SHIFT_REGISTER_STATE_TRANSMIT_STEP;
+    return;
+  }
   ++data->_private.send.counter;
 }
 
@@ -149,6 +171,9 @@ void APP_ShiftRegister_Tasks(AppShiftRegisterData* app_shift_register_data) {
       break;
     case APP_SHIFT_REGISTER_STATE_TRANSMIT_FINISH:
       transmitFinish(app_shift_register_data);
+      break;
+    case APP_SHIFT_REGISTER_STATE_TRANSMIT_PAUSE:
+      transmitPause(app_shift_register_data);
       break;
   }
 }
