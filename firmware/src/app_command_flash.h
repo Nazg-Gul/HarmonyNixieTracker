@@ -26,53 +26,6 @@
 struct AppData;
 struct SYS_CMD_DEVICE_NODE;
 
-// TODO(sergey): Consider de-duplicating task logic with RTC commands.
-
-typedef enum {
-  // Callback is being invoked for the first time after flash module became
-  // available.
-  APP_COMMAND_FLASH_MODE_CALLBACK_INVOKE,
-  // Callback is called after callback was invoked, to update status of async
-  // running task.
-  APP_COMMAND_FLASH_MODE_CALLBACK_UPDATE,
-} AppCommandFlashCallbackMode;
-
-typedef void (*AppCommandFlashCallback)(struct AppData* app_data,
-                                        struct SYS_CMD_DEVICE_NODE* cmd_io,
-                                        AppCommandFlashCallbackMode mode);
-
-typedef enum {
-  // None of the flash tasks to be performed.
-  APP_COMMAND_FLASH_STATE_NONE,
-  // Wait for flash to become available for the commands.
-  APP_COMMAND_FLASH_STATE_WAIT_AVAILABLE,
-  // Flash command is running a background task.
-  APP_COMMAND_FLASH_STATE_RUNNING,
-} AppCommandFlashState;
-
-typedef struct AppCommandFlashData {
-  // Current state of flash command handling.
-  AppCommandFlashState state;
-
-  // Callback which is executed once flash handle is free.
-  //
-  // This is a way to avoid too many states of the state machine,
-  // and general rule here is:
-  //
-  // - Command processor callback sets flash data state to WAIT_AVAILABLE,
-  //   additionally it sets which callback needs to be called.
-  // - Flash state machine waits for flash handle to be free.
-  // - Flash state machine calls the specified callback.
-  AppCommandFlashCallback callback;
-  struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
-} AppCommandFlashData;
-
-// Initialize flash related command processor state and data.
-void APP_Command_Flash_Initialize(struct AppData* app_data);
-
-// Perform flash command processor tasks.
-void APP_Command_Flash_Tasks(struct AppData* app_data);
-
 // Handle `flash` command line command.
 int APP_Command_Flash(struct AppData* app_data,
                       struct SYS_CMD_DEVICE_NODE* cmd_io,

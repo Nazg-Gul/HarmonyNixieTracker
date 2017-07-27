@@ -45,52 +45,28 @@ static int appCmdNixieUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   return true;
 }
 
-// TODO(sergey): Consider de-duplicating task logic with RTC commands.
-
-static void appCmdNixieSetCallback(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   AppCommandNixieCallback callback) {
-  app_data->command.nixie.callback = callback;
-  app_data->command.nixie.callback_cmd_io = cmd_io;
-}
-
-static void appCmdNixieStartTask(AppData* app_data,
-                                 SYS_CMD_DEVICE_NODE* cmd_io,
-                                 AppCommandNixieCallback callback) {
-  SYS_ASSERT(app_data->command.nixie.state == APP_COMMAND_NIXIE_STATE_NONE,
-             "\r\nAttempt to start task while another one is in process\r\n");
-  app_data->command.state = APP_COMMAND_STATE_NIXIE;
-  app_data->command.nixie.state = APP_COMMAND_NIXIE_STATE_WAIT_AVAILABLE;
-  appCmdNixieSetCallback(app_data, cmd_io, callback);
-}
-
-static void appCmdNixieFinishTask(AppData* app_data) {
-  SYS_ASSERT(app_data->command.nixie.state != APP_COMMAND_NIXIE_STATE_NONE,
-             "\r\nAttempt to finish non-existing task\r\n");
-  app_data->command.state = APP_COMMAND_STATE_NONE;
-  app_data->command.nixie.state = APP_COMMAND_NIXIE_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdNixieSetCallback(app_data, NULL, NULL);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Commands implementation.
 
+static bool performNixieCheckAvailable(AppData* app_data) {
+  return !APP_Nixie_IsBusy(&app_data->nixie);
+}
+
 // ============ Display ============
 
-static void performDisplay(AppData* app_data,
-                           SYS_CMD_DEVICE_NODE* cmd_io,
-                           AppCommandNixieCallbackMode mode) {
+static AppCommandTaskCallbackResult performNixieDisplay(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_NIXIE_MODE_CALLBACK_INVOKE: {
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       APP_Nixie_Display(&app_data->nixie,
                         app_data->command.nixie._private.display.value);
       break;
-    }
-    case APP_COMMAND_NIXIE_MODE_CALLBACK_UPDATE:
-      appCmdNixieFinishTask(app_data);
-      break;
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
+      return APP_COMMAND_TASK_RESULT_FINISHED;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdNixieDisplay(AppData* app_data,
@@ -108,23 +84,28 @@ static int appCmdNixieDisplay(AppData* app_data,
   strncpy(app_data->command.nixie._private.display.value,
           value,
           sizeof(app_data->command.nixie._private.display.value));
-  appCmdNixieStartTask(app_data, cmd_io, &performDisplay);
+  APP_Command_Task_Schedule(&app_data->command.task,
+                            cmd_io,
+                            performNixieDisplay,
+                            performNixieCheckAvailable);
   return true;
 }
 
 // ============ Fetch ============
 
-static void performFetch(AppData* app_data,
-                         SYS_CMD_DEVICE_NODE* cmd_io,
-                         AppCommandNixieCallbackMode mode) {
+static AppCommandTaskCallbackResult performNixieFetch(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_NIXIE_MODE_CALLBACK_INVOKE: {
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE: {
       APP_Nixie_Fetch(&app_data->nixie,
                       &app_data->command.nixie._private.fetch.is_fetched,
                       app_data->command.nixie._private.fetch.value);
       break;
     }
-    case APP_COMMAND_NIXIE_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
+      // TODO(sergey): What if someone else made nixie module busy?
       if (!APP_Nixie_IsBusy(&app_data->nixie)) {
         if (app_data->command.nixie._private.fetch.is_fetched) {
           COMMAND_PRINT("Value from server: " NIXIE_DISPLAY_FORMAT "\r\n",
@@ -133,10 +114,11 @@ static void performFetch(AppData* app_data,
         } else {
           COMMAND_MESSAGE("Error fetching value from server.\r\n");
         }
-        appCmdNixieFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdNixieFetch(AppData* app_data,
@@ -145,7 +127,10 @@ static int appCmdNixieFetch(AppData* app_data,
   if (argc != 2) {
     return appCmdNixieUsage(cmd_io, argv[0]);
   }
-  appCmdNixieStartTask(app_data, cmd_io, &performFetch);
+  APP_Command_Task_Schedule(&app_data->command.task,
+                            cmd_io,
+                            performNixieFetch,
+                            performNixieCheckAvailable);
   return true;
 }
 
@@ -153,34 +138,7 @@ static int appCmdNixieFetch(AppData* app_data,
 // Public API.
 
 void APP_Command_Nixie_Initialize(AppData* app_data) {
-  app_data->command.nixie.state = APP_COMMAND_NIXIE_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdNixieSetCallback(app_data, NULL, NULL);
-}
-
-void APP_Command_Nixie_Tasks(AppData* app_data) {
-  switch (app_data->command.nixie.state) {
-    case APP_COMMAND_NIXIE_STATE_NONE:
-      // Nothing to do.
-      break;
-    case APP_COMMAND_NIXIE_STATE_WAIT_AVAILABLE:
-      if (!APP_Nixie_IsBusy(&app_data->nixie)) {
-        DEBUG_MESSAGE("Nixie is free, invoking command.\r\n");
-        app_data->command.nixie.state = APP_COMMAND_NIXIE_STATE_RUNNING;
-        app_data->command.nixie.callback(
-            app_data,
-            app_data->command.nixie.callback_cmd_io,
-            APP_COMMAND_NIXIE_MODE_CALLBACK_INVOKE);
-      } else {
-        DEBUG_MESSAGE("Nixie is busy, waiting.\r\n");
-      }
-      break;
-    case APP_COMMAND_NIXIE_STATE_RUNNING:
-      app_data->command.nixie.callback(app_data,
-                                       app_data->command.nixie.callback_cmd_io,
-                                       APP_COMMAND_NIXIE_MODE_CALLBACK_UPDATE);
-      break;
-  }
+  // TODO(sergey): Memset to zero in debug mode?
 }
 
 int APP_Command_Nixie(AppData* app_data,

@@ -30,43 +30,7 @@
 struct AppData;
 struct SYS_CMD_DEVICE_NODE;
 
-typedef enum {
-  // Callback is being invoked for the first time after HTTP(S) client becames
-  // available.
-  APP_COMMAND_FETCH_MODE_CALLBACK_INVOKE,
-  // Callback is called after callback was invoked, to update status of async
-  // running task.
-  APP_COMMAND_FETCH_MODE_CALLBACK_UPDATE,
-} AppCommandFetchCallbackMode;
-
-typedef void (*AppCommandFetchCallback)(struct AppData* app_data,
-                                        struct SYS_CMD_DEVICE_NODE* cmd_io,
-                                        AppCommandFetchCallbackMode mode);
-
-typedef enum {
-  // None of the fetch tasks to be performed.
-  APP_COMMAND_FETCH_STATE_NONE,
-  // Wait for fetch handle to become available for the commands.
-  APP_COMMAND_FETCH_STATE_WAIT_AVAILABLE,
-  // Fetch command is running a background task.
-  APP_COMMAND_FETCH_STATE_RUNNING,
-} AppCommandFetchState;
-
 typedef struct AppCommandFetchData {
-  // Current state of fetch command handling.
-  AppCommandFetchState state;
-  // Callback which is executed once fetch handle is free.
-  //
-  // This is a way to avoid too many states of the state machine,
-  // and general rule here is:
-  //
-  // - Command processor callback sets fetch data state to WAIT_AVAILABLE,
-  //   additionally it sets which callback needs to be called.
-  // - Fetch state machine waits for HTTP(S) client handle to be free.
-  // - Fetch state machine calls the specified callback.
-  AppCommandFetchCallback callback;
-  struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
-
   // Requested URL for fetch.
   char url[MAX_URL];
 
@@ -76,9 +40,6 @@ typedef struct AppCommandFetchData {
 
 // Initialize fetch related command processor state and data.
 void APP_Command_Fetch_Initialize(struct AppData* app_data);
-
-// Perform Fetch command processor tasks.
-void APP_Command_Fetch_Tasks(struct AppData* app_data);
 
 // Handle `fetch` command line command.
 int APP_Command_Fetch(struct AppData* app_data,

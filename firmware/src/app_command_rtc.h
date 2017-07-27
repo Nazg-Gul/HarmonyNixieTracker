@@ -30,43 +30,7 @@
 struct AppData;
 struct SYS_CMD_DEVICE_NODE;
 
-typedef enum {
-  // Callback is being invoked for the first time after RTC module became
-  // available.
-  APP_COMMAND_RTC_MODE_CALLBACK_INVOKE,
-  // Callback is called after callback was invoked, to update status of async
-  // running task.
-  APP_COMMAND_RTC_MODE_CALLBACK_UPDATE,
-} AppCommandRTCCallbackMode;
-
-typedef void (*AppCommandRTCCallback)(struct AppData* app_data,
-                                      struct SYS_CMD_DEVICE_NODE* cmd_io,
-                                      AppCommandRTCCallbackMode mode);
-
-typedef enum {
-  // None of the RTC tasks to be performed.
-  APP_COMMAND_RTC_STATE_NONE,
-  // Wait for RTC handle to become available for the commands.
-  APP_COMMAND_RTC_STATE_WAIT_AVAILABLE,
-  // RTC command is running a background task.
-  APP_COMMAND_RTC_STATE_RUNNING,
-} AppCommandRTCState;
-
 typedef struct AppCommandRTCData {
-  // Current state of RTC command handling.
-  AppCommandRTCState state;
-  // Callback which is executed once RTC handle is free.
-  //
-  // This is a way to avoid too many states of the state machine,
-  // and general rule here is:
-  //
-  // - Command processor callback sets RTC data state to WAIT_AVAILABLE,
-  //   additionally it sets which callback needs to be called.
-  // - RTC state machine waits for RTC handle to be free.
-  // - RTC state machine calls the specified callback.
-  AppCommandRTCCallback callback;
-  struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
-
   // Storage buffers for async RTC communication.
   union {
     // Storage for `oscillator` command.
@@ -104,9 +68,6 @@ typedef struct AppCommandRTCData {
 
 // Initialize RTC related command processor state and data.
 void APP_Command_RTC_Initialize(struct AppData* app_data);
-
-// Perform RTC command processor tasks.
-void APP_Command_RTC_Tasks(struct AppData* app_data);
 
 // Handle `rtc` command line command.
 int APP_Command_RTC(struct AppData* app_data,

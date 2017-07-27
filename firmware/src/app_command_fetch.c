@@ -31,45 +31,23 @@
 #define LOG_PREFIX "APP CMD FETCH: "
 #define DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
 
+////////////////////////////////////////////////////////////////////////////////
+// Internal routines.
+
 static int appCmdFetchUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   COMMAND_PRINT("Usage: %s <url>\r\n", argv0);
   return true;
 }
 
-// TODO(sergey): Consider de-duplicating task logic with RTC commands.
-
-static void appCmdFetchSetCallback(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   AppCommandFetchCallback callback) {
-  app_data->command.fetch.callback = callback;
-  app_data->command.fetch.callback_cmd_io = cmd_io;
-}
-
-static void appCmdFetchStartTask(AppData* app_data,
-                                 SYS_CMD_DEVICE_NODE* cmd_io,
-                                 AppCommandFetchCallback callback) {
-  SYS_ASSERT(app_data->command.fetch.state == APP_COMMAND_FETCH_STATE_NONE,
-             "\r\nAttempt to start task while another one is in process\r\n");
-  app_data->command.state = APP_COMMAND_STATE_FETCH;
-  app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_WAIT_AVAILABLE;
-  appCmdFetchSetCallback(app_data, cmd_io, callback);
-}
-
-static void appCmdFetchFinishTask(AppData* app_data) {
-  SYS_ASSERT(app_data->command.fetch.state != APP_COMMAND_FETCH_STATE_NONE,
-             "\r\nAttempt to finish non-existing task\r\n");
-  app_data->command.state = APP_COMMAND_STATE_NONE;
-  app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdFetchSetCallback(app_data, NULL, NULL);
-}
+////////////////////////////////////////////////////////////////////////////////
+// Commands implementation.
 
 static void bufferReceivedCallback(const uint8_t* buffer,
                                   uint16_t num_bytes,
                                   void* user_data) {
   AppData* app_data = (AppData*)user_data;
   // TOFO(sergey): This doesn't look nice.
-  SYS_CMD_DEVICE_NODE* cmd_io = app_data->command.fetch.callback_cmd_io;
+  SYS_CMD_DEVICE_NODE* cmd_io = app_data->command.task.callback_cmd_io;
   uint16_t i;
   // TODO(sergey): This is because of some nasty defines in stdio which is
   // indirectly included via system_definitions.h -> tpcpip.h.
@@ -94,11 +72,12 @@ static void errorCallback(void* user_data) {
   app_data->command.fetch.request_active = false;
 }
 
-static void performFetch(AppData* app_data,
-                         SYS_CMD_DEVICE_NODE* cmd_io,
-                         AppCommandFetchCallbackMode mode) {
+static AppCommandTaskCallbackResult performFetch(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_FETCH_MODE_CALLBACK_INVOKE: {
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE: {
       AppHttpsClientCallbacks callbacks = {NULL};
       callbacks.buffer_received = bufferReceivedCallback;
       callbacks.request_handled = requestHandledCallback;
@@ -108,16 +87,21 @@ static void performFetch(AppData* app_data,
       if (!APP_HTTPS_Client_Request(&app_data->https_client,
                                     app_data->command.fetch.url,
                                     &callbacks)) {
-        appCmdFetchFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
     }
-    case APP_COMMAND_FETCH_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       if (!app_data->command.fetch.request_active) {
-        appCmdFetchFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
+}
+
+static bool performFetchCheckAvailable(AppData* app_data) {
+  return !APP_HTTPS_Client_IsBusy(&app_data->https_client);
 }
 
 static int appCmdFetch(AppData* app_data,
@@ -129,42 +113,16 @@ static int appCmdFetch(AppData* app_data,
   safe_strncpy(app_data->command.fetch.url,
                argv[1],
                sizeof(app_data->command.fetch.url));
-  appCmdFetchStartTask(app_data, cmd_io, &performFetch);
+  APP_Command_Task_Schedule(&app_data->command.task,
+                            cmd_io,
+                            performFetch,
+                            performFetchCheckAvailable);
   return true;
 }
 
 void APP_Command_Fetch_Initialize(AppData* app_data) {
   // TODO(sergey): Ignore for release builds to save CPU ticks?
   memset(&app_data->command.fetch, 0, sizeof(app_data->command.fetch));
-  app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdFetchSetCallback(app_data, NULL, NULL);
-}
-
-void APP_Command_Fetch_Tasks(struct AppData* app_data) {
-  switch (app_data->command.fetch.state) {
-    case APP_COMMAND_FETCH_STATE_NONE:
-      // Nothing to do.
-      break;
-    case APP_COMMAND_FETCH_STATE_WAIT_AVAILABLE:
-      if (!APP_HTTPS_Client_IsBusy(&app_data->https_client)) {
-        DEBUG_MESSAGE("HTTP(S) client is free, invoking command.\r\n");
-        app_data->command.fetch.state = APP_COMMAND_FETCH_STATE_RUNNING;
-        app_data->command.fetch.callback(
-            app_data,
-            app_data->command.fetch.callback_cmd_io,
-            APP_COMMAND_FETCH_MODE_CALLBACK_INVOKE);
-      } else {
-        DEBUG_MESSAGE("HTTPS(client) is busy, waiting.\r\n");
-      }
-      break;
-    case APP_COMMAND_FETCH_STATE_RUNNING:
-      app_data->command.fetch.callback(
-          app_data,
-          app_data->command.fetch.callback_cmd_io,
-          APP_COMMAND_FETCH_MODE_CALLBACK_UPDATE);
-      break;
-  }
 }
 
 int APP_Command_Fetch(AppData* app_data,

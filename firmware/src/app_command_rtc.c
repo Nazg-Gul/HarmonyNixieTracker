@@ -37,6 +37,9 @@ static const char* days_of_week[] = {"Mon", "Tue", "Wed", "Thu",
 static const char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
+////////////////////////////////////////////////////////////////////////////////
+// Internal routines.
+
 static int appCmdRTCUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   COMMAND_PRINT("Usage: %s command arguments ...\r\n", argv0);
   COMMAND_MESSAGE(
@@ -71,76 +74,64 @@ static int appCmdRTCUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   return true;
 }
 
-static void appCmdRTCSetCallback(AppData* app_data,
-                                 SYS_CMD_DEVICE_NODE* cmd_io,
-                                 AppCommandRTCCallback callback) {
-  app_data->command.rtc.callback = callback;
-  app_data->command.rtc.callback_cmd_io = cmd_io;
+////////////////////////////////////////////////////////////////////////////////
+// Commands implementation.
+
+static bool performRTCCheckAvailable(AppData* app_data) {
+  return !RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle);
 }
 
-static void appCmdRTCStartTask(AppData* app_data,
-                               SYS_CMD_DEVICE_NODE* cmd_io,
-                               AppCommandRTCCallback callback) {
-  SYS_ASSERT(app_data->command.rtc.state == APP_COMMAND_RTC_STATE_NONE,
-             "\r\nAttempt to start task while another one is in process\r\n");
-  app_data->command.state = APP_COMMAND_STATE_RTC;
-  app_data->command.rtc.state = APP_COMMAND_RTC_STATE_WAIT_AVAILABLE;
-  appCmdRTCSetCallback(app_data, cmd_io, callback);
-}
+// ============ OSCILLATOR START/STOP/STATUS ============
 
-static void appCmdRTCFinishTask(AppData* app_data) {
-  SYS_ASSERT(app_data->command.rtc.state != APP_COMMAND_RTC_STATE_NONE,
-             "\r\nAttempt to finish non-existing task\r\n");
-  app_data->command.state = APP_COMMAND_STATE_NONE;
-  app_data->command.rtc.state = APP_COMMAND_RTC_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdRTCSetCallback(app_data, NULL, NULL);
-}
-
-static void performOscillatorStart(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCOscillatorStart(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableOscillator(&app_data->rtc.rtc_handle, true);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
-static void performOscillatorStop(AppData* app_data,
-                                  SYS_CMD_DEVICE_NODE* cmd_io,
-                                  AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCOscillatorStop(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableOscillator(&app_data->rtc.rtc_handle, false);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
-static void performOscillatorStatus(AppData* app_data,
-                                    SYS_CMD_DEVICE_NODE* cmd_io,
-                                    AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCOscillatorStatus(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_OscillatorStatus(
           &app_data->rtc.rtc_handle,
           &app_data->command.rtc._private.oscillator.status);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
@@ -148,10 +139,11 @@ static void performOscillatorStatus(AppData* app_data,
             "Oscillator status: %s\r\n",
             app_data->command.rtc._private.oscillator.status ? "ENABLED"
                                                              : "DISABLED");
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdRTCOscillator(AppData* app_data,
@@ -161,27 +153,39 @@ static int appCmdRTCOscillator(AppData* app_data,
     return appCmdRTCUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[2], "start")) {
-    appCmdRTCStartTask(app_data, cmd_io, &performOscillatorStart);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                               cmd_io,
+                               performRTCOscillatorStart,
+                               performRTCCheckAvailable);
   } else if (STREQ(argv[2], "stop")) {
-    appCmdRTCStartTask(app_data, cmd_io, &performOscillatorStop);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCOscillatorStop,
+                              performRTCCheckAvailable);
   } else if (STREQ(argv[2], "status")) {
-    appCmdRTCStartTask(app_data, cmd_io, &performOscillatorStatus);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCOscillatorStatus,
+                              performRTCCheckAvailable);
   } else {
     return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }
 
-static void performDateShow(AppData* app_data,
-                            SYS_CMD_DEVICE_NODE* cmd_io,
-                            AppCommandRTCCallbackMode mode) {
+// ============ DATE SHOW/SET ============
+
+static AppCommandTaskCallbackResult performRTCDateShow(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_ReadDateAndTime(
           &app_data->rtc.rtc_handle,
           &app_data->command.rtc._private.date.date_time);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
@@ -195,29 +199,32 @@ static void performDateShow(AppData* app_data,
                       date_time->hours,
                       date_time->minutes,
                       date_time->seconds);
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
-static void performDateSet(AppData* app_data,
-                           SYS_CMD_DEVICE_NODE* cmd_io,
-                           AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCDateSet(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_WriteDateAndTime(
           &app_data->rtc.rtc_handle,
           &app_data->command.rtc._private.date.date_time);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static bool dateDecode(char** argv, RTC_MCP7940N_DateTime* date_time) {
@@ -286,10 +293,16 @@ static int appCmdRTCDate(AppData* app_data,
                          SYS_CMD_DEVICE_NODE* cmd_io,
                          int argc, char** argv) {
   if (argc == 2) {
-    appCmdRTCStartTask(app_data, cmd_io, &performDateShow);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCDateShow,
+                              performRTCCheckAvailable);
   } else if (argc == 7) {
     if (dateDecode(argv, &app_data->command.rtc._private.date.date_time)) {
-      appCmdRTCStartTask(app_data, cmd_io, &performDateSet);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCDateSet,
+                              performRTCCheckAvailable);
     } else {
       COMMAND_MESSAGE("Failed to parse date.\r\n");
       COMMAND_MESSAGE("Expected format: ddd DD MMM YYYY HH:MM:SS.\r\n");
@@ -300,50 +313,57 @@ static int appCmdRTCDate(AppData* app_data,
   return true;
 }
 
-static void performBatteryEnable(AppData* app_data,
-                                 SYS_CMD_DEVICE_NODE* cmd_io,
-                                 AppCommandRTCCallbackMode mode) {
+// ============ BATTERY ENABLE/DISABLE/STATUS ============
+
+static AppCommandTaskCallbackResult performRTCBatteryEnable(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, true);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        appCmdRTCFinishTask(app_data);
+        return  APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
-static void performBatteryDisable(AppData* app_data,
-                                  SYS_CMD_DEVICE_NODE* cmd_io,
-                                  AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCBatteryDisable(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_EnableBatteryBackup(&app_data->rtc.rtc_handle, false);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
-static void performBatteryStatus(AppData* app_data,
-                                 SYS_CMD_DEVICE_NODE* cmd_io,
-                                 AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCBatteryStatus(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_BatteryBackupStatus(
           &app_data->rtc.rtc_handle,
           &app_data->command.rtc._private.battery.status);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
@@ -351,10 +371,11 @@ static void performBatteryStatus(AppData* app_data,
             "Battery status: %s\r\n",
             app_data->command.rtc._private.battery.status ? "ENABLED"
                                                           : "DISABLED");
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdRTCBattery(AppData* app_data,
@@ -364,16 +385,27 @@ static int appCmdRTCBattery(AppData* app_data,
     return appCmdRTCUsage(cmd_io, argv[0]);
   }
   if (STREQ(argv[2], "enable")) {
-    appCmdRTCStartTask(app_data, cmd_io, &performBatteryEnable);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCBatteryEnable,
+                              performRTCCheckAvailable);
   } else if (STREQ(argv[2], "disable")) {
-    appCmdRTCStartTask(app_data, cmd_io, &performBatteryDisable);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCBatteryDisable,
+                              performRTCCheckAvailable);
   } else if (STREQ(argv[2], "status")) {
-    appCmdRTCStartTask(app_data, cmd_io, &performBatteryStatus);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCBatteryStatus,
+                              performRTCCheckAvailable);
   } else {
     return appCmdRTCUsage(cmd_io, argv[0]);
   }
   return true;
 }
+
+// ============ DUMP ============
 
 static void printRegisters(SYS_CMD_DEVICE_NODE* cmd_io,
                             uint8_t* registers,
@@ -390,27 +422,29 @@ static void printRegisters(SYS_CMD_DEVICE_NODE* cmd_io,
   }
 }
 
-static void performRTCDump(AppData* app_data,
-                           SYS_CMD_DEVICE_NODE* cmd_io,
-                           AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCDump(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_ReadNumRegisters(
           &app_data->rtc.rtc_handle,
           app_data->command.rtc._private.dump.registers_storage,
           RTC_MCP7940N_NUM_REGISTERS);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         printRegisters(cmd_io,
                         app_data->command.rtc._private.dump.registers_storage,
                         RTC_MCP7940N_NUM_REGISTERS);
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdRTCDump(AppData* app_data,
@@ -419,50 +453,59 @@ static int appCmdRTCDump(AppData* app_data,
   if (argc != 2) {
     return appCmdRTCUsage(cmd_io, argv[0]);
   }
-  appCmdRTCStartTask(app_data, cmd_io, &performRTCDump);
+  APP_Command_Task_Schedule(&app_data->command.task,
+                            cmd_io,
+                            performRTCDump,
+                            performRTCCheckAvailable);
   return true;
 }
 
-static void performRTCRegisterRead(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   AppCommandRTCCallbackMode mode) {
+// ============ REGISTER READ/WRITE ============
+
+static AppCommandTaskCallbackResult performRTCRegisterRead(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_ReadRegister(
           &app_data->rtc.rtc_handle,
           app_data->command.rtc._private.reg.register_address,
           &app_data->command.rtc._private.reg.register_value);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
         COMMAND_PRINT("Register value: 0x%02x.\r\n",
                       app_data->command.rtc._private.reg.register_value);
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
-static void performRTCRegisterWrite(AppData* app_data,
-                                    SYS_CMD_DEVICE_NODE* cmd_io,
-                                    AppCommandRTCCallbackMode mode) {
+static AppCommandTaskCallbackResult performRTCRegisterWrite(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_RTC_MODE_CALLBACK_INVOKE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE:
       RTC_MCP7940N_WriteRegister(
           &app_data->rtc.rtc_handle,
           app_data->command.rtc._private.reg.register_address,
           app_data->command.rtc._private.reg.register_value);
       break;
-    case APP_COMMAND_RTC_MODE_CALLBACK_UPDATE:
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
       // TODO(sergey): What if other routine will start using RTC
       // before this check?
       if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        appCmdRTCFinishTask(app_data);
+        return APP_COMMAND_TASK_RESULT_FINISHED;
       }
       break;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdRTCRegister(AppData* app_data,
@@ -473,11 +516,17 @@ static int appCmdRTCRegister(AppData* app_data,
   }
   if (argc == 4 && STREQ(argv[2], "read")) {
     app_data->command.rtc._private.reg.register_address = atoi(argv[3]);
-    appCmdRTCStartTask(app_data, cmd_io, &performRTCRegisterRead);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCRegisterRead,
+                              performRTCCheckAvailable);
   } else if (argc == 5 && STREQ(argv[2], "write")) {
     app_data->command.rtc._private.reg.register_address = atoi(argv[3]);
     app_data->command.rtc._private.reg.register_value = atoi(argv[4]);
-    appCmdRTCStartTask(app_data, cmd_io, &performRTCRegisterWrite);
+    APP_Command_Task_Schedule(&app_data->command.task,
+                              cmd_io,
+                              performRTCRegisterWrite,
+                              performRTCCheckAvailable);
   } else {
     return appCmdRTCUsage(cmd_io, argv[0]);
   }
@@ -487,33 +536,6 @@ static int appCmdRTCRegister(AppData* app_data,
 void APP_Command_RTC_Initialize(AppData* app_data) {
   // TODO(sergey): Ignore for release builds to save CPU ticks?
   memset(&app_data->command.rtc, 0, sizeof(app_data->command.rtc));
-  app_data->command.rtc.state = APP_COMMAND_RTC_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdRTCSetCallback(app_data, NULL, NULL);
-}
-
-void APP_Command_RTC_Tasks(struct AppData* app_data) {
-  switch (app_data->command.rtc.state) {
-    case APP_COMMAND_RTC_STATE_NONE:
-      // Nothing to do.
-      break;
-    case APP_COMMAND_RTC_STATE_WAIT_AVAILABLE:
-      if (!RTC_MCP7940N_IsBusy(&app_data->rtc.rtc_handle)) {
-        DEBUG_MESSAGE("RTC is free, invoking command.\r\n");
-        app_data->command.rtc.state = APP_COMMAND_RTC_STATE_RUNNING;
-        app_data->command.rtc.callback(app_data,
-                                       app_data->command.rtc.callback_cmd_io,
-                                       APP_COMMAND_RTC_MODE_CALLBACK_INVOKE);
-      } else {
-        DEBUG_MESSAGE("RTC is busy, waiting.\r\n");
-      }
-      break;
-    case APP_COMMAND_RTC_STATE_RUNNING:
-      app_data->command.rtc.callback(app_data,
-                                     app_data->command.rtc.callback_cmd_io,
-                                     APP_COMMAND_RTC_MODE_CALLBACK_UPDATE);
-      break;
-  }
 }
 
 int APP_Command_RTC(AppData* app_data,

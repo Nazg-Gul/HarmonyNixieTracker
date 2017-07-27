@@ -101,39 +101,22 @@ void APP_Command_Initialize(AppData* app_data) {
     SYS_CONSOLE_MESSAGE("APP: Error initializing command processor\r\n");
   }
   g_app_data = app_data;
-  app_data->command.state = APP_COMMAND_STATE_NONE;
+  APP_Command_Task_Initialize(&app_data->command.task);
   APP_Command_Fetch_Initialize(app_data);
-  APP_Command_Flash_Initialize(app_data);
   APP_Command_Nixie_Initialize(app_data);
   APP_Command_RTC_Initialize(app_data);
   APP_Command_ShiftRegister_Initialize(app_data);
 }
 
 void APP_Command_Tasks(AppData* app_data) {
-  switch (app_data->command.state) {
-    case APP_COMMAND_STATE_NONE:
-      // Nothing to do.
-      break;
-    case APP_COMMAND_STATE_FETCH:
-      APP_Command_Fetch_Tasks(app_data);
-      break;
-    case APP_COMMAND_STATE_FLASH:
-      APP_Command_Flash_Tasks(app_data);
-      break;
-    case APP_COMMAND_STATE_NIXIE:
-      APP_Command_Nixie_Tasks(app_data);
-      break;
-    case APP_COMMAND_STATE_RTC:
-      APP_Command_RTC_Tasks(app_data);
-      break;
-    case APP_COMMAND_STATE_SHIFT_REGISTER:
-      APP_Command_ShiftRegister_Tasks(app_data);
-      break;
-  }
+  APP_Command_Task_Tasks(&app_data->command.task, app_data);
 }
 
 bool APP_Command_IsBusy(AppData* app_data) {
-  return app_data->command.state != APP_COMMAND_STATE_NONE;
+  if (APP_Command_Task_IsBusy(&app_data->command.task)) {
+    return true;
+  }
+  return false;
 }
 
 bool APP_Command_CheckAvailable(AppData* app_data,

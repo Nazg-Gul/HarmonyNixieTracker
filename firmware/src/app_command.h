@@ -23,6 +23,9 @@
 #ifndef _APP_COMMAND_H
 #define _APP_COMMAND_H
 
+// Simple task scheduler implementation.
+#include "app_command_task.h"
+
 #include "app_command_debug.h"
 #include "app_command_fetch.h"
 #include "app_command_flash.h"
@@ -39,22 +42,11 @@
 struct AppData;
 struct SYS_CMD_DEVICE_NODE;
 
-typedef enum {
-  // Command processor has nothing to do.
-  APP_COMMAND_STATE_NONE,
-  // Per-command processor state.
-  APP_COMMAND_STATE_FETCH,
-  APP_COMMAND_STATE_FLASH,
-  APP_COMMAND_STATE_NIXIE,
-  APP_COMMAND_STATE_RTC,
-  APP_COMMAND_STATE_SHIFT_REGISTER,
-} AppCommandState;
-
 typedef struct AppCommandData {
-  AppCommandState state;
+  // Simple task scheduler.
+  AppCommandTaskData task;
   // Per-command data for the state machine.
   AppCommandFetchData fetch;
-  AppCommandFlashData flash;
   AppCommandNixieData nixie;
   AppCommandRTCData rtc;
   AppCommandShiftRegisterData shift_register;

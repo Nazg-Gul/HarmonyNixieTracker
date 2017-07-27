@@ -46,44 +46,21 @@ static int appCmdFlashUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
   return true;
 }
 
-// TODO(sergey): Consider de-duplicating task logic with RTC commands.
-
-static void appCmdFlashSetCallback(AppData* app_data,
-                                   SYS_CMD_DEVICE_NODE* cmd_io,
-                                   AppCommandFlashCallback callback) {
-  app_data->command.flash.callback = callback;
-  app_data->command.flash.callback_cmd_io = cmd_io;
-}
-
-static void appCmdFlashStartTask(AppData* app_data,
-                                 SYS_CMD_DEVICE_NODE* cmd_io,
-                                 AppCommandFlashCallback callback) {
-  SYS_ASSERT(app_data->command.flash.state == APP_COMMAND_FLASH_STATE_NONE,
-             "\r\nAttempt to start task while another one is in process\r\n");
-  app_data->command.state = APP_COMMAND_STATE_FLASH;
-  app_data->command.flash.state = APP_COMMAND_FLASH_STATE_WAIT_AVAILABLE;
-  appCmdFlashSetCallback(app_data, cmd_io, callback);
-}
-
-static void appCmdFlashFinishTask(AppData* app_data) {
-  SYS_ASSERT(app_data->command.flash.state != APP_COMMAND_FLASH_STATE_NONE,
-             "\r\nAttempt to finish non-existing task\r\n");
-  app_data->command.state = APP_COMMAND_STATE_NONE;
-  app_data->command.flash.state = APP_COMMAND_FLASH_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdFlashSetCallback(app_data, NULL, NULL);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Commands implementation.
 
+static bool performFlashCheckAvailable(AppData* app_data) {
+  return !APP_Flash_IsBusy(&app_data->flash);
+}
+
 // ============ SECTORS ============
 
-static void performSectors(AppData* app_data,
-                           SYS_CMD_DEVICE_NODE* cmd_io,
-                           AppCommandFlashCallbackMode mode) {
+static AppCommandTaskCallbackResult performFlashSectors(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_FLASH_MODE_CALLBACK_INVOKE: {
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE: {
       uint32_t total_sectors, free_sectors;
       if (APP_Flash_DriveSectorGet(&total_sectors, &free_sectors)) {
         COMMAND_PRINT("Total sectors: %d, free sectors: %d\r\n",
@@ -93,10 +70,10 @@ static void performSectors(AppData* app_data,
       }
       break;
     }
-    case APP_COMMAND_FLASH_MODE_CALLBACK_UPDATE:
-      appCmdFlashFinishTask(app_data);
-      break;
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
+      return APP_COMMAND_TASK_RESULT_FINISHED;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdFlashSectors(AppData* app_data,
@@ -105,17 +82,21 @@ static int appCmdFlashSectors(AppData* app_data,
   if (argc != 2) {
     return appCmdFlashUsage(cmd_io, argv[0]);
   }
-  appCmdFlashStartTask(app_data, cmd_io, &performSectors);
+  APP_Command_Task_Schedule(&app_data->command.task,
+                            cmd_io,
+                            performFlashSectors,
+                            performFlashCheckAvailable);
   return true;
 }
 
 // ============ FORMAT ============
 
-static void performFormat(AppData* app_data,
-                          SYS_CMD_DEVICE_NODE* cmd_io,
-                          AppCommandFlashCallbackMode mode) {
+static AppCommandTaskCallbackResult performFlashFormat(
+    AppData* app_data,
+    SYS_CMD_DEVICE_NODE* cmd_io,
+    AppCommandTaskCallbackMode mode) {
   switch (mode) {
-    case APP_COMMAND_FLASH_MODE_CALLBACK_INVOKE: {
+    case APP_COMMAND_TASK_MODE_CALLBACK_INVOKE: {
       if (APP_Flash_DriveFormat()) {
         COMMAND_MESSAGE("Drive is formatted.\r\n");
       } else {
@@ -123,10 +104,10 @@ static void performFormat(AppData* app_data,
       }
       break;
     }
-    case APP_COMMAND_FLASH_MODE_CALLBACK_UPDATE:
-      appCmdFlashFinishTask(app_data);
-      break;
+    case APP_COMMAND_TASK_MODE_CALLBACK_UPDATE:
+      return APP_COMMAND_TASK_RESULT_FINISHED;
   }
+  return APP_COMMAND_TASK_RESULT_RUNNING;
 }
 
 static int appCmdFlashFormat(AppData* app_data,
@@ -135,48 +116,15 @@ static int appCmdFlashFormat(AppData* app_data,
   if (argc != 2) {
     return appCmdFlashUsage(cmd_io, argv[0]);
   }
-  appCmdFlashStartTask(app_data, cmd_io, &performFormat);
+  APP_Command_Task_Schedule(&app_data->command.task,
+                            cmd_io,
+                            performFlashFormat,
+                            performFlashCheckAvailable);
   return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Public API.
-
-void APP_Command_Flash_Initialize(AppData* app_data) {
-  app_data->command.flash.state = APP_COMMAND_FLASH_STATE_NONE;
-  // TODO(sergey): Ignore for release builds to save CPU ticks?
-  appCmdFlashSetCallback(app_data, NULL, NULL);
-}
-
-void APP_Command_Flash_Tasks(AppData* app_data) {
-  switch (app_data->command.flash.state) {
-    case APP_COMMAND_FLASH_STATE_NONE:
-      // Nothing to do.
-      break;
-    case APP_COMMAND_FLASH_STATE_WAIT_AVAILABLE:
-      if (!APP_Flash_IsBusy(&app_data->flash)) {
-        if (APP_Flash_IsError(&app_data->flash)) {
-          DEBUG_MESSAGE("Flash is in error state, can't perform operation.\r\n");
-          appCmdFlashFinishTask(app_data);
-        } else {
-          DEBUG_MESSAGE("Flash is free, invoking command.\r\n");
-          app_data->command.flash.state = APP_COMMAND_FLASH_STATE_RUNNING;
-          app_data->command.flash.callback(
-              app_data,
-              app_data->command.flash.callback_cmd_io,
-              APP_COMMAND_FLASH_MODE_CALLBACK_INVOKE);
-        }
-      } else {
-        DEBUG_MESSAGE("Flash is busy, waiting.\r\n");
-      }
-      break;
-    case APP_COMMAND_FLASH_STATE_RUNNING:
-      app_data->command.flash.callback(app_data,
-                                       app_data->command.flash.callback_cmd_io,
-                                       APP_COMMAND_FLASH_MODE_CALLBACK_UPDATE);
-      break;
-  }
-}
 
 int APP_Command_Flash(AppData* app_data,
                       SYS_CMD_DEVICE_NODE* cmd_io,
