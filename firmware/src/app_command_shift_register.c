@@ -28,10 +28,14 @@
 #include "system_definitions.h"
 #include "utildefines.h"
 
+#include "util_math.h"
 #include "util_string.h"
 
 #define LOG_PREFIX "APP CMD SHIFT REGISTER: "
 #define DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
+
+////////////////////////////////////////////////////////////////////////////////
+// Internal routines.
 
 static int appCmdShiftRegisterUsage(SYS_CMD_DEVICE_NODE* cmd_io,
                                     const char* argv0) {
@@ -41,6 +45,8 @@ static int appCmdShiftRegisterUsage(SYS_CMD_DEVICE_NODE* cmd_io,
 "\r\n"
 "    <enable|disable>\r\n"
 "        Enable or disable shift register outputs.\r\n"
+"    send <data>\r\n"
+"        Send data to the shift register.\r\n"
 "\r\n"
     );
   return true;
@@ -79,6 +85,11 @@ static void appCmdShiftRegisterFinishTask(AppData* app_data) {
   appCmdShiftRegisterSetCallback(app_data, NULL, NULL);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Commands implementation.
+
+// ============ enable/disable ============
+
 static void performSetEnabled(AppData* app_data,
                               SYS_CMD_DEVICE_NODE* cmd_io,
                               AppCommandShiftRegisterCallbackMode mode) {
@@ -105,10 +116,9 @@ static void performSetDisabled(AppData* app_data,
   }
 }
 
-static int commandShiftRegisterSetEnabled(AppData* app_data,
-                                          SYS_CMD_DEVICE_NODE* cmd_io,
-                                          int argc, char** argv,
-                                          bool is_enabled) {
+static int commandShiftRegisterSetEnabledOrDisabled(AppData* app_data,
+                                                    SYS_CMD_DEVICE_NODE* cmd_io,
+                                                    int argc, char** argv) {
   if (argc != 2) {
     return appCmdShiftRegisterUsage(cmd_io, argv[0]);
   } else if (STREQ(argv[1], "enable")) {
@@ -118,6 +128,43 @@ static int commandShiftRegisterSetEnabled(AppData* app_data,
   } else {
      appCmdShiftRegisterUsage(cmd_io, argv[0]);
   }
+  return true;
+}
+
+// ============ data ============
+
+static void performSendData(AppData* app_data,
+                            SYS_CMD_DEVICE_NODE* cmd_io,
+                            AppCommandShiftRegisterCallbackMode mode) {
+  switch (mode) {
+    case APP_COMMAND_SHIFT_REGISTER_MODE_CALLBACK_INVOKE:
+      APP_ShiftRegister_SendData(
+          &app_data->shift_register,
+          app_data->command.shift_register._private.send.data,
+          app_data->command.shift_register._private.send.num_bytes);
+      break;
+    case APP_COMMAND_SHIFT_REGISTER_MODE_CALLBACK_UPDATE:
+      appCmdShiftRegisterFinishTask(app_data);
+      break;
+  }
+}
+
+static int commandShiftRegisterSendData(AppData* app_data,
+                                        SYS_CMD_DEVICE_NODE* cmd_io,
+                                        int argc, char** argv,
+                                        bool is_enabled) {
+  if (argc < 3) {
+    return appCmdShiftRegisterUsage(cmd_io, argv[0]);
+  }
+  const size_t num_bytes =
+    min_zz(argc - 2,
+           sizeof(app_data->command.shift_register._private.send.data));
+  size_t i;
+  for (i = 0; i < num_bytes; ++i) {
+    app_data->command.shift_register._private.send.data[i] = atoi(argv[i + 2]);
+  }
+  app_data->command.shift_register._private.send.num_bytes = num_bytes;
+  appCmdShiftRegisterStartTask(app_data, cmd_io, &performSendData);
   return true;
 }
 
@@ -167,9 +214,11 @@ int APP_Command_ShiftRegister(AppData* app_data,
   if (argc == 1) {
     return appCmdShiftRegisterUsage(cmd_io, argv[0]);
   } else if (argc == 2 && STREQ(argv[1], "enable")) {
-    commandShiftRegisterSetEnabled(app_data, cmd_io, argc, argv, true);
+    commandShiftRegisterSetEnabledOrDisabled(app_data, cmd_io, argc, argv);
   } else if (argc == 2 && STREQ(argv[1], "disable")) {
-    commandShiftRegisterSetEnabled(app_data, cmd_io, argc, argv, false);
+    commandShiftRegisterSetEnabledOrDisabled(app_data, cmd_io, argc, argv);
+  } else if (argc >= 2 && STREQ(argv[1], "send")) {
+    commandShiftRegisterSendData(app_data, cmd_io, argc, argv, false);
   } else {
     return appCmdShiftRegisterUsage(cmd_io, argv[0]);
   }

@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-#include "app_https_client.h"
+#include "app_shift_register.h"
 
 struct AppData;
 struct SYS_CMD_DEVICE_NODE;
@@ -69,6 +69,14 @@ typedef struct AppCommandShiftRegisterData {
   // - Shift register state machine calls the specified callback.
   AppCommandShiftRegisterCallback callback;
   struct SYS_CMD_DEVICE_NODE* callback_cmd_io;
+
+  // Per-task storage.
+  union {
+    struct {
+      uint8_t data[SHIFT_REGISTER_MAX_DATA];
+      size_t num_bytes;
+    } send;
+  } _private;
 } AppCommandShiftRegisterData;
 
 // Initialize shift register related command processor state and data.

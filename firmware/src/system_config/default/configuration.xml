@@ -2589,7 +2589,7 @@
       <Template dnOrder="21">
         <Name dnOrder="0">system_config.h</Name>
         <Path dnOrder="1">Header Files/app/system_config/default</Path>
-        <Checksum dnOrder="2">5D137A2600AAB58B760F59030E0089B7</Checksum>
+        <Checksum dnOrder="2">E32A1C60D61648C67684F5867A941A89</Checksum>
       </Template>
       <Template dnOrder="22">
         <Name dnOrder="0">app.h</Name>
@@ -2608,11 +2608,11 @@
     </Templates>
     <CompilerItems dnOrder="2">
       <C32 dnOrder="0">
-        <Include dnOrder="0" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src"/>
-        <Include dnOrder="1" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src\system_config\default"/>
-        <Include dnOrder="2" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src\default"/>
-        <Include dnOrder="3" value="C:\opt\microchip\harmony\v2_02_00b\framework"/>
-        <Include dnOrder="4" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src\system_config\default\framework"/>
+        <Include dnOrder="0" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src"/>
+        <Include dnOrder="1" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src/system_config/default"/>
+        <Include dnOrder="2" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src/default"/>
+        <Include dnOrder="3" value="/opt/microchip/harmony/v2_02_00b/framework"/>
+        <Include dnOrder="4" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src/system_config/default/framework"/>
         <Define dnOrder="5" value="HAVE_CONFIG_H"/>
         <Include dnOrder="6" value="../../../../../../../opt/microchip/harmony/v2_02_00b/third_party/tcpip/wolfssl"/>
       </C32>

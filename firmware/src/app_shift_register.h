@@ -28,13 +28,17 @@
 #include <stdint.h>
 
 // Maximum number of bytes to be sent to shift registers.
-#define SHIFT_REGISTER_MAX_DATA 4
+#define SHIFT_REGISTER_MAX_DATA 6
 
 typedef enum {
   // No tasks to be performed.
   APP_SHIFT_REGISTER_STATE_IDLE,
+  // Begin transmittance. Will start with pulling ~G high.
+  APP_SHIFT_REGISTER_STATE_TRANSMIT_BEGIN,
   // Shift register state machine is in transmittance state.
-  APP_SHIFT_REGISTER_STATE_SEND,
+  APP_SHIFT_REGISTER_STATE_TRANSMIT_STEP,
+  // End transmittance. Will toggle RCK and pull ~G down.
+  APP_SHIFT_REGISTER_STATE_TRANSMIT_FINISH,
 } AppShiftRegisterState;
 
 typedef struct AppShiftRegisterData {
@@ -48,6 +52,10 @@ typedef struct AppShiftRegisterData {
       // Current pointer in the array.
       size_t current_byte;
       uint8_t current_bit;
+      // To keep timings compatible with any length of the tranmission line
+      // we don't change status too often. For example, we pull SRCK high on
+      // first iteration of state machine and pull it down on the next one.
+      uint8_t counter;
     } send;
   } _private;
 } AppShiftRegisterData;
