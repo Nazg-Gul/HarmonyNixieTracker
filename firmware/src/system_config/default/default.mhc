@@ -6,52 +6,52 @@
 #     Harmony version: 2.02
 #
 #
-# from /home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/HarmonyNixieTracker.hconfig
+# from C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\HarmonyNixieTracker.hconfig
 #
 CONFIG_APP_INSTANCES=1
 #
-# from $HARMONY_VERSION_PATH/utilities/mhc/config/app_name_idx_gencode.ftl
+# from $HARMONY_VERSION_PATH\utilities\mhc\config\app_name_idx_gencode.ftl
 #
 CONFIG_APP_MENU_IDX0=y
 CONFIG_APP_NAME_0="app"
 CONFIG_APP_AUTO_GENERATE_CODE0=n
 #
-# from /home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/HarmonyNixieTracker.hconfig
+# from C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\HarmonyNixieTracker.hconfig
 #
 CONFIG_USE_EXCEPTION_HANDLER=y
 CONFIG_EXCEPTION_USE_SYS_DEBUG=y
 CONFIG_EXCEPTION_BREAKPOINT=y
 #
-# from $HARMONY_VERSION_PATH/framework/bluetooth/config/bluetooth.hconfig
+# from $HARMONY_VERSION_PATH\framework\bluetooth\config\bluetooth.hconfig
 #
 CONFIG_USE_BLUETOOTH_LIBRARIES=n
 #
-# from $HARMONY_VERSION_PATH/framework/bootloader/config/bootloader.hconfig
+# from $HARMONY_VERSION_PATH\framework\bootloader\config\bootloader.hconfig
 #
 CONFIG_USE_BOOTLOADER=n
 #
-# from $HARMONY_VERSION_PATH/framework/classb/config/classb.hconfig
+# from $HARMONY_VERSION_PATH\framework\classb\config\classb.hconfig
 #
 CONFIG_USE_CLASSB=n
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto.hconfig
 #
 CONFIG_USE_CRYPTO_LIBRARY=y
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto_cipher.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto_cipher.hconfig
 #
 CONFIG_USE_CRYPTO_ECC=n
 CONFIG_USE_CRYPTO_3DES_SW=n
 CONFIG_USE_CRYPTO_RSA=y
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto_cipher_aes.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto_cipher_aes.hconfig
 #
 CONFIG_USE_CRYPTO_AES_SW=y
 CONFIG_USE_CRYPTO_AES_CBC_SW=n
 CONFIG_USE_CRYPTO_AES_COUNTER_SW=n
 CONFIG_USE_CRYPTO_AES_DIRECT_SW=n
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto_hash.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto_hash.hconfig
 #
 CONFIG_USE_CRYPTO_MD5_SW=n
 CONFIG_USE_CRYPTO_SHA_SW=n
@@ -60,48 +60,48 @@ CONFIG_USE_CRYPTO_SHA_384=n
 CONFIG_USE_CRYPTO_SHA_512=n
 CONFIG_USE_CRYPTO_HMAC_SW=y
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto_compress.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto_compress.hconfig
 #
 CONFIG_USE_CRYPTO_COMPRESS=n
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto_random.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto_random.hconfig
 #
 CONFIG_USE_CRYPTO_RANDOM=y
 #
-# from $HARMONY_VERSION_PATH/framework/crypto/config/crypto.hconfig
+# from $HARMONY_VERSION_PATH\framework\crypto\config\crypto.hconfig
 #
 CONFIG_USE_CRYPTO_LIB=n
 #
-# from $HARMONY_VERSION_PATH/framework/decoder/config/decoder.hconfig
+# from $HARMONY_VERSION_PATH\framework\decoder\config\decoder.hconfig
 #
 CONFIG_USE_DECODER=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/adc/config/drv_adc.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\adc\config\drv_adc.hconfig
 #
 CONFIG_USE_DRV_ADC=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/camera/config/drv_camera.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\camera\config\drv_camera.hconfig
 #
 CONFIG_USE_DRV_CAMERA=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/can/config/drv_can.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\can\config\drv_can.hconfig
 #
 CONFIG_USE_DRV_CAN=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/cmp/config/drv_cmp.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\cmp\config\drv_cmp.hconfig
 #
 CONFIG_DRV_CVREF_ENABLE=n
 CONFIG_USE_DRV_CMP=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/encx24j600/config/drv_encx24j600.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\encx24j600\config\drv_encx24j600.hconfig
 #
 CONFIG_DRV_ENCX24J600_USE_DRIVER=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/enc28j60/config/drv_enc28j60.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\enc28j60\config\drv_enc28j60.hconfig
 #
 CONFIG_DRV_ENC28J60_USE_DRIVER=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_mac.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_mac.hconfig
 #
 CONFIG_TCPIP_USE_ETH_MAC=y
 CONFIG_TCPIP_EMAC_TX_DESCRIPTORS=8
@@ -156,7 +156,7 @@ CONFIG_DRV_ETHPHY_RESET_CLR_TMO=500
 CONFIG_DRV_ETHPHY_USE_RESET_CALLBACK=y
 CONFIG_DRV_ETHPHY_RESET_CALLBACK="APP_Network_PHY_Reset"
 #
-# from $HARMONY_VERSION_PATH/framework/driver/miim/config/drv_miim.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\miim\config\drv_miim.hconfig
 #
 CONFIG_DRV_MIIM_USE_DRIVER=y
 CONFIG_DRV_MIIM_ETH_MODULE_ID="ETH_ID_0"
@@ -168,11 +168,11 @@ CONFIG_DRV_MIIM_COMMANDS=y
 CONFIG_DRV_MIIM_DRIVER_OBJECT="DRV_MIIM_OBJECT_BASE_Default"
 CONFIG_DRV_MIIM_DRIVER_INDEX=0
 #
-# from $HARMONY_VERSION_PATH/framework/driver/flash/config/drv_flash.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\flash\config\drv_flash.hconfig
 #
 CONFIG_USE_DRV_FLASH=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/i2c/config/drv_i2c.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\i2c\config\drv_i2c.hconfig
 #
 CONFIG_USE_DRV_I2C=y
 CONFIG_DRV_I2C_DRIVER_MODE="DYNAMIC"
@@ -181,7 +181,7 @@ CONFIG_DRV_I2C_CLIENTS_NUMBER=1
 CONFIG_DRV_I2C_INSTANCES_NUMBER=1
 CONFIG_DRV_I2C_FORCED_WRITE=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/i2c/config/drv_i2c_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\driver\i2c\config\drv_i2c_idx.ftl
 #
 CONFIG_DRV_I2C_INST_IDX0=y
 CONFIG_DRV_I2C_BIT_BANG_IDX0=n
@@ -194,11 +194,11 @@ CONFIG_DRV_I2C_BAUD_RATE_IDX0=50000
 CONFIG_DRV_I2C_SLEW_RATE_CONTROL_IDX0=n
 CONFIG_DRV_I2C_POWER_STATE_IDX0="SYS_MODULE_POWER_RUN_FULL"
 #
-# from $HARMONY_VERSION_PATH/framework/driver/ic/config/drv_ic.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\ic\config\drv_ic.hconfig
 #
 CONFIG_USE_DRV_IC=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/nvm/config/drv_nvm.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\nvm\config\drv_nvm.hconfig
 #
 CONFIG_USE_DRV_NVM=y
 CONFIG_DRV_NVM_DRIVER_MODE="DYNAMIC"
@@ -215,27 +215,27 @@ CONFIG_USE_DRV_NVM_ERASE_WRITE=y
 CONFIG_USE_DRV_NVM_SYS_FS_REGISTER=y
 CONFIG_USE_DRV_NVM_DISABLE_ERROR_CHECK=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/oc/config/drv_oc.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\oc\config\drv_oc.hconfig
 #
 CONFIG_USE_DRV_OC=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/pmp/config/drv_pmp.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\pmp\config\drv_pmp.hconfig
 #
 CONFIG_USE_DRV_PMP=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/rtcc/config/drv_rtcc.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\rtcc\config\drv_rtcc.hconfig
 #
 CONFIG_USE_DRV_RTCC=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/sample/config/drv_sample.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\sample\config\drv_sample.hconfig
 #
 CONFIG_USE_DRV_SAMPLE=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/sdcard/config/drv_sdcard.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\sdcard\config\drv_sdcard.hconfig
 #
 CONFIG_USE_DRV_SDCARD=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi/config/drv_spi.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\spi\config\drv_spi.hconfig
 #
 CONFIG_DRV_SPI_USE_DRIVER=y
 CONFIG_DRV_SPI_DRIVER_MODE="DYNAMIC"
@@ -253,7 +253,7 @@ CONFIG_DRV_SPI_INSTANCES_NUMBER=2
 CONFIG_DRV_SPI_CLIENT_NUMBER=2
 CONFIG_DRV_SPI_NUM_ELEMENTS_PER_INSTANCE=8
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi/config/drv_spi_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\driver\spi\config\drv_spi_idx.ftl
 #
 CONFIG_DRV_SPI_IDX0=y
 CONFIG_DRV_SPI_SPI_ID_IDX0="SPI_ID_4"
@@ -324,11 +324,11 @@ CONFIG_DRV_SPI_BAUD_RATE_STATIC_IDX1=1000000
 CONFIG_DRV_SPI_CLOCK_MODE_STATIC_IDX1="DRV_SPI_CLOCK_MODE_IDLE_LOW_EDGE_RISE"
 CONFIG_DRV_SPI_INPUT_PHASE_STATIC_IDX1="SPI_INPUT_SAMPLING_PHASE_IN_MIDDLE"
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi/config/drv_spi.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\spi\config\drv_spi.hconfig
 #
 CONFIG_DRV_SPI_STATIC_INSTANCES_NUMBER=0
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi_flash/sst25/config/drv_sst25.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\spi_flash\sst25\config\drv_sst25.hconfig
 #
 CONFIG_USE_DRV_SST25=y
 CONFIG_DRV_SST25_DRIVER_MODE="DYNAMIC"
@@ -337,7 +337,7 @@ CONFIG_DRV_SST25_CLIENTS_NUMBER=2
 CONFIG_DRV_SST25_QUEUE_DEPTH_COMBINED=5
 CONFIG_USE_DRV_SST25_SYS_FS_REGISTER=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi_flash/sst25/config/drv_sst25_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\driver\spi_flash\sst25\config\drv_sst25_idx.ftl
 #
 CONFIG_DRV_SST25_INST_IDX0=y
 CONFIG_DRV_SST25_SPI_DRIVER_INSTANCE_IDX0=1
@@ -351,23 +351,23 @@ CONFIG_DRV_SST25_WRITE_PROTECT_PIN_PORT_CHANNEL_IDX0="PORT_CHANNEL_C"
 CONFIG_DRV_SST25_WRITE_PROTECT_PIN_BIT_POS_IDX0="PORTS_BIT_POS_14"
 CONFIG_DRV_SST25_POWER_STATE_IDX0="SYS_MODULE_POWER_RUN_FULL"
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi_flash/sst25vf016b/config/drv_sst25vf016b.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\spi_flash\sst25vf016b\config\drv_sst25vf016b.hconfig
 #
 CONFIG_USE_DRV_SST25VF016B=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi_flash/sst25vf020b/config/drv_sst25vf020b.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\spi_flash\sst25vf020b\config\drv_sst25vf020b.hconfig
 #
 CONFIG_USE_DRV_SST25VF020B=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/spi_flash/sst25vf064c/config/drv_sst25vf064c.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\spi_flash\sst25vf064c\config\drv_sst25vf064c.hconfig
 #
 CONFIG_USE_DRV_SST25VF064C=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/sram/config/drv_sram.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\sram\config\drv_sram.hconfig
 #
 CONFIG_USE_DRV_SRAM=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/tmr/config/drv_tmr.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\tmr\config\drv_tmr.hconfig
 #
 CONFIG_USE_DRV_TMR=y
 CONFIG_DRV_TMR_DRIVER_MODE="DYNAMIC"
@@ -375,7 +375,7 @@ CONFIG_DRV_TMR_CLIENTS_NUMBER=1
 CONFIG_DRV_TMR_INTERRUPT_MODE=y
 CONFIG_DRV_TMR_INSTANCES_NUMBER=1
 #
-# from $HARMONY_VERSION_PATH/framework/driver/tmr/config/drv_tmr_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\driver\tmr\config\drv_tmr_idx.ftl
 #
 CONFIG_DRV_TMR_INST_0=y
 CONFIG_DRV_TMR_PERIPHERAL_ID_IDX0="TMR_ID_2"
@@ -387,23 +387,23 @@ CONFIG_DRV_TMR_OPERATION_MODE_IDX0="DRV_TMR_OPERATION_MODE_16_BIT"
 CONFIG_DRV_TMR_ASYNC_WRITE_ENABLE_IDX0=n
 CONFIG_DRV_TMR_POWER_STATE_IDX0="SYS_MODULE_POWER_RUN_FULL"
 #
-# from $HARMONY_VERSION_PATH/framework/driver/touch/adc10bit/config/drv_adc10bit.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\touch\adc10bit\config\drv_adc10bit.hconfig
 #
 CONFIG_USE_DRV_TOUCH_ADC10BIT=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/touch/ar1021/config/drv_ar1021.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\touch\ar1021\config\drv_ar1021.hconfig
 #
 CONFIG_USE_DRV_TOUCH_AR1021=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/touch/mtch6301/config/drv_mtch6301.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\touch\mtch6301\config\drv_mtch6301.hconfig
 #
 CONFIG_USE_DRV_TOUCH_MTCH6301=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/touch/mtch6303/config/drv_mtch6303.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\touch\mtch6303\config\drv_mtch6303.hconfig
 #
 CONFIG_USE_DRV_TOUCH_MTCH6303=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/usart/config/drv_usart.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\usart\config\drv_usart.hconfig
 #
 CONFIG_USE_DRV_USART=y
 CONFIG_DRV_USART_DRIVER_MODE="DYNAMIC"
@@ -414,7 +414,7 @@ CONFIG_DRV_USART_BUFFER_QUEUE_SUPPORT=y
 CONFIG_DRV_USART_INSTANCES_NUMBER=1
 CONFIG_DRV_USART_CLIENTS_NUMBER=1
 #
-# from $HARMONY_VERSION_PATH/framework/driver/usart/config/drv_usart_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\driver\usart\config\drv_usart_idx.ftl
 #
 CONFIG_DRV_USART_INST_IDX0=y
 CONFIG_DRV_USART_PERIPHERAL_ID_IDX0="USART_ID_1"
@@ -434,12 +434,12 @@ CONFIG_DRV_USART_SUPPORT_TRANSMIT_DMA_IDX0=n
 CONFIG_DRV_USART_SUPPORT_RECEIVE_DMA_IDX0=n
 CONFIG_DRV_USART_POWER_STATE_IDX0="SYS_MODULE_POWER_RUN_FULL"
 #
-# from $HARMONY_VERSION_PATH/framework/driver/usart/config/drv_usart.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\usart\config\drv_usart.hconfig
 #
 CONFIG_DRV_USART_SUPPORT_RECEIVE_DMA=n
 CONFIG_DRV_USART_SUPPORT_TRANSMIT_DMA=n
 #
-# from $HARMONY_VERSION_PATH/framework/driver/wifi/config/drv_wifi.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\wifi\config\drv_wifi.hconfig
 #
 CONFIG_USE_DRV_WIFI=y
 CONFIG_DRV_WIFI_DEVICE="MRF24WG"
@@ -450,7 +450,7 @@ CONFIG_DRV_WIFI_SPI_INSTANCE_INDEX=0
 CONFIG_DRV_WIFI_STORE_CONFIG_IN_NVM=y
 CONFIG_DRV_WIFI_NVM_START_ADDRESS=0
 #
-# from $HARMONY_VERSION_PATH/framework/driver/wifi/config/drv_wifi_mrf24w.hconfig
+# from $HARMONY_VERSION_PATH\framework\driver\wifi\config\drv_wifi_mrf24w.hconfig
 #
 CONFIG_MRF24WG_CS_PORT_CHANNEL="F"
 CONFIG_MRF24WG_CS_BIT_POS=12
@@ -465,19 +465,19 @@ CONFIG_MRF24WG_INFRASTRUCTURE_SECURITY_MODE="WPA2-PSK"
 CONFIG_MRF24WG_SSID="MySSID"
 CONFIG_MRF24WG_WPA_PASS_PHRASE="MyPSKPhrase"
 #
-# from $HARMONY_VERSION_PATH/framework/gfx/config/gfx.hconfig
+# from $HARMONY_VERSION_PATH\framework\gfx\config\gfx.hconfig
 #
 CONFIG_USE_GFX_STACK=n
 #
-# from $HARMONY_VERSION_PATH/framework/math/dsp/config/dsp.hconfig
+# from $HARMONY_VERSION_PATH\framework\math\dsp\config\dsp.hconfig
 #
 CONFIG_USE_DSP=n
 #
-# from $HARMONY_VERSION_PATH/framework/math/libq/config/libq.hconfig
+# from $HARMONY_VERSION_PATH\framework\math\libq\config\libq.hconfig
 #
 CONFIG_USE_LIBQ_C=n
 #
-# from $HARMONY_VERSION_PATH/framework/net/pres/config/net_pres.hconfig
+# from $HARMONY_VERSION_PATH\framework\net\pres\config\net_pres.hconfig
 #
 CONFIG_NET_PRES_USE=y
 CONFIG_NET_PRES_RTOS="Standalone"
@@ -488,7 +488,7 @@ CONFIG_NET_PRES_RTOS_DELAY=1000
 CONFIG_NET_PRES_SOCKETS=4
 CONFIG_NET_PRES_INSTANCES=1
 #
-# from $HARMONY_VERSION_PATH/framework/net/pres/config/net_pres_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\net\pres\config\net_pres_idx.ftl
 #
 CONFIG_NET_PRES_IDX0=y
 CONFIG_NET_PRES_CONFIG_NAME_IDX0="NET_PRES_0"
@@ -504,7 +504,7 @@ CONFIG_NET_PRES_SUPPORT_DATAGRAM_ENC_IDX0=n
 CONFIG_NET_PRES_SUPPORT_SERVER_ENC_IDX0=n
 CONFIG_NET_PRES_SUPPORT_CLIENT_ENC_IDX0=y
 #
-# from $HARMONY_VERSION_PATH/framework/net/pres/config/net_pres.hconfig
+# from $HARMONY_VERSION_PATH\framework\net\pres\config\net_pres.hconfig
 #
 CONFIG_NET_PRES_BLOB_CERT_REPO=y
 CONFIG_NET_PRES_BLOB_CLIENT_SUPPORT=y
@@ -513,25 +513,25 @@ CONFIG_NET_PRES_BLOB_CLIENT_CERT_VARIABLE="client_cert_der_2048"
 CONFIG_NET_PRES_BLOB_CLIENT_CERT_LEN_VARIABLE="sizeof_client_cert_der_2048"
 CONFIG_NET_PRES_BLOB_SERVER_SUPPORT=n
 #
-# from $HARMONY_VERSION_PATH/framework/osal/config/osal.hconfig
+# from $HARMONY_VERSION_PATH\framework\osal\config\osal.hconfig
 #
 CONFIG_USE_OSAL=y
 #
-# from $HARMONY_VERSION_PATH/framework/peripheral/config/peripheral.hconfig
+# from $HARMONY_VERSION_PATH\framework\peripheral\config\peripheral.hconfig
 #
 CONFIG_PERIPHERAL_LIB=y
 #
-# from $HARMONY_VERSION_PATH/framework/sample/config/sample_module.hconfig
+# from $HARMONY_VERSION_PATH\framework\sample\config\sample_module.hconfig
 #
 CONFIG_USE_SAMPLE_MODULE=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/common/config/sys_common.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\common\config\sys_common.hconfig
 #
 CONFIG_USE_SYS_COMMON=y
 CONFIG_SYS_BUFFER=n
 CONFIG_SYS_QUEUE=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/clk/config/DS60001156.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\clk\config\DS60001156.hconfig
 #
 CONFIG_USE_SYS_CLK=y
 CONFIG_SYS_CLK_FRCDIV="OSC_FRC_DIV_2"
@@ -543,14 +543,14 @@ CONFIG_SYS_CLK_FREQ="80000000"
 CONFIG_SYS_CLK_PBCLK_FREQ="40000000"
 CONFIG_SYS_CLK_UPLL_BEFORE_DIV2_FREQ="48000000"
 #
-# from $HARMONY_VERSION_PATH/framework/system/devcon/config/sys_devcon.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\devcon\config\sys_devcon.hconfig
 #
 CONFIG_USE_SYS_DEVCON=y
 CONFIG_SYS_DEVCON_DYNAMIC=n
 CONFIG_SYS_DEVCON_USE_JTAG=n
 CONFIG_SYS_DEVCON_USE_TRACE=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/ports/config/sys_ports.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\ports\config\sys_ports.hconfig
 #
 CONFIG_USE_SYS_PORTS=y
 CONFIG_SYS_PORTS_IMPLEMENTATION="STATIC"
@@ -561,7 +561,7 @@ CONFIG_SYS_PORT_CNEN=0x0
 CONFIG_SYS_PORT_CNPU=0x0
 CONFIG_COMPONENT_PACKAGE="TQFP"
 #
-# from $HARMONY_VERSION_PATH/framework/system/ports/config/sys_ports_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\system\ports\config\sys_ports_idx.ftl
 #
 CONFIG_SYS_PORTS_INST_IDX0=y
 CONFIG_SYS_PORT_A_USED="Y"
@@ -594,7 +594,7 @@ CONFIG_SYS_PORTS_INST_IDX9=y
 CONFIG_SYS_PORT_K_USED=""
 CONFIG_SYS_PORT_K_CN_USED=""
 #
-# from $HARMONY_VERSION_PATH/framework/system/ports/config/sys_ports_pps_input_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\system\ports\config\sys_ports_pps_input_idx.ftl
 #
 CONFIG_SYS_PORTS_PPS_INPUT_0=y
 CONFIG_USE_PPS_INPUT_0=n
@@ -717,7 +717,7 @@ CONFIG_USE_PPS_INPUT_58=n
 CONFIG_SYS_PORTS_PPS_INPUT_59=y
 CONFIG_USE_PPS_INPUT_59=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/ports/config/sys_ports_pps_output_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\system\ports\config\sys_ports_pps_output_idx.ftl
 #
 CONFIG_SYS_PORTS_PPS_OUTPUT_0=y
 CONFIG_USE_PPS_OUTPUT_0=n
@@ -840,7 +840,7 @@ CONFIG_USE_PPS_OUTPUT_58=n
 CONFIG_SYS_PORTS_PPS_OUTPUT_59=y
 CONFIG_USE_PPS_OUTPUT_59=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/ports/config/sys_ports_pins.ftl
+# from $HARMONY_VERSION_PATH\framework\system\ports\config\sys_ports_pins.ftl
 #
 CONFIG_BSP_PIN_0_FUNCTION_NAME=""
 CONFIG_BSP_PIN_0_FUNCTION_TYPE=""
@@ -4407,7 +4407,7 @@ CONFIG_BSP_PIN_323_CN=""
 CONFIG_BSP_PIN_323_PU=""
 CONFIG_BSP_PIN_323_PD=""
 #
-# from $HARMONY_VERSION_PATH/framework/system/ports/config/sys_ports_pin_functions.ftl
+# from $HARMONY_VERSION_PATH\framework\system\ports\config\sys_ports_pin_functions.ftl
 #
 CONFIG_BSP_CUSTOM_TYPE0="LED_AH"
 CONFIG_BSP_CUSTOM_MODE0="DIGITAL"
@@ -4570,13 +4570,13 @@ CONFIG_BSP_CUSTOM_CN19=""
 CONFIG_BSP_CUSTOM_PU19=""
 CONFIG_BSP_CUSTOM_PD19=""
 #
-# from $HARMONY_VERSION_PATH/framework/system/command/config/sys_command.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\command\config\sys_command.hconfig
 #
 CONFIG_USE_SYS_COMMAND=y
 CONFIG_COMMAND_PRINT_BUFFER_SIZE=8192
 CONFIG_REMAP_SYS_CONSOLE_MESSAGE=y
 #
-# from $HARMONY_VERSION_PATH/framework/system/console/config/sys_console.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\console\config\sys_console.hconfig
 #
 CONFIG_USE_SYS_CONSOLE=y
 CONFIG_SYS_CONSOLE_MODE="DYNAMIC"
@@ -4587,15 +4587,15 @@ CONFIG_SYS_CONSOLE_USE_UART_INSTANCE=0
 CONFIG_SYS_CONSOLE_UART_RD_QUEUE_DEPTH=1
 CONFIG_SYS_CONSOLE_UART_WR_QUEUE_DEPTH=64
 #
-# from $HARMONY_VERSION_PATH/framework/system/debug/config/sys_debug.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\debug\config\sys_debug.hconfig
 #
 CONFIG_USE_SYS_DEBUG=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/dma/config/sys_dma.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\dma\config\sys_dma.hconfig
 #
 CONFIG_USE_SYS_DMA=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/fs/config/sys_fs.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\fs\config\sys_fs.hconfig
 #
 CONFIG_USE_SYS_FS=y
 CONFIG_SYS_FS_MAX_FILES=2
@@ -4605,25 +4605,25 @@ CONFIG_SYS_FS_AUTO_MOUNT=n
 CONFIG_SYS_FS_INSTANCES_NUMBER=2
 CONFIG_SYS_FS_VOLUME_NUMBER=2
 #
-# from $HARMONY_VERSION_PATH/framework/system/fs/config/sys_fs_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\system\fs\config\sys_fs_idx.ftl
 #
 CONFIG_SYS_FS_IDX0=y
 CONFIG_SYS_FS_IDX1=y
 #
-# from $HARMONY_VERSION_PATH/framework/system/fs/config/sys_fs.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\fs\config\sys_fs.hconfig
 #
 CONFIG_SYS_FS_MAX_FILE_SYSTEM_TYPE=2
 CONFIG_SYS_FS_FAT=y
 CONFIG_SYS_FS_MPFS=n
 CONFIG_SYS_FS_USE_MBR=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/int/config/sys_int.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\int\config\sys_int.hconfig
 #
 CONFIG_USE_SYS_INT=y
 CONFIG_USE_EXT_INT=y
 CONFIG_EXT_INT_INSTANCES_NUMBER=1
 #
-# from $HARMONY_VERSION_PATH/framework/system/int/config/ext_int_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\system\int\config\ext_int_idx.ftl
 #
 CONFIG_EXT_INT_INST_IDX0=y
 CONFIG_EXT_INT_PERIPHERAL_ID_IDX0="INT_EXTERNAL_INT_SOURCE4"
@@ -4633,29 +4633,29 @@ CONFIG_EXT_INT_SUB_PRIORITY_IDX0="INT_SUBPRIORITY_LEVEL1"
 CONFIG_EXT_INT_POLARITY_IDX0="INT_EDGE_TRIGGER_FALLING"
 CONFIG_EXT_INT_ENABLE_IDX0=y
 #
-# from $HARMONY_VERSION_PATH/framework/system/msg/config/sys_msg.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\msg\config\sys_msg.hconfig
 #
 CONFIG_USE_SYS_MSG=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/random/config/sys_random.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\random\config\sys_random.hconfig
 #
 CONFIG_USE_SYS_RANDOM=y
 CONFIG_SYS_RANDOM_CRYPTO_SEED_SIZE=55
 CONFIG_SYS_RANDOM_USE_CRYPTO_STRENGTH=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/reset/config/sys_reset.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\reset\config\sys_reset.hconfig
 #
 CONFIG_USE_SYS_RESET=y
 #
-# from $HARMONY_VERSION_PATH/framework/system/rtcc/config/sys_rtcc.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\rtcc\config\sys_rtcc.hconfig
 #
 CONFIG_USE_SYS_RTCC=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/touch/config/sys_touch.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\touch\config\sys_touch.hconfig
 #
 CONFIG_USE_SYS_TOUCH=n
 #
-# from $HARMONY_VERSION_PATH/framework/system/tmr/config/sys_tmr.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\tmr\config\sys_tmr.hconfig
 #
 CONFIG_USE_SYS_TMR=y
 CONFIG_SYS_TMR_POWER_STATE="SYS_MODULE_POWER_RUN_FULL"
@@ -4667,29 +4667,29 @@ CONFIG_SYS_TMR_UNIT_RESOLUTION=10000
 CONFIG_SYS_TMR_CLIENT_TOLERANCE=10
 CONFIG_SYS_TMR_INTERRUPT_NOTIFICATION=y
 #
-# from $HARMONY_VERSION_PATH/framework/system/wdt/config/sys_wdt.hconfig
+# from $HARMONY_VERSION_PATH\framework\system\wdt\config\sys_wdt.hconfig
 #
 CONFIG_USE_SYS_WDT=n
 #
-# from $HARMONY_VERSION_PATH/framework/test/config/test.hconfig
+# from $HARMONY_VERSION_PATH\framework\test\config\test.hconfig
 #
 CONFIG_USE_TEST_HARNESS=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_stack.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_stack.hconfig
 #
 CONFIG_USE_TCPIP_STACK=y
 CONFIG_TCPIP_STACK_USE_IPV4=y
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/ip.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\ip.hconfig
 #
 CONFIG_TCPIP_IPV4_FRAGMENTATION=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_stack.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_stack.hconfig
 #
 CONFIG_TCPIP_STACK_USE_IPV6=n
 CONFIG_TCPIP_USE_TCP=y
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcp.hconfig
 #
 CONFIG_TCPIP_TCP_MAX_SEG_SIZE_TX=1460
 CONFIG_TCPIP_TCP_MAX_SEG_SIZE_RX_LOCAL=1460
@@ -4713,11 +4713,11 @@ CONFIG_TCPIP_TCP_MSL_TIMEOUT=0
 CONFIG_TCPIP_TCP_QUIET_TIME=0
 CONFIG_TCPIP_TCP_COMMANDS=y
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_stack.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_stack.hconfig
 #
 CONFIG_TCPIP_USE_UDP=y
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/udp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\udp.hconfig
 #
 CONFIG_TCPIP_UDP_MAX_SOCKETS=10
 CONFIG_TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE=512
@@ -4728,11 +4728,11 @@ CONFIG_TCPIP_UDP_SOCKET_DEFAULT_RX_QUEUE_LIMIT=5
 CONFIG_TCPIP_UDP_USE_POOL_BUFFERS=n
 CONFIG_TCPIP_UDP_COMMANDS=y
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_stack.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_stack.hconfig
 #
 CONFIG_TCPIP_STACK_NETWORK_CONFIG_NUMBER=2
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/network_config_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\network_config_idx.ftl
 #
 CONFIG_TCPIP_STACK_NETWORK_CONFIG_IDX0=y
 CONFIG_TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX0="PIC32INT"
@@ -4769,7 +4769,7 @@ CONFIG_TCPIP_NETWORK_INTERFACE_FLAG_DNS_SERVER_IDX1=n
 CONFIG_TCPIP_NETWORK_CONFIG_MULTICAST_IDX1=n
 CONFIG_TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX1="DRV_MRF24W_MACObject"
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_stack.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_stack.hconfig
 #
 CONFIG_TCPIP_STACK_TICK_RATE=5
 CONFIG_TCPIP_STACK_USER_NOTIFICATION=n
@@ -4778,7 +4778,7 @@ CONFIG_TCPIP_STACK_IF_UP_DOWN_OPERATION=y
 CONFIG_TCPIP_STACK_CONFIGURATION_SAVE_RESTORE=y
 CONFIG_TCPIP_STACK_SECURE_PORT_ENTRIES=10
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_heap.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_heap.hconfig
 #
 CONFIG_TCPIP_USE_HEAP=y
 CONFIG_TCPIP_STACK_USE_HEAP_CONFIG="TCPIP_STACK_HEAP_TYPE_INTERNAL_HEAP"
@@ -4792,7 +4792,7 @@ CONFIG_TCPIP_STACK_DRAM_SIZE=32768
 CONFIG_TCPIP_STACK_DRAM_RUN_LIMIT=2048
 CONFIG_TCPIP_STACK_DRAM_DEBUG_ENABLE=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/arp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\arp.hconfig
 #
 CONFIG_TCPIP_ARP_CACHE_ENTRIES=5
 CONFIG_TCPIP_ARP_CACHE_DELETE_OLD=y
@@ -4806,11 +4806,11 @@ CONFIG_TCPIP_ARP_CACHE_ENTRY_RETRIES=3
 CONFIG_TCPIP_ARP_GRATUITOUS_PROBE_COUNT=1
 CONFIG_TCPIP_ARP_TASK_PROCESS_RATE=2
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/berkeley_api.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\berkeley_api.hconfig
 #
 CONFIG_TCPIP_STACK_USE_BERKELEY_API=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/dhcp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\dhcp.hconfig
 #
 CONFIG_TCPIP_STACK_USE_DHCP_CLIENT=y
 CONFIG_TCPIP_DHCP_TIMEOUT=10
@@ -4820,11 +4820,11 @@ CONFIG_TCPIP_DHCP_HOST_NAME_SIZE=20
 CONFIG_TCPIP_DHCP_CLIENT_CONNECT_PORT=68
 CONFIG_TCPIP_DHCP_SERVER_LISTEN_PORT=67
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/dhcps.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\dhcps.hconfig
 #
 CONFIG_TCPIP_STACK_USE_DHCP_SERVER=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/dns.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\dns.hconfig
 #
 CONFIG_TCPIP_USE_DNS_CLIENT=y
 CONFIG_TCPIP_DNS_CLIENT_SERVER_TMO=60
@@ -4842,27 +4842,27 @@ CONFIG_TCPIP_DNS_CLIENT_MAX_SELECT_INTERFACES=4
 CONFIG_TCPIP_DNS_CLIENT_DELETE_OLD_ENTRIES=y
 CONFIG_TCPIP_DNS_CLIENT_USER_NOTIFICATION=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/dnss.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\dnss.hconfig
 #
 CONFIG_TCPIP_USE_DNSS=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/ddns.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\ddns.hconfig
 #
 CONFIG_TCPIP_USE_DDNS=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/ftp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\ftp.hconfig
 #
 CONFIG_TCPIP_USE_FTP_MODULE=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/http.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\http.hconfig
 #
 CONFIG_TCPIP_STACK_USE_HTTP_SERVER=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/http_net.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\http_net.hconfig
 #
 CONFIG_TCPIP_STACK_USE_HTTP_NET_SERVER=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/icmp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\icmp.hconfig
 #
 CONFIG_TCPIP_STACK_USE_ICMPV4=y
 CONFIG_TCPIP_STACK_USE_ICMP_SERVER=y
@@ -4871,27 +4871,27 @@ CONFIG_TCPIP_ICMP_CLIENT_USER_NOTIFICATION=y
 CONFIG_TCPIP_ICMP_ECHO_REQUEST_TIMEOUT=500
 CONFIG_TCPIP_ICMP_TASK_TICK_RATE=33
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/nbns.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\nbns.hconfig
 #
 CONFIG_TCPIP_USE_NBNS=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_reboot.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_reboot.hconfig
 #
 CONFIG_TCPIP_USE_REBOOT_SERVER=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/smtp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\smtp.hconfig
 #
 CONFIG_TCPIP_USE_SMTP_CLIENT=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/smtpc.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\smtpc.hconfig
 #
 CONFIG_TCPIP_USE_SMTPC_CLIENT=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/snmp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\snmp.hconfig
 #
 CONFIG_TCPIP_USE_SNMP=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/sntp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\sntp.hconfig
 #
 CONFIG_TCPIP_USE_SNTP_CLIENT=y
 CONFIG_TCPIP_NTP_DEFAULT_IF="PIC32INT"
@@ -4908,23 +4908,23 @@ CONFIG_TCPIP_NTP_FAST_QUERY_INTERVAL="14"
 CONFIG_TCPIP_NTP_TASK_TICK_RATE="1100"
 CONFIG_TCPIP_NTP_RX_QUEUE_LIMIT="2"
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/telnet.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\telnet.hconfig
 #
 CONFIG_TCPIP_USE_TELNET=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/zeroconf.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\zeroconf.hconfig
 #
 CONFIG_TCPIP_USE_LINK_ZERO_CONFIG=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_announce.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_announce.hconfig
 #
 CONFIG_TCPIP_USE_ANNOUNCE=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/iperf.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\iperf.hconfig
 #
 CONFIG_TCPIP_USE_IPERF=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tcpip_cmd.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tcpip_cmd.hconfig
 #
 CONFIG_TCPIP_STACK_USE_COMMANDS=y
 CONFIG_TCPIP_STACK_COMMANDS_STORAGE_ENABLE=n
@@ -4935,15 +4935,15 @@ CONFIG_TCPIP_STACK_COMMANDS_WIFI_ENABLE=y
 CONFIG_TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUEST_BUFF_SIZE=2000
 CONFIG_TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUEST_DATA_SIZE=100
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/tftpc.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\tftpc.hconfig
 #
 CONFIG_TCPIP_USE_TFTPC_MODULE=n
 #
-# from $HARMONY_VERSION_PATH/framework/tcpip/config/igmp.hconfig
+# from $HARMONY_VERSION_PATH\framework\tcpip\config\igmp.hconfig
 #
 CONFIG_TCPIP_USE_IGMP=n
 #
-# from $HARMONY_VERSION_PATH/framework/usb/config/usb.hconfig
+# from $HARMONY_VERSION_PATH\framework\usb\config\usb.hconfig
 #
 CONFIG_USE_USB_STACK=y
 CONFIG_DRV_USB_INTERRUPT_MODE=y
@@ -4953,13 +4953,13 @@ CONFIG_DRV_USB_BETA_SW_HOST_SUPPORT=n
 CONFIG_DRV_USB_ENDPOINTS_NUMBER=2
 CONFIG_USB_DEVICE_EP0_BUFFER_SIZE="8"
 #
-# from $HARMONY_VERSION_PATH/framework/usb/config/usb_device_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\usb\config\usb_device_idx.ftl
 #
 CONFIG_USB_DEVICE_INST_IDX0=y
 CONFIG_USB_DEVICE_NUMBER_REGISTRED_FUNCTION_DRIVER_IDX0=1
 CONFIG_USB_DEVICE_FUNCTION_1_IDX0=y
 #
-# from $HARMONY_VERSION_PATH/framework/usb/config/usb_device_function_1.ftl
+# from $HARMONY_VERSION_PATH\framework\usb\config\usb_device_function_1.ftl
 #
 CONFIG_USB_DEVICE_FUNCTION_1_DEVICE_CLASS_IDX0="HID"
 CONFIG_USB_DEVICE_FUNCTION_1_CONFIGURATION_IDX0=1
@@ -4968,7 +4968,7 @@ CONFIG_USB_DEVICE_FUNCTION_1_HID_READ_Q_SIZE_IDX0=1
 CONFIG_USB_DEVICE_FUNCTION_1_HID_WRITE_Q_SIZE_IDX0=1
 CONFIG_USB_DEVICE_FUNCTION_1_HID_ENDPOINT_NUMBER_IDX0=1
 #
-# from $HARMONY_VERSION_PATH/framework/usb/config/usb_device_idx.ftl
+# from $HARMONY_VERSION_PATH\framework\usb\config\usb_device_idx.ftl
 #
 CONFIG_USB_DEVICE_PRODUCT_ID_SELECT_IDX0="User Defined Product ID"
 CONFIG_USB_DEVICE_VENDOR_ID_IDX0="0x04D8"
@@ -4980,7 +4980,7 @@ CONFIG_DRV_USB_INTERRUPT_PRIORITY_IDX0="INT_PRIORITY_LEVEL4"
 CONFIG_DRV_USB_INTERRUPT_SUB_PRIORITY_IDX0="INT_SUBPRIORITY_LEVEL0"
 CONFIG_USB_DEVICE_POWER_STATE_IDX0="SYS_MODULE_POWER_RUN_FULL"
 #
-# from $HARMONY_VERSION_PATH/framework/usb/config/usb.hconfig
+# from $HARMONY_VERSION_PATH\framework\usb\config\usb.hconfig
 #
 CONFIG_USB_DEVICE_SOF_EVENT_ENABLE=n
 CONFIG_USB_DEVICE_SET_DESCRIPTOR_EVENT_ENABLE=n
@@ -4989,15 +4989,15 @@ CONFIG_USB_DEVICE_REMOTE_WAKEUP=n
 CONFIG_USB_DEVICE_BOS_DESCRIPTOR_SUPPORT=n
 CONFIG_USB_DEVICE_STRING_DESCRIPTOR_TABLE_ADVANCED=n
 #
-# from $HARMONY_VERSION_PATH/bsp/config/bsp.hconfig
+# from $HARMONY_VERSION_PATH\bsp\config\bsp.hconfig
 #
 CONFIG_USE_BSP=n
 #
-# from $HARMONY_VERSION_PATH/third_party/rtos/config/rtos.hconfig
+# from $HARMONY_VERSION_PATH\third_party\rtos\config\rtos.hconfig
 #
 CONFIG_USE_3RDPARTY_RTOS=n
 #
-# from $HARMONY_VERSION_PATH/third_party/tcpip/config/wolfssl.hconfig
+# from $HARMONY_VERSION_PATH\third_party\tcpip\config\wolfssl.hconfig
 #
 CONFIG_USE_3RDPARTY_WOLFSSL=y
 CONFIG_WOLFSSL_MULTI_THREAD_SUPPORT=n
@@ -5037,31 +5037,31 @@ CONFIG_WOLFSSL_DEBUG_SUPPORT=n
 CONFIG_WOLFSSL_OPENSSL_EXTRA=n
 CONFIG_WOLFSSL_OLD_TLS_SUPPORT=n
 #
-# from $HARMONY_VERSION_PATH/third_party/tcpip/config/wolfmqtt.hconfig
+# from $HARMONY_VERSION_PATH\third_party\tcpip\config\wolfmqtt.hconfig
 #
 CONFIG_USE_3RDPARTY_WOLFMQTT=n
 #
-# from $HARMONY_VERSION_PATH/third_party/tcpip/iniche/config/embtcp.hconfig
+# from $HARMONY_VERSION_PATH\third_party\tcpip\iniche\config\embtcp.hconfig
 #
 CONFIG_IN_EMB_TCPIP_USE_TCP=n
 #
-# from $HARMONY_VERSION_PATH/third_party/tcpip/iniche/config/embdual.hconfig
+# from $HARMONY_VERSION_PATH\third_party\tcpip\iniche\config\embdual.hconfig
 #
 CONFIG_IN_EMB_DUAL_USE_TCP=n
 #
-# from $HARMONY_VERSION_PATH/third_party/tcpip/iniche/config/stack.hconfig
+# from $HARMONY_VERSION_PATH\third_party\tcpip\iniche\config\stack.hconfig
 #
 CONFIG_IN_TCPIP=n
 #
-# from $HARMONY_VERSION_PATH/third_party/gfx/config/gfxtp.hconfig
+# from $HARMONY_VERSION_PATH\third_party\gfx\config\gfxtp.hconfig
 #
 CONFIG_USE_SEGGER_EMWIN_LIBRARY=n
 #
-# from $HARMONY_VERSION_PATH/config/harmony.hconfig
+# from $HARMONY_VERSION_PATH\config\harmony.hconfig
 #
 CONFIG_DEVICE_CONFIGURATION=y
 #
-# from $HARMONY_VERSION_PATH/utilities/mhc/config/PIC32MX795F512L.hconfig
+# from $HARMONY_VERSION_PATH\utilities\mhc\config\PIC32MX795F512L.hconfig
 #
 CONFIG_USERID=0xffff
 CONFIG_FSRSSEL="PRIORITY_7"
@@ -5090,15 +5090,15 @@ CONFIG_PWP="OFF"
 CONFIG_BWP="OFF"
 CONFIG_CP="OFF"
 #
-# from $HARMONY_VERSION_PATH/config/harmony.hconfig
+# from $HARMONY_VERSION_PATH\config\harmony.hconfig
 #
 CONFIG_PROJECT_STANDALONE=n
 #
-# from $HARMONY_VERSION_PATH/utilities/mhc/config/project.hconfig
+# from $HARMONY_VERSION_PATH\utilities\mhc\config\project.hconfig
 #
 CONFIG_XC32_HEAP="90000"
 #
-# from $HARMONY_VERSION_PATH/utilities/mhc/config/isa.hconfig
+# from $HARMONY_VERSION_PATH\utilities\mhc\config\isa.hconfig
 #
 CONFIG_ISA_MIPS32_MODE=y
 CONFIG_ISA_MIPS16_MODE=n

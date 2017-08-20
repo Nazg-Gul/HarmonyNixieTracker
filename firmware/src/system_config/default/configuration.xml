@@ -2608,11 +2608,11 @@
     </Templates>
     <CompilerItems dnOrder="2">
       <C32 dnOrder="0">
-        <Include dnOrder="0" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src"/>
-        <Include dnOrder="1" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src/system_config/default"/>
-        <Include dnOrder="2" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src/default"/>
-        <Include dnOrder="3" value="/opt/microchip/harmony/v2_02_00b/framework"/>
-        <Include dnOrder="4" value="/home/sergey/Data/ElectronicsDesign/HarmonyNixieTracker/firmware/src/system_config/default/framework"/>
+        <Include dnOrder="0" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src"/>
+        <Include dnOrder="1" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src\system_config\default"/>
+        <Include dnOrder="2" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src\default"/>
+        <Include dnOrder="3" value="C:\opt\microchip\harmony\v2_02_00b\framework"/>
+        <Include dnOrder="4" value="C:\Users\sergey\Documents\Electronics Design\HarmonyNixieTracker\firmware\src\system_config\default\framework"/>
         <Define dnOrder="5" value="HAVE_CONFIG_H"/>
         <Include dnOrder="6" value="../../../../../../../opt/microchip/harmony/v2_02_00b/third_party/tcpip/wolfssl"/>
       </C32>

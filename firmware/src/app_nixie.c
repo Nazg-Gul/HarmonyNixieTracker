@@ -54,7 +54,7 @@ static int8_t IN12A_SymbolToCathodeIndex(char symbol) {
   if (symbol == '0') {
     return 2;
   } else  if (symbol > '0' && symbol <= '9') {
-    return 11 - (symbol - '0');
+    return 12 - (symbol - '0');
   }
   return -1;
 }
@@ -63,7 +63,7 @@ static int8_t IN12B_SymbolToCathodeIndex(char symbol) {
   if (symbol == '0') {
     return 2;
   } else  if (symbol > '0' && symbol <= '9') {
-    return 11 - (symbol - '0');
+    return 12 - (symbol - '0');
   } else if (symbol == ',') {
     return 12;
   }
@@ -372,7 +372,8 @@ static void encodeShiftRegister(AppNixieData* app_nixie_data) {
     SYS_ASSERT(byte < app_nixie_data->num_shift_registers,
                "\r\nInvalid shift register index");
     SYS_ASSERT(bit <= 8, "\r\nInvalid shift register bit");
-    app_nixie_data->register_shift_state[byte] |= (1 << bit);
+    const int num_byte = app_nixie_data->num_shift_registers - byte - 1;
+    app_nixie_data->register_shift_state[num_byte] |= (1 << bit);
   }
   app_nixie_data->state = APP_NIXIE_STATE_WRITE_SHIFT_REGISTER;
 #ifdef SYS_CMD_REMAP_SYS_DEBUG_MESSAGE
@@ -440,56 +441,56 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
   // TODO(sergey): Make it a proper wiring diagram here.
   NIXIE_REGISTER_BEGIN(app_nixie_data);
     NIXIE_TUBE_BEGIN(NIXIE_TYPE_IN12A);  /* J2 */
-      // NIXIE_CATHODE('.', 12, 0, 0);  /* 2 */
-      NIXIE_CATHODE('0', 2,  0, 0);  /* 1 */
-      NIXIE_CATHODE('9', 3,  0, 0);  /* 4 */
-      NIXIE_CATHODE('8', 4,  0, 0);  /* 3 */
-      NIXIE_CATHODE('7', 5,  0, 0);  /* 6 */
-      NIXIE_CATHODE('6', 6,  0, 0);  /* 5 */
-      NIXIE_CATHODE('5', 7,  0, 0);  /* 8 */
-      NIXIE_CATHODE('4', 8,  0, 0);  /* 7 */
-      NIXIE_CATHODE('3', 9,  0, 0);  /* 10 */
-      NIXIE_CATHODE('2', 10, 0, 0);  /* 9 */
-      NIXIE_CATHODE('1', 11, 0, 0);  /* 12 */
+      // NIXIE_CATHODE('.', 12, 3, 2);  /* 2 */
+      NIXIE_CATHODE('0', 2,  3, 3);  /* 1 */
+      NIXIE_CATHODE('9', 3,  3, 1);  /* 4 */
+      NIXIE_CATHODE('8', 4,  3, 4);  /* 3 */
+      NIXIE_CATHODE('7', 5,  3, 0);  /* 6 */
+      NIXIE_CATHODE('6', 6,  3, 5);  /* 5 */
+      NIXIE_CATHODE('5', 7,  2, 7);  /* 8 */
+      NIXIE_CATHODE('4', 8,  3, 6);  /* 7 */
+      NIXIE_CATHODE('3', 9,  2, 6);  /* 10 */
+      NIXIE_CATHODE('2', 10, 3, 7);  /* 9 */
+      NIXIE_CATHODE('1', 11, 2, 5);  /* 12 */
     NIXIE_TUBE_END();
     NIXIE_TUBE_BEGIN(NIXIE_TYPE_IN12A);  /* J3 */
-      // NIXIE_CATHODE('.', 12, 0, 0);  /* 2 */
-      NIXIE_CATHODE('0', 2,  0, 0);  /* 1 */
-      NIXIE_CATHODE('9', 3,  0, 0);  /* 4 */
-      NIXIE_CATHODE('8', 4,  0, 0);  /* 3 */
-      NIXIE_CATHODE('7', 5,  0, 0);  /* 6 */
-      NIXIE_CATHODE('6', 6,  0, 0);  /* 5 */
-      NIXIE_CATHODE('5', 7,  0, 0);  /* 8 */
-      NIXIE_CATHODE('4', 8,  0, 0);  /* 7 */
-      NIXIE_CATHODE('3', 9,  0, 0);  /* 10 */
-      NIXIE_CATHODE('2', 10, 0, 0);  /* 9 */
-      NIXIE_CATHODE('1', 11, 0, 0);  /* 12 */
+      // NIXIE_CATHODE('.', 12, 1, 7);  /* 2 */
+      NIXIE_CATHODE('0', 2,  2, 0);  /* 1 */
+      NIXIE_CATHODE('9', 3,  1, 6);  /* 4 */
+      NIXIE_CATHODE('8', 4,  2, 1);  /* 3 */
+      NIXIE_CATHODE('7', 5,  1, 5);  /* 6 */
+      NIXIE_CATHODE('6', 6,  2, 2);  /* 5 */
+      NIXIE_CATHODE('5', 7,  1, 4);  /* 8 */
+      NIXIE_CATHODE('4', 8,  2, 3);  /* 7 */
+      NIXIE_CATHODE('3', 9,  1, 0);  /* 10 */
+      NIXIE_CATHODE('2', 10, 2, 4);  /* 9 */
+      NIXIE_CATHODE('1', 11, 1, 1);  /* 12 */
     NIXIE_TUBE_END();
     NIXIE_TUBE_BEGIN(NIXIE_TYPE_IN12A);  /* J4 */
-      // NIXIE_CATHODE('.', 12, 0, 0);  /* 2 */
-      NIXIE_CATHODE('0', 2,  0, 0);  /* 1 */
+      // NIXIE_CATHODE('.', 12, 0, 4);  /* 2 */
+      NIXIE_CATHODE('0', 2,  1, 2);  /* 1 */
       NIXIE_CATHODE('9', 3,  0, 0);  /* 4 */
-      NIXIE_CATHODE('8', 4,  0, 0);  /* 3 */
-      NIXIE_CATHODE('7', 5,  0, 0);  /* 6 */
-      NIXIE_CATHODE('6', 6,  0, 0);  /* 5 */
-      NIXIE_CATHODE('5', 7,  0, 0);  /* 8 */
-      NIXIE_CATHODE('4', 8,  0, 0);  /* 7 */
-      NIXIE_CATHODE('3', 9,  0, 0);  /* 10 */
-      NIXIE_CATHODE('2', 10, 0, 0);  /* 9 */
-      NIXIE_CATHODE('1', 11, 0, 0);  /* 12 */
+      NIXIE_CATHODE('8', 4,  1, 3);  /* 3 */
+      NIXIE_CATHODE('7', 5,  0, 1);  /* 6 */
+      NIXIE_CATHODE('6', 6,  0, 7);  /* 5 */
+      NIXIE_CATHODE('5', 7,  0, 2);  /* 8 */
+      NIXIE_CATHODE('4', 8,  0, 6);  /* 7 */
+      NIXIE_CATHODE('3', 9,  0, 3);  /* 10 */
+      NIXIE_CATHODE('2', 10, 0, 5);  /* 9 */
+      NIXIE_CATHODE('1', 11, 5, 3);  /* 12 */
     NIXIE_TUBE_END();
     NIXIE_TUBE_BEGIN(NIXIE_TYPE_IN12A);  /* J5 */
-      // NIXIE_CATHODE('.', 12, 0, 0);  /* 2 */
-      NIXIE_CATHODE('0', 2,  0, 0);  /* 1 */
-      NIXIE_CATHODE('9', 3,  0, 0);  /* 4 */
-      NIXIE_CATHODE('8', 4,  0, 0);  /* 3 */
-      NIXIE_CATHODE('7', 5,  0, 0);  /* 6 */
-      NIXIE_CATHODE('6', 6,  0, 0);  /* 5 */
-      NIXIE_CATHODE('5', 7,  0, 0);  /* 8 */
-      NIXIE_CATHODE('4', 8,  0, 0);  /* 7 */
-      NIXIE_CATHODE('3', 9,  0, 0);  /* 10 */
-      NIXIE_CATHODE('2', 10, 0, 0);  /* 9 */
-      NIXIE_CATHODE('1', 11, 0, 0);  /* 12 */
+      // NIXIE_CATHODE('.', 12, 4, 7);  /* 2 */
+      NIXIE_CATHODE('0', 2,  4, 5);  /* 1 */
+      NIXIE_CATHODE('9', 3,  4, 6);  /* 4 */
+      NIXIE_CATHODE('8', 4,  4, 4);  /* 3 */
+      NIXIE_CATHODE('7', 5,  5, 7);  /* 6 */
+      NIXIE_CATHODE('6', 6,  5, 0);  /* 5 */
+      NIXIE_CATHODE('5', 7,  5, 6);  /* 8 */
+      NIXIE_CATHODE('4', 8,  5, 1);  /* 7 */
+      NIXIE_CATHODE('3', 9,  5, 5);  /* 10 */
+      NIXIE_CATHODE('2', 10, 5, 2);  /* 9 */
+      NIXIE_CATHODE('1', 11, 5, 4);  /* 12 */
     NIXIE_TUBE_END();
   NIXIE_REGISTER_END();
 
