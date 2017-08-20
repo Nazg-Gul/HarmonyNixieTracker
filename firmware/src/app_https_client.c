@@ -358,6 +358,7 @@ static void waitForSSLConnect(AppHTTPSClientData* app_https_client_data) {
   }
   if (!NET_PRES_SocketIsSecure(data->socket)) {
     HTTPS_ERROR_MESSAGE("SSL connection negotiation failed, aborting.\r\n");
+    NET_PRES_SocketClose(data->socket);
     enterErrorState(data);
     return;
   }
