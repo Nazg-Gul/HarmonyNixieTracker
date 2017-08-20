@@ -29,6 +29,7 @@
 #include "util_math.h"
 #include "util_string.h"
 
+#include "app_network.h"
 #include "app_shift_register.h"
 
 #define LOG_PREFIX "APP NIXIE: "
@@ -44,6 +45,10 @@
 #define NIXIE_DEBUG_PRINT(format, ...) \
   APP_DEBUG_PRINT(LOG_PREFIX, format, ##__VA_ARGS__)
 #define NIXIE_DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
+
+// Interval for periodic tasks in seconds.
+#define PERIODIC_INTERVAL_FAST    5
+#define PERIODIC_INTERVAL_NORMAL  30
 
 ////////////////////////////////////////////////////////////////////////////////
 // Nixie tube specific routines.
@@ -297,8 +302,14 @@ static void shuffleServerValueDigits(AppNixieData* app_nixie_data) {
            app_nixie_data->display_value,
            sizeof(app_nixie_data->display_value));
     *app_nixie_data->is_fetched_out = true;
+    // Get rid of pointers.
+    app_nixie_data->display_value_out = NULL;
+    app_nixie_data->is_fetched_out = NULL;
   } else {
     app_nixie_data->state = APP_NIXIE_STATE_BEGIN_DISPLAY_SEQUENCE;
+    NIXIE_MESSAGE("Sending HTTP request.\r\n");
+    NIXIE_PRINT("Will display " NIXIE_DISPLAY_FORMAT "\r\n",
+                NIXIE_DISPLAY_VALUES(app_nixie_data->display_value));
   }
 }
 
@@ -334,9 +345,10 @@ static int8_t nixieSymbolToCathodeIndex(NixieType type, char symbol) {
 static void decodeDisplayValue(AppNixieData* app_nixie_data) {
   int8_t i;
   for (i = 0; i < app_nixie_data->num_nixies; ++i) {
+    const int8_t nixie_index = app_nixie_data->num_nixies - i - 1;
     app_nixie_data->cathodes[i] = nixieSymbolToCathodeIndex(
-        app_nixie_data->nixie_types[i],
-        app_nixie_data->display_value[i]);
+        app_nixie_data->nixie_types[nixie_index],
+        app_nixie_data->display_value[nixie_index]);
   }
   app_nixie_data->state = APP_NIXIE_STATE_ENCODE_SHIFT_REGISTER;
 #ifdef SYS_CMD_REMAP_SYS_DEBUG_MESSAGE
@@ -393,11 +405,58 @@ static void writeShiftRegister(AppNixieData* app_nixie_data) {
     return;
   }
   APP_ShiftRegister_SendData(app_nixie_data->app_shift_register_data,
-                             (uint8_t*)app_nixie_data->register_shift_state,
+                             app_nixie_data->register_shift_state,
                              app_nixie_data->num_shift_registers);
   // TODO(sergey): Shall we wait for communication to be over before going idle?
   // TODO(sergey): Shall we enable shift registers here?
   app_nixie_data->state = APP_NIXIE_STATE_IDLE;
+}
+
+////////////////////////////////////////
+// Periodic tasks.
+
+typedef enum PeriodicTime {
+  PERIODIC_TIME_FAST,
+  PERIODIC_TIME_NORMAL,
+} PeriodicTime;
+
+static void schedulePeriodicTask(AppNixieData* app_nixie_data,
+                                 PeriodicTime time) {
+  uint64_t interval;
+  switch (time) {
+    case PERIODIC_TIME_FAST:
+      interval = PERIODIC_INTERVAL_FAST;
+      break;
+    case PERIODIC_TIME_NORMAL:
+      interval = PERIODIC_INTERVAL_NORMAL;
+      break;
+  }
+  app_nixie_data->periodic_next_time =
+      SYS_TMR_SystemCountGet() + SYS_TMR_SystemCountFrequencyGet() * interval;
+}
+
+static void performPeriodicTasks(AppNixieData* app_nixie_data) {
+  if (!app_nixie_data->periodic_tasks_enabled) {
+    // Periodic tasks are not enabled, so we shouldn't be doing anything here.
+    return;
+  }
+  if (SYS_TMR_SystemCountGet() < app_nixie_data->periodic_next_time) {
+    // The time for next periodic tasks did not come yet.
+    return;
+  }
+  if (APP_Nixie_IsBusy(app_nixie_data)) {
+    NIXIE_DEBUG_MESSAGE("Application is busy, waiting to become available.\r\n");
+    return;
+  }
+  if (!APP_Network_hasUsableInterface()) {
+    return;
+  }
+  NIXIE_DEBUG_MESSAGE("Performing periodic tasks.\r\n");
+  NIXIE_MESSAGE("Sending HTTP request.\r\n");
+  app_nixie_data->state = APP_NIXIE_STATE_BEGIN_HTTP_REQUEST;
+  app_nixie_data->task_from_periodic = true;
+  // Schedule next periodic task.
+  schedulePeriodicTask(app_nixie_data, PERIODIC_TIME_NORMAL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -434,6 +493,11 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
   app_nixie_data->app_https_client_data = app_https_client_data;
   app_nixie_data->app_shift_register_data = app_shift_register_data;
   app_nixie_data->display_value_out = NULL;
+
+  // Set up periodic tasks to fire up as soon as possible.
+  app_nixie_data->periodic_tasks_enabled = true;
+  app_nixie_data->periodic_next_time = 0;
+  app_nixie_data->task_from_periodic = false;
 
   // ======== Nixie display information =======
   // Fill in nixies information.
@@ -509,6 +573,14 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
 
   // ======== Support components information ========
   app_nixie_data->num_shift_registers = 6;
+  // Cleanup shift registers from previous run.
+  memset(app_nixie_data->register_shift_state,
+         0,
+         sizeof(app_nixie_data->register_shift_state));
+  APP_ShiftRegister_SendData(app_shift_register_data,
+                             app_nixie_data->register_shift_state,
+                             app_nixie_data->num_shift_registers);
+
   // Everything is done.
   SYS_MESSAGE("Nixie tubes subsystem initialized.\r\n");
 
@@ -521,13 +593,18 @@ void APP_Nixie_Initialize(AppNixieData* app_nixie_data,
 void APP_Nixie_Tasks(AppNixieData* app_nixie_data) {
   switch (app_nixie_data->state) {
     case APP_NIXIE_STATE_IDLE:
-      // Nothing to do.
-      // TODO(sergey): Check timer, and start fetching new value from server.
+      app_nixie_data->task_from_periodic = false;
+      performPeriodicTasks(app_nixie_data);
       break;
 
     case APP_NIXIE_STATE_ERROR:
       // TODO(sergey): Check whether it was a recoverable error.
       app_nixie_data->state = APP_NIXIE_STATE_IDLE;
+      // If error happened from periodic, schedule next update as soon as
+      // possible.
+      if (app_nixie_data->task_from_periodic) {
+          schedulePeriodicTask(app_nixie_data, PERIODIC_TIME_FAST);
+      }
       break;
 
     case APP_NIXIE_STATE_BEGIN_HTTP_REQUEST:
@@ -593,4 +670,13 @@ bool APP_Nixie_Fetch(AppNixieData* app_nixie_data,
   app_nixie_data->is_fetched_out = is_fetched;
   app_nixie_data->display_value_out = value;
   return true;
+}
+
+bool APP_Nixie_PeriodicTasksEnabled(AppNixieData* app_nixie_data) {
+  return app_nixie_data->periodic_tasks_enabled;
+}
+
+void APP_Nixie_PeriodicTasksSetEnabled(AppNixieData* app_nixie_data,
+                                       bool enabled) {
+  app_nixie_data->periodic_tasks_enabled = enabled;
 }

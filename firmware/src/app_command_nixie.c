@@ -25,6 +25,7 @@
 #include "app.h"
 #include "system_definitions.h"
 #include "utildefines.h"
+#include "util_string.h"
 
 #define LOG_PREFIX "APP CMD NIXIE: "
 #define DEBUG_MESSAGE(message) APP_DEBUG_MESSAGE(LOG_PREFIX, message)
@@ -39,6 +40,10 @@ static int appCmdNixieUsage(SYS_CMD_DEVICE_NODE* cmd_io, const char* argv0) {
 "\r\n"
 "    display <value>\r\n"
 "        Display given number on nixie display.\r\n"
+"    periodic\r\n"
+"        Print status of periodic tasks.\r\n"
+"    periodic <enable|disable>\r\n"
+"        Enable or disable periodic tasks.\r\n"
 "    fetch\r\n"
 "        Fetch value from server and show it in the console.\r\n"
     );
@@ -84,10 +89,37 @@ static int appCmdNixieDisplay(AppData* app_data,
   strncpy(app_data->command.nixie._private.display.value,
           value,
           sizeof(app_data->command.nixie._private.display.value));
+  // Reverse array in memory to match layout in nixie module/
+  reverse_bytes(app_data->command.nixie._private.display.value,
+                sizeof(app_data->command.nixie._private.display.value));
   APP_Command_Task_Schedule(&app_data->command.task,
                             cmd_io,
                             performNixieDisplay,
                             performNixieCheckAvailable);
+  return true;
+}
+
+// ============ Periodic ============
+
+static int appCmdNixiePeriodic(AppData* app_data,
+                               SYS_CMD_DEVICE_NODE* cmd_io,
+                               int argc, char** argv) {
+  if (argc == 2) {
+    const bool is_enabled = APP_Nixie_PeriodicTasksEnabled(&app_data->nixie);
+    COMMAND_PRINT("Nixie periodic tasks %s.\r\n", is_enabled ? "enabled"
+                                                             : "disabled");
+    return true;
+  }
+  if (argc != 3) {
+    return appCmdNixieUsage(cmd_io, argv[0]);
+  }
+  if (STREQ(argv[2], "enable")) {
+    APP_Nixie_PeriodicTasksSetEnabled(&app_data->nixie, true);
+  } else if (STREQ(argv[2], "disable")) {
+    APP_Nixie_PeriodicTasksSetEnabled(&app_data->nixie, false);
+  } else {
+    return appCmdNixieUsage(cmd_io, argv[0]);
+  }
   return true;
 }
 
@@ -152,6 +184,8 @@ int APP_Command_Nixie(AppData* app_data,
   }
   if (STREQ(argv[1], "display")) {
     return appCmdNixieDisplay(app_data, cmd_io, argc, argv);
+  } else if (STREQ(argv[1], "periodic")) {
+    return appCmdNixiePeriodic(app_data, cmd_io, argc, argv);
   } else if (STREQ(argv[1], "fetch")) {
     return appCmdNixieFetch(app_data, cmd_io, argc, argv);
   } else {

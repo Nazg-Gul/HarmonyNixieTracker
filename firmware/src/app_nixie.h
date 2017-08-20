@@ -96,6 +96,13 @@ typedef struct AppNixieData {
 
   AppNixieState state;
 
+  // ======== Periodic tasks ========
+  // Denotes whether periodic tasks are enabled.
+  bool periodic_tasks_enabled;
+  // Next time when periodic tasks will take place.
+  uint64_t periodic_next_time;
+  bool task_from_periodic;
+
   // ======== Static information about display ========
   // Number of nixie tubes in the display.
   int8_t num_nixies;
@@ -138,7 +145,7 @@ typedef struct AppNixieData {
   // State of shift registers corresponding to the requested cathodes.
   // TODO(sergey): Make it more obvious name, and thing of naming conflict with
   // `app_*_data` names, since this array is kind of a data.
-  int8_t register_shift_state[NUM_NIXIE_SHIFT_REGISTERS];
+  uint8_t register_shift_state[NUM_NIXIE_SHIFT_REGISTERS];
 
   // ======== Fetch routines ========
   // Pointer to store fetched value to.
@@ -167,5 +174,12 @@ bool APP_Nixie_Display(AppNixieData* app_nixie_data,
 bool APP_Nixie_Fetch(AppNixieData* app_nixie_data,
                      bool* is_fetched,
                      char value[MAX_NIXIE_TUBES]);
+
+// Check whether periodic tasks are enabled.
+bool APP_Nixie_PeriodicTasksEnabled(AppNixieData* app_nixie_data);
+
+// Enable or disable periodic tasks.
+void APP_Nixie_PeriodicTasksSetEnabled(AppNixieData* app_nixie_data,
+                                       bool enabled);
 
 #endif  // _APP_NIXIE_H
