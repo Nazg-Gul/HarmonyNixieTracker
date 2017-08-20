@@ -78,4 +78,7 @@ void APP_Network_PHY_Down(AppNetworkData* app_network_data);
 void APP_Network_PHY_Up(AppNetworkData* app_network_data);
 void APP_Network_PHY_SetEnabled(AppNetworkData* app_network_data, bool enabled);
 
+// Check whether there is any usable interface.
+bool APP_Network_hasUsableInterface(void);
+
 #endif  // _APP_NETWORK_H

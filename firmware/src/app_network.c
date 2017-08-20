@@ -249,3 +249,14 @@ void APP_Network_PHY_SetEnabled(AppNetworkData* app_network_data, bool enabled) 
     APP_Network_PHY_Down(app_network_data);
   }
 }
+
+bool APP_Network_hasUsableInterface(void) {
+  int i, num_nets = TCPIP_STACK_NumberOfNetworksGet();
+  for (i = 0; i < num_nets; ++i) {
+    TCPIP_NET_HANDLE net = TCPIP_STACK_IndexToNet(i);
+    if (TCPIP_STACK_NetIsReady(net)) {
+      return true;
+    }
+  }
+  return false;
+}
