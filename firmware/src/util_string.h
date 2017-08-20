@@ -69,4 +69,7 @@ size_t safe_snprintf(char* dst, size_t size, const char* format, ...);
 // Reverse the given null-terminated string in place.
 void string_inplace_reverse(char *string);
 
+// Reverse array of bytes in memory.
+void reverse_bytes(void* mem, size_t size);
+
 #endif  // _UTIL_STRING_H

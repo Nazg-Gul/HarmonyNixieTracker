@@ -121,3 +121,13 @@ size_t safe_snprintf(char* dst, size_t size, const char* format, ...) {
   va_end(arg);
   return n;
 }
+
+void reverse_bytes(void* mem, size_t size) {
+  unsigned char *lo = (unsigned char*)mem;
+  unsigned char *hi = lo + size - 1;
+  while (lo < hi) {
+    unsigned char tmp = *lo;
+    *lo++ = *hi;
+    *hi-- = tmp;
+  }
+}
